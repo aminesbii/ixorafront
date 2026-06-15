@@ -1,0 +1,228 @@
+<app-navbar></app-navbar>
+
+<main class="w-full overflow-hidden bg-[var(--color-ixora-white)] text-[var(--color-ixora-black)]">
+  <!-- Hero Section -->
+  <section class="relative w-full min-h-[90vh] flex items-center justify-center pt-20 pb-12 lg:pt-0">
+    <div class="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div #revealEl class="space-y-8 z-10">
+        <h1 class="text-5xl lg:text-7xl font-montserrat leading-tight">
+          <span class="line-reveal-wrapper"><span class="line-reveal-inner">IXORA</span></span><br />
+          <span class="line-reveal-wrapper"><span class="line-reveal-inner">Une
+              marque 100% Tunisienne</span></span>
+        </h1>
+
+        <p class="text-lg text-gray-600 max-w-md font-sans mt-6">
+          <span class="line-reveal-wrapper"><span class="line-reveal-inner">Discover the power of our
+              premium</span></span><br />
+          <span class="line-reveal-wrapper"><span class="line-reveal-inner">dermatological formulas. Designed
+              to</span></span><br />
+          <span class="line-reveal-wrapper"><span class="line-reveal-inner">bring out your natural glow.</span></span>
+        </p>
+
+        <div class="line-reveal-wrapper pt-4">
+          <div class="line-reveal-inner">
+            <button
+              class="btn btn-lg bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] border-none rounded-none px-10 uppercase tracking-widest text-sm transition-colors duration-300">
+              Shop Now
+            </button>
+          </div>
+        </div>
+      </div>
+      <div #revealEl data-delay="0.2" class="relative gsap-reveal-right">
+        <div class="hover-3d">
+          <!-- content -->
+          <figure class="max-w-100 rounded-2xl">
+            <img src="assets/special.png" alt="3D card" />
+          </figure>
+          <!-- 8 empty divs needed for the 3D effect -->
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Product Carousel (Horizontal Scroll) -->
+  <section class="py-24 container mx-auto px-4" id="products">
+    <div #revealEl class="text-center mb-16 gsap-reveal">
+      <h2 class="text-4xl font-serif">Featured Products</h2>
+      <div class="w-16 h-1 bg-[var(--color-ixora-blue)] mx-auto mt-6"></div>
+    </div>
+
+    <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 pt-4 hide-scrollbar px-4"
+      style="scroll-behavior: smooth;">
+      <div *ngFor="let product of featuredProducts; let i = index" #revealEl [attr.data-delay]="i * 0.1"
+        class="card rounded-none group cursor-pointer gsap-reveal flex-none w-[80vw] md:w-[40vw] lg:w-[22vw] snap-center">
+        <figure class="relative h-80 overflow-hidden bg-gray-100">
+          <img [src]="product.image" alt="{{ product.name }}"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+          <div *ngIf="product.tag"
+            class="absolute top-4 right-4 bg-[var(--color-ixora-black)] text-white text-xs uppercase px-3 py-1 tracking-wider">
+            {{ product.tag }}
+          </div>
+          <div
+            class="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+            <button
+              class="btn w-full bg-white text-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-green)] hover:text-white border-none rounded-none">Add
+              to Cart</button>
+          </div>
+        </figure>
+        <div class="card-body px-0 py-6 items-center text-center">
+          <h3 class="card-title font-sans text-lg font-medium tracking-wide">{{ product.name }}</h3>
+          <p class="text-gray-500">{{ product.price }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Grid -->
+  <section class="py-24 container mx-auto px-4">
+    <div #revealEl class="text-center mb-16 gsap-reveal">
+      <h2 class="text-4xl font-serif">Shop by Category</h2>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div *ngFor="let cat of categories; let i = index" #revealEl [attr.data-delay]="i * 0.1"
+        class="relative h-64 overflow-hidden group cursor-pointer gsap-reveal">
+        <img [src]="cat.image" alt="{{ cat.name }}"
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-white font-serif text-xl tracking-wide">{{ cat.name }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Brand Statement -->
+  <section class="py-24 bg-[var(--color-ixora-black)] text-white text-center px-4" id="brand">
+    <div #revealEl class="max-w-4xl mx-auto space-y-6">
+      <p class="uppercase tracking-[0.3em] text-[var(--color-ixora-green)] text-xs font-semibold line-reveal-wrapper">
+        <span class="line-reveal-inner">Our Philosophy</span>
+      </p>
+      <h2 class="text-3xl lg:text-5xl font-serif leading-relaxed">
+        <span class="line-reveal-wrapper"><span class="line-reveal-inner">"The dermocosmetic brand</span></span><br />
+        <span class="line-reveal-wrapper"><span class="line-reveal-inner">that understands your skin's unique
+            needs."</span></span>
+      </h2>
+    </div>
+  </section>
+
+  <!-- Promo Split 1 -->
+  <section class="grid grid-cols-1 lg:grid-cols-2 lg:h-[450px]">
+    <div class="bg-[var(--color-ixora-green)]/10 flex items-center justify-center p-12 lg:p-16 overflow-hidden h-full">
+      <div #revealEl class="space-y-6 max-w-md gsap-reveal-left">
+        <h2 class="text-4xl font-serif">The Pure Collection</h2>
+        <p class="font-sans text-gray-700 leading-relaxed">
+          Restore balance and clarity to your complexion with our green-tea infused Pure Collection. Formulated to calm
+          redness and minimize pores instantly.
+        </p>
+        <button
+          class="btn btn-outline border-[var(--color-ixora-black)] text-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-black)] hover:text-white rounded-none uppercase tracking-widest text-xs px-8">
+          Discover More
+        </button>
+      </div>
+    </div>
+    <div class="h-[350px] lg:h-full">
+      <img src="https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?q=80&w=800&auto=format&fit=crop"
+        alt="Pure Collection" class="w-full h-full object-cover" />
+    </div>
+  </section>
+
+  <!-- Promo Split 2 -->
+  <section class="grid grid-cols-1 lg:grid-cols-2 lg:h-[450px]">
+    <div class="h-[350px] lg:h-full order-2 lg:order-1">
+      <img src="https://images.unsplash.com/photo-1601049541289-9b1b7ce82fc3?q=80&w=800&auto=format&fit=crop"
+        alt="Hydration Serum" class="w-full h-full object-cover" />
+    </div>
+    <div
+      class="bg-[var(--color-ixora-blue)]/10 flex items-center justify-center p-12 lg:p-16 order-1 lg:order-2 overflow-hidden h-full">
+      <div #revealEl class="space-y-6 max-w-md gsap-reveal-right">
+        <h2 class="text-4xl font-serif">Deep Blue Hydration</h2>
+        <p class="font-sans text-gray-700 leading-relaxed">
+          Dive into 48-hour moisture with our hyaluronic acid and marine botanical blend. Plumps fine lines and protects
+          the skin barrier.
+        </p>
+        <button
+          class="btn btn-outline border-[var(--color-ixora-black)] text-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-black)] hover:text-white rounded-none uppercase tracking-widest text-xs px-8">
+          Shop Serum
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Testimonials Carousel -->
+  <section class="py-24 bg-gray-50 border-t border-gray-100">
+    <div class="container mx-auto px-4 text-center">
+      <h2 #revealEl class="text-4xl font-serif mb-16 gsap-reveal">What They Say</h2>
+
+      <div #revealEl class="carousel w-full max-w-4xl mx-auto gsap-reveal">
+        <div *ngFor="let test of testimonials; let i = index; let first = first; let last = last" [id]="'slide' + i"
+          class="carousel-item relative w-full flex-col items-center justify-center px-12">
+          <svg class="w-12 h-12 text-[var(--color-ixora-green)] mb-8 opacity-50" fill="currentColor"
+            viewBox="0 0 32 32">
+            <path
+              d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H8.3c.5-1.9 2.2-3.3 4.2-3.5V8zm16 0c-3.3 0-6 2.7-6 6v10h10V14h-5.7c.5-1.9 2.2-3.3 4.2-3.5V8z" />
+          </svg>
+          <p class="text-2xl lg:text-3xl font-serif leading-relaxed italic mb-8">"{{ test.quote }}"</p>
+          <p class="uppercase tracking-widest text-sm font-semibold">— {{ test.author }}</p>
+
+          <div class="absolute flex justify-between transform -translate-y-1/2 left-0 right-0 top-1/2">
+            <a [href]="'#slide' + (i === 0 ? testimonials.length - 1 : i - 1)" class="btn btn-circle btn-ghost">❮</a>
+            <a [href]="'#slide' + (i === testimonials.length - 1 ? 0 : i + 1)" class="btn btn-circle btn-ghost">❯</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer p-16 bg-[var(--color-ixora-black)] text-white font-sans" id="contact">
+  <aside>
+    <img src="/icons/IXORLogo.png" alt="ixora logo" class="h-16 mb-4 filter brightness-0 invert" />
+    <p class="max-w-xs text-gray-400">
+      Premium dermocosmetics formulated with advanced active ingredients for your skin's health.
+    </p>
+  </aside>
+  <nav>
+    <header class="footer-title text-gray-300 opacity-100 uppercase tracking-widest text-xs">Shop</header>
+    <a class="link link-hover text-gray-400">All Products</a>
+    <a class="link link-hover text-gray-400">New Arrivals</a>
+    <a class="link link-hover text-gray-400">Best Sellers</a>
+    <a class="link link-hover text-gray-400">Gifts & Sets</a>
+  </nav>
+  <nav>
+    <header class="footer-title text-gray-300 opacity-100 uppercase tracking-widest text-xs">Brand</header>
+    <a class="link link-hover text-gray-400">Our Story</a>
+    <a class="link link-hover text-gray-400">Ingredients</a>
+    <a class="link link-hover text-gray-400">Sustainability</a>
+    <a class="link link-hover text-gray-400">Contact Us</a>
+  </nav>
+  <form>
+    <header class="footer-title text-gray-300 opacity-100 uppercase tracking-widest text-xs">Newsletter</header>
+    <fieldset class="form-control w-80">
+      <label class="label">
+        <span class="label-text text-gray-400">Join our newsletter for exclusive offers.</span>
+      </label>
+      <div class="join mt-2 border-b border-gray-600 pb-2">
+        <input type="text" placeholder="username@site.com"
+          class="input input-ghost join-item rounded-none border-none focus:outline-none focus:bg-transparent px-0 w-full text-white placeholder-gray-600" />
+        <button
+          class="btn btn-ghost join-item rounded-none uppercase text-xs tracking-widest text-[var(--color-ixora-green)] hover:bg-transparent hover:text-white">→</button>
+      </div>
+    </fieldset>
+  </form>
+</footer>
+<div class="bg-black text-gray-500 py-4 text-center text-xs tracking-widest uppercase font-sans">
+  &copy; 2026 ixora Cosmetics. All rights reserved.
+</div>

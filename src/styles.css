@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-ixora-black: #0a0a0a;
+  --color-ixora-white: #ffffff;
+  --color-ixora-green: #10b981;
+  --color-ixora-blue: #3b82f6;
+
+  --font-sans: "Montserrat", system-ui, sans-serif;
+  --font-serif: "Montserrat", serif;
+}
+
+html,
+body {
+  background-color: var(--color-ixora-white);
+  color: var(--color-ixora-black);
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+}
+
+/* Fluid scroll animation base classes */
+.gsap-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.gsap-reveal-left {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.gsap-reveal-right {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.gsap-scale-up {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.line-reveal-wrapper {
+  overflow: hidden;
+}
+
+span.line-reveal-wrapper,
+span.line-reveal-inner {
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.line-reveal-inner {
+  opacity: 0;
+  transform: translateY(100%);
+  will-change: transform, opacity;
+}
