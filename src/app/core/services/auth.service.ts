@@ -7,10 +7,19 @@ import { Observable } from 'rxjs';
 export interface AuthResponse {
   token: string;
   userId: string;
-  name: string;
+  full_name: string;
   email: string;
-  isAdmin: boolean;
-  isTutor: boolean;
+  role: 'admin' | 'customer';
+  status: 'active' | 'inactive' | 'suspended';
+}
+
+// Shape stored in localStorage after stripping the token
+export interface StoredUser {
+  userId: string;
+  full_name: string;
+  email: string;
+  role: 'admin' | 'customer';
+  status: 'active' | 'inactive' | 'suspended';
 }
 
 @Injectable({
@@ -31,8 +40,8 @@ export class AuthService {
     );
   }
 
-  register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/register', { name, email, password }).pipe(
+  register(full_name: string, email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>('/api/auth/register', { full_name, email, password }).pipe(
       tap(res => this.persist(res))
     );
   }
@@ -40,21 +49,29 @@ export class AuthService {
   // ── Token / session helpers ──────────────────────────────────────────────────
 
   private persist(res: AuthResponse): void {
-    localStorage.setItem(this.TOKEN_KEY, res.token);
-    localStorage.setItem(this.USER_KEY, JSON.stringify({
-      userId: res.userId,
-      name: res.name,
-      email: res.email,
-      isAdmin: res.isAdmin,
-      isTutor: res.isTutor,
-    }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.TOKEN_KEY, res.token);
+      localStorage.setItem(this.USER_KEY, JSON.stringify({
+        userId: res.userId,
+        full_name: res.full_name,
+        email: res.email,
+        role: res.role,
+        status: res.status,
+      } satisfies StoredUser));
+    }
   }
 
   getToken(): string | null {
+    if (typeof window === 'undefined') {
+      return null;
+    }
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  getCurrentUser(): Omit<AuthResponse, 'token'> | null {
+  getCurrentUser(): StoredUser | null {
+    if (typeof window === 'undefined') {
+      return null;
+    }
     const raw = localStorage.getItem(this.USER_KEY);
     return raw ? JSON.parse(raw) : null;
   }
@@ -63,9 +80,15 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  isAdmin(): boolean {
+    return this.getCurrentUser()?.role === 'admin';
+  }
+
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.USER_KEY);
+    }
     this.router.navigate(['/auth/login']);
   }
 }

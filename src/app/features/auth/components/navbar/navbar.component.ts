@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,15 +20,15 @@ export class NavbarComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       const user = this.authService.getCurrentUser();
       this.isLoggedIn = this.authService.isLoggedIn();
       if (user) {
-        this.isAdmin = user.isAdmin;
-        this.userName = user.name;
+        this.isAdmin = this.authService.isAdmin();
+        this.userName = user.full_name;
       }
     }
   }

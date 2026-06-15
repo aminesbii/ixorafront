@@ -15,7 +15,7 @@ import {
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
+import { CoreModule } from './core/core.module';
 
 @NgModule({
   declarations: [
@@ -29,6 +29,7 @@ import { AppComponent } from './app.component';
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
+    CoreModule,
   ],
 
   providers: [

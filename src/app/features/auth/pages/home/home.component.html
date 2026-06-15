@@ -70,6 +70,7 @@
           <div
             class="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
             <button
+              (click)="addToCart(product); $event.stopPropagation()"
               class="btn w-full bg-white text-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-green)] hover:text-white border-none rounded-none">Add
               to Cart</button>
           </div>
@@ -79,6 +80,13 @@
           <p class="text-gray-500">{{ product.price }}</p>
         </div>
       </div>
+    </div>
+
+    <!-- Toast feedback for cart additions -->
+    <div *ngIf="cartFeedbackMessage" 
+         class="fixed bottom-8 right-8 z-50 bg-[var(--color-ixora-black)] text-white px-6 py-4 shadow-xl border border-gray-800 transition-all duration-300 flex items-center gap-3">
+      <span class="text-sm font-sans tracking-wide uppercase">{{ cartFeedbackMessage }}</span>
+      <button (click)="cartFeedbackMessage = ''" class="text-gray-400 hover:text-white ml-2">&times;</button>
     </div>
   </section>
 
