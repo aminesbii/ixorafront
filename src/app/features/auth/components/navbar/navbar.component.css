@@ -1,4 +1,4 @@
-/* Navbar always renders dark text — hero left panel is white so transparent works */
+/* Navbar always renders dark text */
 nav {
   color: var(--color-ixora-black);
 }
@@ -19,4 +19,12 @@ nav ul li a::after {
 }
 nav ul li a:hover::after {
   width: 100%;
+}
+
+/* Mobile hamburger button styling */
+.hamburger-btn {
+  transition: transform 0.3s ease;
+}
+.hamburger-btn:active {
+  transform: scale(0.95);
 }

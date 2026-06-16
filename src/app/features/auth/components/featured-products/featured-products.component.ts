@@ -11,6 +11,7 @@ interface FeaturedProductUI {
   price: string;
   image: string;
   tag: string;
+  description?: string;
 }
 
 @Component({
@@ -24,6 +25,44 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
 
   featuredProducts: FeaturedProductUI[] = [];
   cartFeedbackMessage = '';
+  private fallbackProducts: FeaturedProductUI[] = [
+    {
+      id: 'fallback-1',
+      variantId: 'fallback-var-1',
+      name: 'Pure Green Tea Serum',
+      price: '49.00 TND',
+      image: 'assets/icons/product-pure-serum.svg',
+      tag: 'New',
+      description: 'Calming green tea extract serum for balanced skin'
+    },
+    {
+      id: 'fallback-2',
+      variantId: 'fallback-var-2',
+      name: 'Deep Blue Hydration',
+      price: '59.00 TND',
+      image: 'assets/icons/product-deep-blue.svg',
+      tag: 'Bestseller',
+      description: '48-hour moisture with hyaluronic acid & marine botanicals'
+    },
+    {
+      id: 'fallback-3',
+      variantId: 'fallback-var-3',
+      name: 'Rose Radiance Cream',
+      price: '54.00 TND',
+      image: 'assets/icons/product-rose-cream.svg',
+      tag: 'Popular',
+      description: 'Luxurious rose-infused moisturizer for glowing skin'
+    },
+    {
+      id: 'fallback-4',
+      variantId: 'fallback-var-4',
+      name: 'Vitamin C Brightening',
+      price: '45.00 TND',
+      image: 'assets/icons/product-vitamin-c.svg',
+      tag: 'New',
+      description: 'Brightening serum with stabilized vitamin C'
+    }
+  ];
 
   constructor(
     private productService: ProductService,
@@ -44,10 +83,10 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
   loadFeaturedProducts() {
     this.productService.list({ is_featured: true, status: 'active', limit: 8 }).subscribe({
       next: (res) => {
-        if (res && res.products) {
+        if (res && res.products && res.products.length > 0) {
           this.featuredProducts = res.products.map(prod => {
             const mainImg = prod.images?.find(img => img.is_main) || prod.images?.[0];
-            const imageUrl = mainImg?.image_url || 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=600&auto=format&fit=crop';
+            const imageUrl = mainImg?.image_url || 'assets/icons/product-pure-serum.svg';
             const firstVar = prod.variants?.[0];
             const priceStr = firstVar ? `${firstVar.price} ${firstVar.currency}` : 'N/A';
             const variantId = firstVar?._id || null;
@@ -65,17 +104,27 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
           if (isPlatformBrowser(this.platformId)) {
             setTimeout(() => this.initScrollAnimations(), 100);
           }
+        } else {
+          this.useFallbackProducts();
         }
       },
       error: (err) => {
         console.error('Failed to load featured products:', err);
+        this.useFallbackProducts();
       }
     });
   }
 
+  private useFallbackProducts() {
+    this.featuredProducts = this.fallbackProducts;
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => this.initScrollAnimations(), 100);
+    }
+  }
+
   addToCart(product: FeaturedProductUI) {
-    if (!product.variantId) {
-      this.showFeedback('This product is currently unavailable.');
+    if (!product.variantId || product.variantId.startsWith('fallback-')) {
+      this.showFeedback('This is a demo product. Connect to backend to purchase.');
       return;
     }
 
@@ -126,6 +175,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
               delay: Number(el.getAttribute('data-delay') || 0)
             });
           }
+
           observer.unobserve(el);
         }
       });

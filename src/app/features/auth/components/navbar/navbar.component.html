@@ -53,31 +53,54 @@
     </div>
 
     <!-- Mobile hamburger -->
-    <div class="lg:hidden relative">
+    <div class="lg:hidden relative z-[60]">
       <button class="p-1.5" (click)="toggleMobileMenu()">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+          <path *ngIf="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+          <path *ngIf="isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-      <ul *ngIf="isMobileMenuOpen"
-        class="absolute right-0 top-full mt-2 w-52 bg-white shadow-xl border border-gray-100 p-3 flex flex-col gap-1 font-sans text-[11px] uppercase tracking-[0.15em] font-semibold">
-        <li><a routerLink="/" class="block px-3 py-2 hover:text-[var(--color-ixora-green)]"
-            (click)="isMobileMenuOpen=false">Home</a></li>
-        <li><a href="#products" class="block px-3 py-2 hover:text-[var(--color-ixora-green)]"
-            (click)="isMobileMenuOpen=false">Products</a></li>
-        <li><a href="#brand" class="block px-3 py-2 hover:text-[var(--color-ixora-green)]"
-            (click)="isMobileMenuOpen=false">ixora Brand</a></li>
-        <li><a href="#contact" class="block px-3 py-2 hover:text-[var(--color-ixora-green)]"
-            (click)="isMobileMenuOpen=false">Contact</a></li>
-        <li *ngIf="!isLoggedIn"><a class="block px-3 py-2 hover:text-[var(--color-ixora-green)] cursor-pointer"
-            (click)="goToLogin(); isMobileMenuOpen=false">Login</a></li>
-        <li *ngIf="isLoggedIn && isAdmin"><a
-            class="block px-3 py-2 hover:text-[var(--color-ixora-green)] cursor-pointer"
-            (click)="goToDashboard(); isMobileMenuOpen=false">Dashboard</a></li>
-        <li *ngIf="isLoggedIn"><a class="block px-3 py-2 hover:text-[var(--color-ixora-green)] cursor-pointer"
-            (click)="logout(); isMobileMenuOpen=false">Logout</a></li>
-      </ul>
     </div>
 
+  </div>
+
+  <!-- Mobile full-screen menu -->
+  <div *ngIf="isMobileMenuOpen"
+    class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center lg:hidden">
+    <ul class="flex flex-col items-center gap-8 font-sans text-2xl uppercase tracking-[0.15em] font-semibold">
+      <li><a routerLink="/" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+          (click)="isMobileMenuOpen=false">Home</a></li>
+      <li><a href="#products" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+          (click)="isMobileMenuOpen=false">Products</a></li>
+      <li><a href="#brand" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+          (click)="isMobileMenuOpen=false">Brand</a></li>
+      <li><a href="#contact" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+          (click)="isMobileMenuOpen=false">Contact</a></li>
+    </ul>
+
+    <div class="mt-12 flex flex-col items-center gap-4">
+      <ng-container *ngIf="!isLoggedIn">
+        <button
+          class="px-8 py-3 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300"
+          (click)="goToLogin(); isMobileMenuOpen=false">
+          Login
+        </button>
+      </ng-container>
+      <ng-container *ngIf="isLoggedIn && isAdmin">
+        <button
+          class="px-8 py-3 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-blue)] text-white hover:bg-blue-600 transition-colors duration-300"
+          (click)="goToDashboard(); isMobileMenuOpen=false">
+          Dashboard
+        </button>
+      </ng-container>
+      <ng-container *ngIf="isLoggedIn">
+        <button
+          class="text-sm uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors"
+          (click)="logout(); isMobileMenuOpen=false">
+          Logout
+        </button>
+        <span *ngIf="isLoggedIn" class="text-xs font-sans text-gray-400 mt-2">Hi, {{ userName }}</span>
+      </ng-container>
+    </div>
   </div>
 </nav>
