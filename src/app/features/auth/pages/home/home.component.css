@@ -1,1 +1,20 @@
-/* Handled by Tailwind & inline GSAP */
+.promo-split {
+  transition: box-shadow 0.4s ease;
+}
+
+.promo-split:hover {
+  box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.15);
+}
+
+.promo-img-overlay {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-split:hover {
+    box-shadow: none;
+  }
+  .promo-split img {
+    transition: none;
+  }
+}

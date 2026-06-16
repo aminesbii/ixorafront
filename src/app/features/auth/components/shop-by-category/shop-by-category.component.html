@@ -1,0 +1,17 @@
+<section class="py-24 container mx-auto px-4">
+  <div #revealEl class="text-center mb-16 gsap-reveal">
+    <h2 class="text-4xl font-serif">Shop by Category</h2>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div *ngFor="let cat of categories; let i = index" #revealEl [attr.data-delay]="i * 0.1"
+      class="relative h-64 overflow-hidden group cursor-pointer gsap-reveal">
+      <img [src]="cat.image" alt="{{ cat.name }}"
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+      <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300"></div>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <span class="text-white font-serif text-xl tracking-wide">{{ cat.name }}</span>
+      </div>
+    </div>
+  </div>
+</section>

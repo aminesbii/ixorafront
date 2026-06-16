@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0fdf4"/>
+      <stop offset="100%" stop-color="#d1fae5"/>
+    </linearGradient>
+    <linearGradient id="bottle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="leaf1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="leaf2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6ee7b7"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#047857" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <g opacity="0.06">
+    <circle cx="100" cy="500" r="120" fill="#10b981"/>
+    <circle cx="700" cy="100" r="80" fill="#10b981"/>
+    <circle cx="650" cy="500" r="100" fill="#059669"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="300" y="120" width="200" height="360" rx="30" fill="url(#bottle)" opacity="0.9"/>
+    <rect x="340" y="80" width="120" height="50" rx="8" fill="#047857"/>
+    <rect x="360" y="70" width="80" height="15" rx="4" fill="#065f46"/>
+    <rect x="310" y="310" width="180" height="8" rx="4" fill="#065f46" opacity="0.3"/>
+    <rect x="310" y="340" width="160" height="8" rx="4" fill="#065f46" opacity="0.2"/>
+    <rect x="310" y="370" width="140" height="8" rx="4" fill="#065f46" opacity="0.15"/>
+  </g>
+  <g>
+    <path d="M160 320 Q200 220 280 280 Q240 200 280 140 Q320 180 340 260 Q300 240 260 300 Z" fill="url(#leaf1)" opacity="0.8"/>
+    <path d="M640 260 Q670 180 740 200 Q700 140 720 80 Q760 120 750 200 Q710 180 680 260 Z" fill="url(#leaf2)" opacity="0.7"/>
+    <path d="M180 380 Q220 310 300 340 Q280 280 320 230 Q340 270 330 340 Q290 320 260 380 Z" fill="url(#leaf2)" opacity="0.5"/>
+  </g>
+  <g opacity="0.15">
+    <circle cx="400" cy="480" r="40" fill="none" stroke="#10b981" stroke-width="1"/>
+    <circle cx="400" cy="480" r="60" fill="none" stroke="#10b981" stroke-width="0.5"/>
+    <circle cx="400" cy="480" r="80" fill="none" stroke="#10b981" stroke-width="0.3"/>
+  </g>
+</svg>

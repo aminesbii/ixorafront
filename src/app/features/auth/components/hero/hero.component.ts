@@ -1,25 +1,17 @@
-import { Component, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  selector: 'app-hero',
+  templateUrl: './hero.component.html',
+  styleUrls: ['./hero.component.css'],
   standalone: false
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HeroComponent implements AfterViewInit {
   @ViewChildren('revealEl') revealElements!: QueryList<ElementRef>;
 
-  testimonials = [
-    { quote: "IXORA completely transformed my skincare routine. The hydration is unmatched.", author: "Amina F." },
-    { quote: "I love that it's 100% local but feels like a premium international brand.", author: "Youssef T." },
-    { quote: "The best serum I've used. My skin has never looked more glowing.", author: "Sonia M." }
-  ];
-
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
-
-  ngOnInit(): void {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -32,7 +24,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const el = entry.target;
-
           const lineInners = el.querySelectorAll('.line-reveal-inner');
           if (lineInners.length > 0) {
             gsap.to(lineInners, {
@@ -55,7 +46,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
               delay: Number(el.getAttribute('data-delay') || 0)
             });
           }
-
           observer.unobserve(el);
         }
       });

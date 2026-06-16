@@ -8,13 +8,21 @@ import { LayoutsModule } from '../../layouts/layouts.module';
 import { LoginComponent } from './pages/login/login.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { HeroComponent } from './components/hero/hero.component';
+import { FeaturedProductsComponent } from './components/featured-products/featured-products.component';
+import { ShopByCategoryComponent } from './components/shop-by-category/shop-by-category.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 
 @NgModule({
   declarations: [
     LoginComponent,
     HomeComponent,
-    NavbarComponent
+    NavbarComponent,
+    HeroComponent,
+    FeaturedProductsComponent,
+    ShopByCategoryComponent,
+    FooterComponent
   ],
   imports: [
     CommonModule,
