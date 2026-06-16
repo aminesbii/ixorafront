@@ -54,20 +54,20 @@
 
     <!-- Mobile hamburger -->
     <div class="lg:hidden relative z-[60]">
-      <button class="p-1.5" (click)="toggleMobileMenu()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path *ngIf="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
-          <path *ngIf="isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+      <button class="hamburger-btn p-1.5" [class.hamburger-btn--open]="isMobileMenuOpen" (click)="toggleMobileMenu()">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
       </button>
     </div>
 
   </div>
 
   <!-- Mobile full-screen menu -->
-  <div *ngIf="isMobileMenuOpen"
-    class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center lg:hidden">
-    <ul class="flex flex-col items-center gap-8 font-sans text-2xl uppercase tracking-[0.15em] font-semibold">
+  <div
+    class="mobile-menu fixed inset-0 bg-white z-50 flex flex-col items-center justify-center lg:hidden"
+    [class.mobile-menu--open]="isMobileMenuOpen">
+    <ul class="flex flex-col items-center gap-8 font-sans text-2xl uppercase tracking-[0.15em] font-semibold mobile-menu__links">
       <li><a routerLink="/" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="isMobileMenuOpen=false">Home</a></li>
       <li><a href="#products" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
@@ -78,7 +78,7 @@
           (click)="isMobileMenuOpen=false">Contact</a></li>
     </ul>
 
-    <div class="mt-12 flex flex-col items-center gap-4">
+    <div class="mt-12 flex flex-col items-center gap-4 mobile-menu__links">
       <ng-container *ngIf="!isLoggedIn">
         <button
           class="px-8 py-3 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300"
