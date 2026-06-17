@@ -1,0 +1,33 @@
+<section class="grid grid-cols-1 lg:grid-cols-2 lg:h-[600px] group">
+  <div [class.lg:order-1]="imageSide === 'left'"
+       class="bg-white flex items-center justify-center p-12 lg:p-20 overflow-hidden h-full relative order-2">
+    <div class="absolute top-0 left-0 w-40 h-40 rounded-br-full pointer-events-none"
+         [style.background-color]="accentVar" [style.opacity]="'0.04'"></div>
+    <div class="absolute bottom-0 right-0 w-56 h-56 rounded-tl-full pointer-events-none"
+         [style.background-color]="accentVar" [style.opacity]="'0.02'"></div>
+    <div #revealEl class="space-y-8 max-w-md relative z-10">
+      <div class="flex items-center gap-3">
+        <span class="w-8 h-[1.5px]" [style.background-color]="accentVar"></span>
+        <span class="text-[10px] uppercase tracking-[0.3em] font-semibold" [style.color]="accentVar">{{ tag }}</span>
+      </div>
+      <h2 class="text-4xl lg:text-6xl font-serif leading-[1.1]" [innerHTML]="title"></h2>
+      <div class="w-12 h-[1.5px]" [style.background-color]="accentVar"></div>
+      <p class="font-sans text-gray-500 leading-relaxed text-base lg:text-lg max-w-sm">{{ description }}</p>
+      <button
+        [ngClass]="accentColor === 'green' ? 'hover:text-[var(--color-ixora-green)]' : 'hover:text-[var(--color-ixora-blue)]'"
+        class="relative inline-flex items-center gap-3 group/btn text-sm uppercase tracking-[0.25em] font-semibold text-[var(--color-ixora-black)] transition-colors duration-300">
+        <span>{{ buttonText }}</span>
+        <span class="w-8 h-[1.5px] bg-[var(--color-ixora-black)] transition-colors duration-300"
+             [ngClass]="accentColor === 'green' ? 'group-hover/btn:bg-[var(--color-ixora-green)]' : 'group-hover/btn:bg-[var(--color-ixora-blue)]'"></span>
+      </button>
+    </div>
+  </div>
+  <div [class.lg:order-2]="imageSide === 'left'"
+       class="h-[400px] lg:h-full overflow-hidden relative order-1">
+    <div class="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-white/30 z-10"></div>
+    <img [src]="imageUrl" [alt]="imageAlt"
+         class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+         loading="lazy"
+         [parallaxSpeed]="40" />
+  </div>
+</section>
