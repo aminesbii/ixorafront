@@ -1,0 +1,127 @@
+<app-navbar></app-navbar>
+
+<!-- Loading State -->
+<section *ngIf="loading" class="min-h-screen flex items-center justify-center bg-white pt-14">
+  <div class="text-center">
+    <div class="w-12 h-12 border-2 border-[var(--color-ixora-black)] border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+    <p class="text-sm uppercase tracking-[0.3em] text-gray-400">Loading...</p>
+  </div>
+</section>
+
+<!-- Product Hero -->
+<section *ngIf="product && !loading" class="min-h-screen bg-white pt-14">
+  <div class="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+    <!-- Left: Images -->
+    <div class="relative bg-gray-50 flex flex-col">
+      <div class="flex-1 grid grid-cols-2">
+        <div class="overflow-hidden relative group cursor-pointer">
+          <img [src]="mainImage?.image_url || 'assets/icons/product-pure-serum.svg'"
+               [alt]="product.name"
+               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
+        </div>
+        <div class="overflow-hidden relative group cursor-pointer">
+          <img [src]="secondImage?.image_url || mainImage?.image_url || 'assets/icons/product-pure-serum.svg'"
+               [alt]="product.name"
+               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Product Info -->
+    <div class="flex items-center px-8 lg:px-16 xl:px-24 py-16">
+      <div #revealEl class="w-full max-w-lg opacity-0 translate-y-8">
+        <p class="text-xs uppercase tracking-[0.3em] text-gray-400 mb-4">{{ product.brand_name || 'IXORA' }}</p>
+        <h1 class="text-5xl lg:text-7xl font-serif leading-[1.1] mb-6">{{ product.name }}</h1>
+
+        <div class="flex items-baseline gap-4 mb-8">
+          <span class="text-3xl lg:text-4xl font-semibold text-[var(--color-ixora-black)]">{{ price }}</span>
+          <span *ngIf="comparePrice" class="text-xl text-gray-300 line-through">{{ comparePrice }} {{ product.variants![0].currency }}</span>
+        </div>
+
+        <p class="text-base lg:text-lg text-gray-500 leading-relaxed mb-10">{{ product.short_description || product.description }}</p>
+
+        <!-- Quantity + Add to Cart -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="flex items-center border border-gray-200">
+            <button (click)="decreaseQty()" class="px-5 py-3 text-lg hover:bg-gray-100 transition-colors">−</button>
+            <span class="px-6 py-3 text-lg font-medium border-x border-gray-200 min-w-[60px] text-center">{{ quantity }}</span>
+            <button (click)="increaseQty()" class="px-5 py-3 text-lg hover:bg-gray-100 transition-colors">+</button>
+          </div>
+          <button (click)="addToCart()"
+            class="flex-1 bg-[var(--color-ixora-black)] text-white py-4 px-10 text-sm uppercase tracking-[0.2em] hover:bg-[var(--color-ixora-green)] transition-all duration-500">
+            Add to Cart
+          </button>
+        </div>
+
+        <!-- Details list -->
+        <div *ngIf="product.details" class="border-t border-gray-100 pt-8 mt-8 space-y-4">
+          <div *ngIf="product.details.indication" class="flex items-start gap-4">
+            <span class="text-xs uppercase tracking-[0.2em] text-gray-400 min-w-[120px]">Indication</span>
+            <span class="text-sm text-gray-600">{{ product.details.indication }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Utilisation & Composition Section -->
+<section *ngIf="product && !loading && (usage || compositionList.length > 0)" class="bg-[var(--color-ixora-black)] text-white">
+  <div class="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
+    <!-- Utilisation -->
+    <div *ngIf="usage" class="relative p-12 lg:p-20 xl:p-24 flex items-center border-b lg:border-b-0 lg:border-r border-gray-800">
+      <div class="absolute top-0 left-0 w-48 h-48 bg-white/[0.02] rounded-br-full pointer-events-none"></div>
+      <div #revealEl class="relative z-10 opacity-0 translate-y-8">
+        <p class="text-xs uppercase tracking-[0.4em] text-gray-500 mb-10">How to Use</p>
+        <h2 class="text-5xl lg:text-7xl font-serif leading-[1.1] mb-10">Utilisation</h2>
+        <div class="w-16 h-0.5 bg-white/20 mb-10"></div>
+        <p class="text-base lg:text-lg text-gray-300 leading-relaxed max-w-xl">{{ usage }}</p>
+      </div>
+    </div>
+
+    <!-- Composition -->
+    <div *ngIf="compositionList.length > 0" class="relative p-12 lg:p-20 xl:p-24 flex items-center">
+      <div class="absolute bottom-0 right-0 w-64 h-64 bg-white/[0.02] rounded-tl-full pointer-events-none"></div>
+      <div #revealEl class="relative z-10 opacity-0 translate-y-8">
+        <p class="text-xs uppercase tracking-[0.4em] text-gray-500 mb-10">Ingredients</p>
+        <h2 class="text-5xl lg:text-7xl font-serif leading-[1.1] mb-10">Composition</h2>
+        <div class="w-16 h-0.5 bg-white/20 mb-10"></div>
+        <ul class="space-y-3">
+          <li *ngFor="let item of compositionList" class="flex items-center gap-4 text-base lg:text-lg text-gray-300">
+            <span class="w-1.5 h-1.5 bg-[var(--color-ixora-green)] rounded-full flex-shrink-0"></span>
+            {{ item }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery Section -->
+<section *ngIf="product && !loading && galleryImages.length > 0" class="bg-white">
+  <div class="py-20 lg:py-28 px-4">
+    <div #revealEl class="text-center mb-16 opacity-0 translate-y-8">
+      <p class="text-xs uppercase tracking-[0.4em] text-gray-400 mb-4">Gallery</p>
+      <h2 class="text-4xl lg:text-6xl font-serif">Product Images</h2>
+      <div class="w-16 h-0.5 bg-[var(--color-ixora-black)] mx-auto mt-6"></div>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 max-w-7xl mx-auto">
+      <div *ngFor="let img of galleryImages; let i = index" #revealEl [attr.data-delay]="i * 0.1"
+           class="overflow-hidden group cursor-pointer opacity-0 translate-y-8 aspect-square">
+        <img [src]="img.image_url" [alt]="img.alt_text || product.name"
+             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Cart Feedback -->
+<div *ngIf="cartFeedback"
+     class="fixed bottom-8 right-8 z-50 bg-[var(--color-ixora-black)] text-white px-6 py-4 shadow-xl border border-gray-800 transition-all duration-300">
+  <span class="text-sm font-sans tracking-wide uppercase">{{ cartFeedback }}</span>
+</div>
+
+<app-footer></app-footer>

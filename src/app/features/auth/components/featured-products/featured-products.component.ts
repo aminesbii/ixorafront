@@ -6,6 +6,7 @@ import { CartService } from '../../../../core/services/cart.service';
 
 interface FeaturedProductUI {
   id: string;
+  slug: string;
   variantId: string | null;
   name: string;
   price: string;
@@ -28,6 +29,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
   private fallbackProducts: FeaturedProductUI[] = [
     {
       id: 'fallback-1',
+      slug: 'pure-green-tea-serum',
       variantId: 'fallback-var-1',
       name: 'Pure Green Tea Serum',
       price: '49.00 TND',
@@ -37,6 +39,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
     },
     {
       id: 'fallback-2',
+      slug: 'deep-blue-hydration',
       variantId: 'fallback-var-2',
       name: 'Deep Blue Hydration',
       price: '59.00 TND',
@@ -46,6 +49,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
     },
     {
       id: 'fallback-3',
+      slug: 'rose-radiance-cream',
       variantId: 'fallback-var-3',
       name: 'Rose Radiance Cream',
       price: '54.00 TND',
@@ -55,6 +59,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
     },
     {
       id: 'fallback-4',
+      slug: 'vitamin-c-brightening',
       variantId: 'fallback-var-4',
       name: 'Vitamin C Brightening',
       price: '45.00 TND',
@@ -93,6 +98,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
 
             return {
               id: prod._id,
+              slug: prod.slug,
               variantId,
               name: prod.name,
               price: priceStr,
