@@ -9,7 +9,8 @@
       class="group relative w-[160px] lg:w-[180px] h-14 lg:h-16 overflow-hidden cursor-pointer gsap-reveal border border-gray-200 hover:border-transparent transition-all duration-500">
 
       <img [src]="cat.image" [alt]="cat.name"
-        class="absolute inset-0 w-full h-full object-cover opacity-0 scale-90 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:scale-100" />
+        class="absolute inset-0 w-full h-full object-cover opacity-0 scale-90 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:scale-100"
+        [parallaxSpeed]="25" />
 
       <div class="absolute inset-0 bg-white group-hover:bg-black/30 transition-all duration-500"></div>
 

@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 
 import { AuthRoutingModule } from './auth-routing.module';
 import { LayoutsModule } from '../../layouts/layouts.module';
+import { SharedModule } from '../../shared/shared.module';
 import { LoginComponent } from './pages/login/login.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
@@ -33,7 +34,8 @@ import { FooterComponent } from './components/footer/footer.component';
     FormsModule,
     RouterModule,
     AuthRoutingModule,
-    LayoutsModule
+    LayoutsModule,
+    SharedModule
   ],
   exports: [
     NavbarComponent

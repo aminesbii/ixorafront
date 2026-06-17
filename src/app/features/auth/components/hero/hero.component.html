@@ -3,7 +3,8 @@
   <div class="absolute inset-0 -z-10">
     <img src="assets/naturepromo.jpg"
          alt=""
-         class="w-full h-full object-cover" />
+         class="w-full h-full object-cover"
+         [parallaxSpeed]="50" />
     <div class="absolute inset-0 bg-gradient-to-r from-white/70 via-white/40 to-transparent"></div>
   </div>
   <div class="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -31,7 +32,7 @@
     <div #revealEl data-delay="0.2" class="relative gsap-reveal-right">
       <div class="hover-3d">
         <figure class="max-w-100 rounded-2xl">
-          <img src="assets/special.png" alt="3D card" />
+          <img src="assets/special.png" alt="3D card" noParallax />
         </figure>
         <div></div>
         <div></div>
