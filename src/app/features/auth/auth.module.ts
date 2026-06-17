@@ -12,6 +12,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { HeroComponent } from './components/hero/hero.component';
 import { FeaturedProductsComponent } from './components/featured-products/featured-products.component';
 import { ShopByCategoryComponent } from './components/shop-by-category/shop-by-category.component';
+import { PromoSplitComponent } from './components/promo-split/promo-split.component';
 import { FooterComponent } from './components/footer/footer.component';
 
 
@@ -24,6 +25,7 @@ import { FooterComponent } from './components/footer/footer.component';
     HeroComponent,
     FeaturedProductsComponent,
     ShopByCategoryComponent,
+    PromoSplitComponent,
     FooterComponent
   ],
   imports: [

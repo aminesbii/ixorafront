@@ -33,7 +33,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
       variantId: 'fallback-var-1',
       name: 'Pure Green Tea Serum',
       price: '49.00 TND',
-      image: 'assets/icons/product-pure-serum.svg',
+      image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop',
       tag: 'New',
       description: 'Calming green tea extract serum for balanced skin'
     },
@@ -43,7 +43,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
       variantId: 'fallback-var-2',
       name: 'Deep Blue Hydration',
       price: '59.00 TND',
-      image: 'assets/icons/product-deep-blue.svg',
+      image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?q=80&w=600&auto=format&fit=crop',
       tag: 'Bestseller',
       description: '48-hour moisture with hyaluronic acid & marine botanicals'
     },
@@ -53,7 +53,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
       variantId: 'fallback-var-3',
       name: 'Rose Radiance Cream',
       price: '54.00 TND',
-      image: 'assets/icons/product-rose-cream.svg',
+      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop',
       tag: 'Popular',
       description: 'Luxurious rose-infused moisturizer for glowing skin'
     },
@@ -63,7 +63,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
       variantId: 'fallback-var-4',
       name: 'Vitamin C Brightening',
       price: '45.00 TND',
-      image: 'assets/icons/product-vitamin-c.svg',
+      image: 'https://images.unsplash.com/photo-1570194065650-d99fb4b38b11?q=80&w=600&auto=format&fit=crop',
       tag: 'New',
       description: 'Brightening serum with stabilized vitamin C'
     }
@@ -91,7 +91,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
         if (res && res.products && res.products.length > 0) {
           this.featuredProducts = res.products.map(prod => {
             const mainImg = prod.images?.find(img => img.is_main) || prod.images?.[0];
-            const imageUrl = mainImg?.image_url || 'assets/icons/product-pure-serum.svg';
+            const imageUrl = mainImg?.image_url || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop';
             const firstVar = prod.variants?.[0];
             const priceStr = firstVar ? `${firstVar.price} ${firstVar.currency}` : 'N/A';
             const variantId = firstVar?._id || null;

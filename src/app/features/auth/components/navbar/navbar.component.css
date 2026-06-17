@@ -22,21 +22,34 @@ nav ul li a:hover::after {
 /* ===== Hamburger Button ===== */
 .hamburger-btn {
   position: relative;
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  color: #000;
+  color: var(--color-ixora-black);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+.hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.hamburger-btn--open {
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .hamburger-bar {
   display: block;
   width: 18px;
-  height: 3px;
+  height: 2.5px;
   background-color: currentColor;
   border-radius: 2px;
   transition: all 0.3s ease;
@@ -44,7 +57,7 @@ nav ul li a:hover::after {
 }
 
 .hamburger-btn--open .hamburger-bar:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
+  transform: translateY(7.5px) rotate(45deg);
 }
 
 .hamburger-btn--open .hamburger-bar:nth-child(2) {
@@ -53,7 +66,7 @@ nav ul li a:hover::after {
 }
 
 .hamburger-btn--open .hamburger-bar:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
+  transform: translateY(-7.5px) rotate(-45deg);
 }
 
 /* ===== Mobile Menu Overlay ===== */
