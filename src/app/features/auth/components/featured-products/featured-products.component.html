@@ -7,7 +7,8 @@
   <div class="products-grid gap-6 pb-12 pt-4">
     <div *ngFor="let product of featuredProducts; let i = index" #revealEl [attr.data-delay]="i * 0.1"
       class="product-card card rounded-none group cursor-pointer gsap-reveal snap-center"
-      [routerLink]="['/products', product.slug]">
+      [routerLink]="['/products', product.slug]"
+      (click)="trackProductClick(product)">
       <figure class="relative aspect-square overflow-hidden bg-gray-50">
         <img [src]="product.image" alt="{{ product.name }}"
           class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"

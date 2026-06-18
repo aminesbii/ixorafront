@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminLayoutComponent } from '../../layouts/admin-layout/admin-layout.component';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
+import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
 import { AdminGuard } from '../../core/guards/admin.guard';
 
 const routes: Routes = [
@@ -23,6 +24,11 @@ const routes: Routes = [
       {
         path: 'products',
         component: AdminProductsComponent,
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'analytics',
+        component: AdminAnalyticsComponent,
         canActivate: [AdminGuard]
       }
     ]

@@ -6,11 +6,13 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { LayoutsModule } from '../../layouts/layouts.module';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
+import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
 
 @NgModule({
   declarations: [
     UserHomeComponent,
-    AdminProductsComponent
+    AdminProductsComponent,
+    AdminAnalyticsComponent
   ],
   imports: [
     CommonModule,

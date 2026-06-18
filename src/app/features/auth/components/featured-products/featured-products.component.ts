@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 import { ProductService } from '../../../../core/services/product.service';
 import { CartService } from '../../../../core/services/cart.service';
+import { DashboardService } from '../../../../core/services/dashboard.service';
 
 interface FeaturedProductUI {
   id: string;
@@ -72,6 +73,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
   constructor(
     private productService: ProductService,
     private cartService: CartService,
+    private dashboardService: DashboardService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -142,6 +144,19 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
         console.error('Error adding product to cart:', err);
         this.showFeedback('Failed to add product to cart.');
       }
+    });
+  }
+
+  trackProductClick(product: FeaturedProductUI) {
+    if (!product.id || product.id.startsWith('fallback-')) {
+      return;
+    }
+
+    this.dashboardService.trackEvent({
+      product_id: product.id,
+      event_type: 'click'
+    }).subscribe({
+      error: (err) => console.error('Failed to track click:', err)
     });
   }
 

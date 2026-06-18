@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 import { ProductService } from '../../../../core/services/product.service';
 import { CartService } from '../../../../core/services/cart.service';
+import { DashboardService } from '../../../../core/services/dashboard.service';
 import { Product, ProductImage } from '../../../../core/models/product.model';
 
 @Component({
@@ -126,6 +127,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private productService: ProductService,
     private cartService: CartService,
+    private dashboardService: DashboardService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -148,6 +150,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
         this.product = res.product || res;
         this.selectedImage = this.mainImage?.image_url || null;
         this.loading = false;
+        this.trackProductView();
         if (isPlatformBrowser(this.platformId)) {
           setTimeout(() => this.initScrollAnimations(), 200);
         }
@@ -164,6 +167,19 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
           setTimeout(() => this.initScrollAnimations(), 200);
         }
       }
+    });
+  }
+
+  trackProductView() {
+    if (!this.product || !this.product._id || this.product._id.startsWith('demo-')) {
+      return;
+    }
+
+    this.dashboardService.trackEvent({
+      product_id: this.product._id,
+      event_type: 'view'
+    }).subscribe({
+      error: (err) => console.error('Failed to track view:', err)
     });
   }
 
