@@ -98,7 +98,7 @@ export class ProductService {
 
   adjustStock(productId: string, variantId: string, quantityAdjustment: number): Observable<ProductVariant> {
     return this.http.patch<ProductVariant>(`${this.API_URL}/${productId}/variants/${variantId}/stock`, {
-      qty: quantityAdjustment
+      delta: quantityAdjustment
     });
   }
 }

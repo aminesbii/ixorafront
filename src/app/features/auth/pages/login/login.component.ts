@@ -25,8 +25,8 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
         this.isLoading = false;
-        if (res.role === 'admin') {
-          this.router.navigate(['/dashboard']);
+        if (res.role === 'ADMIN') {
+          this.router.navigate(['/dashboard/products']);
         } else {
           this.router.navigate(['/']);
         }

@@ -9,8 +9,8 @@ export interface AuthResponse {
   userId: string;
   full_name: string;
   email: string;
-  role: 'admin' | 'customer';
-  status: 'active' | 'inactive' | 'suspended';
+  role: 'ADMIN' | 'CUSTOMER';
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 }
 
 // Shape stored in localStorage after stripping the token
@@ -18,8 +18,8 @@ export interface StoredUser {
   userId: string;
   full_name: string;
   email: string;
-  role: 'admin' | 'customer';
-  status: 'active' | 'inactive' | 'suspended';
+  role: 'ADMIN' | 'CUSTOMER';
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 }
 
 @Injectable({
@@ -81,7 +81,7 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.getCurrentUser()?.role === 'admin';
+    return this.getCurrentUser()?.role === 'ADMIN';
   }
 
   logout(): void {

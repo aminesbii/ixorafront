@@ -1,4 +1,5 @@
 export interface ProductImage {
+  id?: string;
   _id?: string;
   product_id: string;
   image_url: string;
@@ -10,6 +11,7 @@ export interface ProductImage {
 }
 
 export interface ProductVariant {
+  id?: string;
   _id?: string;
   product_id: string;
   sku: string;
@@ -31,6 +33,7 @@ export interface ProductDetails {
 }
 
 export interface Product {
+  id?: string;
   _id: string;
   category_id?: string | null;
   name: string;
@@ -43,7 +46,7 @@ export interface Product {
   is_featured: boolean;
   createdAt?: string;
   updatedAt?: string;
-  
+
   // Populated fields (optional, added by frontend requests or controllers)
   images?: ProductImage[];
   variants?: ProductVariant[];

@@ -1,0 +1,436 @@
+<div class="bg-[var(--color-ixora-white)] min-h-screen">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-4xl lg:text-5xl font-extrabold font-serif text-[var(--color-ixora-black)] mb-2">Products</h1>
+      <p class="text-sm text-gray-700 font-medium">Manage your product catalog, inventory, and variants.</p>
+    </div>
+    <button (click)="toggleAddForm()"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-ixora-black)] text-white text-xs uppercase font-bold tracking-wider hover:bg-opacity-90 rounded-md shadow-sm transition-all duration-300">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" *ngIf="!showAddForm" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" *ngIf="showAddForm" />
+      </svg>
+      <span>{{ showAddForm ? 'Cancel' : 'ADD PRODUCT' }}</span>
+    </button>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="flex flex-col lg:flex-row gap-4 mb-8" *ngIf="!showAddForm">
+    <div class="relative flex-1">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Search"
+        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md leading-5 bg-white placeholder-gray-400 focus:outline-none focus:border-gray-300 sm:text-sm transition duration-150 ease-in-out" />
+    </div>
+    <div class="flex gap-4">
+      <select [(ngModel)]="filterBrand"
+        class="block w-40 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:border-gray-300 sm:text-sm rounded-md bg-white border">
+        <option value="">Brand</option>
+        <option value="IXORA">IXORA</option>
+      </select>
+      <select [(ngModel)]="filterStatus"
+        class="block w-40 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:border-gray-300 sm:text-sm rounded-md bg-white border">
+        <option value="">Status</option>
+        <option value="active">Active</option>
+        <option value="draft">Draft</option>
+        <option value="archived">Archived</option>
+      </select>
+      <select [(ngModel)]="sortDate"
+        class="block w-40 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:border-gray-300 sm:text-sm rounded-md bg-white border">
+        <option value="">Date Added</option>
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Add Form -->
+  <div *ngIf="showAddForm" class="border border-gray-200 rounded-md p-8 bg-white mb-8 shadow-sm">
+    <div class="mb-6">
+      <h2 class="text-2xl font-serif font-bold text-[var(--color-ixora-black)]">New Product</h2>
+      <p class="text-sm text-gray-500 mt-1">Fill in the details below</p>
+    </div>
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Product Name</label>
+          <input type="text" formControlName="name" placeholder="Enter product name"
+            (input)="generateSlug(productForm.get('name')?.value)"
+            class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Slug</label>
+          <input type="text" formControlName="slug" placeholder="product-slug"
+            class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Brand Name</label>
+          <input type="text" formControlName="brand_name" placeholder="Brand name"
+            class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Short Description</label>
+          <input type="text" formControlName="short_description" placeholder="Brief description"
+            class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Description</label>
+          <textarea formControlName="description" placeholder="Full product description" rows="4"
+            class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors resize-y min-h-[100px]"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Status</label>
+          <select formControlName="status"
+            class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors bg-white">
+            <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+        <div class="flex items-center pt-6">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" formControlName="is_featured"
+              class="w-4 h-4 border-gray-300 text-[var(--color-ixora-black)] rounded focus:ring-black" />
+            <span class="text-sm font-medium text-gray-700">Featured product</span>
+          </label>
+        </div>
+
+        <!-- Image Upload Section -->
+        <div class="md:col-span-2 mt-4">
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Product Images (Up to 5)</label>
+
+          <div class="flex flex-wrap gap-4 items-center">
+            <div *ngFor="let preview of imagePreviews; let i = index"
+              class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
+              <img [src]="preview" class="w-full h-full object-cover">
+              <button type="button" (click)="removeImage(i)"
+                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+
+            <label *ngIf="imagePreviews.length < 5"
+              class="w-24 h-24 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600 flex-shrink-0">
+              <i class="fa-solid fa-plus text-xl mb-1"></i>
+              <span class="text-[0.65rem] uppercase font-bold tracking-wider">Upload</span>
+              <input type="file" multiple accept="image/*" class="hidden" (change)="onImagesSelected($event)"
+                [disabled]="isSubmitting">
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 pt-6 mt-4 border-t border-gray-100">
+        <button type="button" (click)="toggleAddForm()"
+          class="px-5 py-2 text-sm font-semibold text-gray-600 hover:text-black border border-gray-300 rounded-md transition-colors">Cancel</button>
+        <button type="submit" [disabled]="productForm.invalid || isSubmitting"
+          class="px-5 py-2 text-sm font-bold bg-[var(--color-ixora-black)] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex items-center gap-2">
+          <i class="fa-solid fa-spinner fa-spin" *ngIf="isSubmitting"></i>
+          {{ isSubmitting ? 'Saving...' : 'Create Product' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="py-20 flex items-center justify-center">
+    <div class="text-center">
+      <div
+        class="w-8 h-8 border-2 border-[var(--color-ixora-black)] border-t-transparent rounded-full animate-spin mx-auto mb-3">
+      </div>
+      <p class="text-sm font-semibold text-gray-500">Loading products...</p>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div *ngIf="!loading && !showAddForm" class="bg-white rounded-md border border-gray-200 mb-8 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-white border-b border-gray-200">
+            <th class="w-20 px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">IMAGE</th>
+            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">NAME & SKU</th>
+            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">BRAND</th>
+            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">STATUS</th>
+            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">VARIANTS</th>
+            <th class="w-24 px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">ACTIONS
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngFor="let product of products" class="hover:bg-gray-50/50 transition-colors">
+            <td class="px-6 py-4">
+              <div
+                class="w-12 h-12 rounded-full overflow-hidden bg-[#e0dcd3] border-none flex items-center justify-center shadow-inner">
+                <img *ngIf="getMainImage(product); else noImage" [src]="getMainImage(product)!" alt="{{ product.name }}"
+                  class="w-full h-full object-cover" />
+                <ng-template #noImage>
+                  <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </ng-template>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <p class="text-base font-serif font-bold text-[var(--color-ixora-black)] mb-0.5">{{ product.name }}</p>
+              <p class="text-sm text-gray-500">SKU: {{ product.slug | uppercase }}</p>
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-sm font-medium text-gray-800">{{ product.brand_name || 'IXORA' }}</span>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                [class.bg-green-100]="product.status === 'active'" [class.text-green-800]="product.status === 'active'"
+                [class.bg-gray-200]="product.status === 'draft' || product.status === 'archived'"
+                [class.text-gray-800]="product.status === 'draft' || product.status === 'archived'">
+                {{ product.status | titlecase }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-800 font-medium">
+                {{ product.variants?.length || 0 }} variant(s)
+              </div>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-3">
+                <button (click)="openEditModal(product)" class="text-gray-400 hover:text-black transition-colors"
+                  title="Edit Product">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                  </svg>
+                </button>
+                <button (click)="confirmDeleteProduct(product)"
+                  class="text-gray-400 hover:text-red-500 transition-colors" title="Delete Product">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="products.length === 0">
+            <td colspan="6" class="px-6 py-16 text-center">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                  <svg class="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <p class="text-sm font-semibold text-gray-700 mb-1">No products found</p>
+                <p class="text-sm text-gray-500">Click "ADD PRODUCT" to create your first item.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div *ngIf="editProduct" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+    (click)="closeEditModal()">
+    <div class="bg-white rounded-md shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]"
+      (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between p-6 border-b border-gray-100">
+        <div>
+          <h2 class="text-2xl font-serif font-bold text-[var(--color-ixora-black)]">Edit Product</h2>
+          <p class="text-sm text-gray-500 mt-1">Make changes to your product</p>
+        </div>
+        <button (click)="closeEditModal()" class="text-gray-400 hover:text-black transition-colors">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto">
+        <form [formGroup]="editForm" (ngSubmit)="onEditSubmit()" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-gray-600 mb-2">Product Name</label>
+              <input type="text" formControlName="name" placeholder="Enter product name"
+                (input)="generateEditSlug(editForm.get('name')?.value)"
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-2">Slug</label>
+              <input type="text" formControlName="slug" placeholder="product-slug"
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-2">Brand Name</label>
+              <input type="text" formControlName="brand_name" placeholder="Brand name"
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-gray-600 mb-2">Short Description</label>
+              <input type="text" formControlName="short_description" placeholder="Brief description"
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-gray-600 mb-2">Description</label>
+              <textarea formControlName="description" placeholder="Full product description" rows="4"
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors resize-y min-h-[100px]"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-2">Status</label>
+              <select formControlName="status"
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors bg-white">
+                <option value="draft">Draft</option>
+                <option value="active">Active</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+            <div class="flex items-center pt-6">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" formControlName="is_featured"
+                  class="w-4 h-4 border-gray-300 text-[var(--color-ixora-black)] rounded focus:ring-black" />
+                <span class="text-sm font-medium text-gray-700">Featured product</span>
+              </label>
+            </div>
+
+            <!-- Edit Image Section -->
+            <div class="md:col-span-2 mt-4 pt-4 border-t border-gray-100">
+              <label class="block text-xs font-semibold text-gray-600 mb-4">Product Images (Existing & New, Up to 5
+                total)</label>
+
+              <div class="flex flex-wrap gap-4 items-center">
+                <!-- Existing Images -->
+                <div *ngFor="let img of editProduct.images"
+                  class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
+                  <img [src]="getImageUrl(img)" class="w-full h-full object-cover">
+                  <div
+                    class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <button type="button" (click)="deleteExistingImage(productId(editProduct), img)"
+                      class="text-white hover:text-red-400 p-2">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                  <div *ngIf="img.is_main"
+                    class="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[0.6rem] uppercase tracking-wider text-center py-0.5">
+                    Main
+                  </div>
+                </div>
+
+                <!-- New Selected Previews -->
+                <div *ngFor="let preview of editImagePreviews; let i = index"
+                  class="relative group w-24 h-24 border border-green-200 rounded-md overflow-hidden bg-green-50 flex-shrink-0">
+                  <img [src]="preview" class="w-full h-full object-cover">
+                  <button type="button" (click)="removeEditNewImage(i)"
+                    class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                  <div class="absolute top-1 right-1">
+                    <span class="bg-green-500 text-white text-[0.6rem] px-1 rounded">NEW</span>
+                  </div>
+                </div>
+
+                <!-- Upload Button -->
+                <label *ngIf="(editProduct.images?.length || 0) + editImagePreviews.length < 5"
+                  class="w-24 h-24 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600 flex-shrink-0">
+                  <i class="fa-solid fa-plus text-xl mb-1"></i>
+                  <span class="text-[0.65rem] uppercase font-bold tracking-wider">Upload</span>
+                  <input type="file" multiple accept="image/*" class="hidden" (change)="onEditImagesSelected($event)"
+                    [disabled]="isEditSubmitting">
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="p-6 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 shrink-0">
+        <button type="button" (click)="closeEditModal()"
+          class="px-6 py-2.5 text-sm font-semibold text-gray-600 hover:text-black border border-gray-300 rounded-md bg-white transition-colors">Cancel</button>
+        <button type="button" (click)="onEditSubmit()" [disabled]="editForm.invalid || isEditSubmitting"
+          class="px-6 py-2.5 text-sm font-bold bg-[var(--color-ixora-black)] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex items-center gap-2">
+          <i class="fa-solid fa-spinner fa-spin" *ngIf="isEditSubmitting"></i>
+          {{ isEditSubmitting ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="confirmDelete" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4"
+    (click)="cancelDelete()">
+    <div class="bg-white rounded-md shadow-xl p-8 max-w-md w-full" (click)="$event.stopPropagation()">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+          <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-xl font-serif font-bold text-[var(--color-ixora-black)]">Delete Product</h2>
+          <p class="text-xs text-red-500 font-semibold mt-1 uppercase tracking-wide">Danger Zone</p>
+        </div>
+      </div>
+      <p class="text-sm text-gray-600 leading-relaxed mb-8">
+        Are you sure you want to delete <strong class="text-black font-semibold">{{ confirmDelete.name }}</strong>? All
+        associated images and variants will be permanently removed. This action cannot be undone.
+      </p>
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+        <button (click)="cancelDelete()"
+          class="px-5 py-2 text-sm font-semibold text-gray-600 hover:text-black border border-gray-300 rounded-md transition-colors">Cancel</button>
+        <button (click)="executeDelete(productId(confirmDelete))"
+          class="px-5 py-2 text-sm font-bold bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+          Delete Product
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adjust Stock Modal -->
+  <div *ngIf="adjustVariant" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4"
+    (click)="closeAdjustStock()">
+    <div class="bg-white rounded-md shadow-xl p-8 max-w-md w-full" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-xl font-serif font-bold text-[var(--color-ixora-black)]">Adjust Stock</h2>
+          <p class="text-sm text-gray-500 mt-1">{{ adjustVariant.variant.variant_name || adjustVariant.variant.sku |
+            uppercase }}</p>
+        </div>
+        <button (click)="closeAdjustStock()" class="text-gray-400 hover:text-black transition-colors">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="mb-6">
+        <div
+          class="flex items-center justify-between p-4 bg-gray-50 rounded-md border border-gray-200 mb-6 shadow-inner">
+          <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Current stock</span>
+          <span class="text-2xl font-bold text-[var(--color-ixora-black)]">{{ adjustVariant.variant.stock_qty }}</span>
+        </div>
+        <label class="block text-xs font-semibold text-gray-600 mb-2">Adjustment Amount</label>
+        <input type="number"
+          [value]="stockAdjustments[adjustVariant.productId + '-' + variantId(adjustVariant.variant)] || 0"
+          (input)="stockAdjustments[adjustVariant.productId + '-' + variantId(adjustVariant.variant)] = $any($event.target).valueAsNumber"
+          placeholder="e.g. 10 or -5"
+          class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+        <p class="text-xs text-gray-500 mt-2 font-medium">Use positive number to add, negative to subtract</p>
+      </div>
+      <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+        <button (click)="closeAdjustStock()"
+          class="px-5 py-2 text-sm font-semibold text-gray-600 hover:text-black border border-gray-300 rounded-md transition-colors">Cancel</button>
+        <button (click)="submitAdjustStock(adjustVariant.productId, variantId(adjustVariant.variant))"
+          class="px-5 py-2 text-sm font-bold bg-[var(--color-ixora-black)] text-white rounded-md hover:bg-opacity-90 transition-opacity">
+          Update Stock
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
