@@ -20,6 +20,8 @@ export class ProductService {
     search?: string;
     limit?: number;
     skip?: number;
+    page?: number;
+    sort?: string;
   }): Observable<{ products: Product[]; pagination: any }> {
     let params = new HttpParams();
     if (queryParams) {
@@ -77,6 +79,18 @@ export class ProductService {
 
   setMainImage(productId: string, imageId: string): Observable<ProductImage> {
     return this.http.patch<ProductImage>(`${this.API_URL}/${productId}/images/${imageId}/main`, {});
+  }
+
+  uploadFeatured1(productId: string, imageFile: File): Observable<ProductImage> {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    return this.http.post<ProductImage>(`${this.API_URL}/${productId}/images/featured1`, formData);
+  }
+
+  uploadFeatured2(productId: string, imageFile: File): Observable<ProductImage> {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    return this.http.post<ProductImage>(`${this.API_URL}/${productId}/images/featured2`, formData);
   }
 
   // ─── Product Variants (Nested) ──────────────────────────────────────────────

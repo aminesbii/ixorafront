@@ -101,10 +101,53 @@
           </label>
         </div>
 
-        <!-- Image Upload Section -->
+        <!-- Featured Image 1 -->
         <div class="md:col-span-2 mt-4">
-          <label class="block text-xs font-semibold text-gray-600 mb-2">Product Images (Up to 5)</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Featured Image 1 (shown on product card &amp; detail)</label>
+          <div class="flex items-center gap-4">
+            <div *ngIf="featured1Preview"
+              class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
+              <img [src]="featured1Preview" class="w-full h-full object-cover">
+              <button type="button" (click)="removeFeatured1()"
+                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+              <div class="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[0.6rem] uppercase tracking-wider text-center py-0.5">Featured 1</div>
+            </div>
+            <label *ngIf="!featured1Preview"
+              class="w-24 h-24 border-2 border-dashed border-[var(--color-ixora-blue)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-blue-400 hover:text-blue-600 flex-shrink-0">
+              <i class="fa-solid fa-star text-xl mb-1"></i>
+              <span class="text-[0.6rem] uppercase font-bold tracking-wider">Featured 1</span>
+              <input type="file" accept="image/*" class="hidden" (change)="onFeatured1Selected($event)" [disabled]="isSubmitting">
+            </label>
+          </div>
+        </div>
 
+        <!-- Featured Image 2 -->
+        <div class="md:col-span-2 mt-3">
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Featured Image 2 (shown as second image in detail)</label>
+          <div class="flex items-center gap-4">
+            <div *ngIf="featured2Preview"
+              class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
+              <img [src]="featured2Preview" class="w-full h-full object-cover">
+              <button type="button" (click)="removeFeatured2()"
+                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+              <div class="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[0.6rem] uppercase tracking-wider text-center py-0.5">Featured 2</div>
+            </div>
+            <label *ngIf="!featured2Preview"
+              class="w-24 h-24 border-2 border-dashed border-[var(--color-ixora-green)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-green-400 hover:bg-green-50 transition-colors text-green-400 hover:text-green-600 flex-shrink-0">
+              <i class="fa-solid fa-star text-xl mb-1"></i>
+              <span class="text-[0.6rem] uppercase font-bold tracking-wider">Featured 2</span>
+              <input type="file" accept="image/*" class="hidden" (change)="onFeatured2Selected($event)" [disabled]="isSubmitting">
+            </label>
+          </div>
+        </div>
+
+        <!-- Other Images -->
+        <div class="md:col-span-2 mt-3">
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Additional Images (up to 3)</label>
           <div class="flex flex-wrap gap-4 items-center">
             <div *ngFor="let preview of imagePreviews; let i = index"
               class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
@@ -114,13 +157,11 @@
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
-
-            <label *ngIf="imagePreviews.length < 5"
+            <label *ngIf="imagePreviews.length < 3"
               class="w-24 h-24 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600 flex-shrink-0">
               <i class="fa-solid fa-plus text-xl mb-1"></i>
               <span class="text-[0.65rem] uppercase font-bold tracking-wider">Upload</span>
-              <input type="file" multiple accept="image/*" class="hidden" (change)="onImagesSelected($event)"
-                [disabled]="isSubmitting">
+              <input type="file" multiple accept="image/*" class="hidden" (change)="onImagesSelected($event)" [disabled]="isSubmitting">
             </label>
           </div>
         </div>
@@ -167,15 +208,15 @@
             <td class="px-6 py-4">
               <div
                 class="w-12 h-12 rounded-full overflow-hidden bg-[#e0dcd3] border-none flex items-center justify-center shadow-inner">
-                <img *ngIf="getMainImage(product); else noImage" [src]="getMainImage(product)!" alt="{{ product.name }}"
-                  class="w-full h-full object-cover" />
-                <ng-template #noImage>
+                <img *ngIf="showMainImage(product)" [src]="getMainImage(product)!" alt="{{ product.name }}"
+                  class="w-full h-full object-cover" (error)="onImageError(product)" (load)="onImageLoad(product)" />
+                <div *ngIf="!showMainImage(product)" class="flex items-center justify-center">
                   <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                     stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round"
                       d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                </ng-template>
+                </div>
               </div>
             </td>
             <td class="px-6 py-4">
@@ -301,49 +342,98 @@
             </div>
 
             <!-- Edit Image Section -->
-            <div class="md:col-span-2 mt-4 pt-4 border-t border-gray-100">
-              <label class="block text-xs font-semibold text-gray-600 mb-4">Product Images (Existing & New, Up to 5
-                total)</label>
+            <div class="md:col-span-2 mt-4 pt-4 border-t border-gray-100 space-y-5">
 
-              <div class="flex flex-wrap gap-4 items-center">
-                <!-- Existing Images -->
-                <div *ngFor="let img of editProduct.images"
-                  class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
-                  <img [src]="getImageUrl(img)" class="w-full h-full object-cover">
-                  <div
-                    class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button type="button" (click)="deleteExistingImage(productId(editProduct), img)"
-                      class="text-white hover:text-red-400 p-2">
+              <!-- Replace Featured 1 -->
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-2">Replace Featured Image 1 (card &amp; main detail)</label>
+                <div class="flex items-center gap-4">
+                  <div *ngIf="editFeatured1Preview"
+                    class="relative group w-24 h-24 border border-blue-200 rounded-md overflow-hidden bg-blue-50 flex-shrink-0">
+                    <img [src]="editFeatured1Preview" class="w-full h-full object-cover">
+                    <button type="button" (click)="removeEditFeatured1()"
+                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                       <i class="fa-solid fa-trash"></i>
                     </button>
+                    <div class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-blue)] text-white text-[0.6rem] uppercase tracking-wider text-center py-0.5">New Featured 1</div>
                   </div>
-                  <div *ngIf="img.is_main"
-                    class="absolute bottom-0 inset-x-0 bg-black/70 text-white text-[0.6rem] uppercase tracking-wider text-center py-0.5">
-                    Main
+                  <label *ngIf="!editFeatured1Preview"
+                    class="w-24 h-24 border-2 border-dashed border-[var(--color-ixora-blue)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-blue-400 hover:text-blue-600 flex-shrink-0">
+                    <i class="fa-solid fa-star text-xl mb-1"></i>
+                    <span class="text-[0.6rem] uppercase font-bold tracking-wider">Featured 1</span>
+                    <input type="file" accept="image/*" class="hidden" (change)="onEditFeatured1Selected($event)" [disabled]="isEditSubmitting">
+                  </label>
+                  <span *ngIf="!editFeatured1Preview && editHasFeatured1" class="text-xs text-gray-400">Current featured 1 exists — uploading replaces it</span>
+                </div>
+              </div>
+
+              <!-- Replace Featured 2 -->
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-2">Replace Featured Image 2 (second detail image)</label>
+                <div class="flex items-center gap-4">
+                  <div *ngIf="editFeatured2Preview"
+                    class="relative group w-24 h-24 border border-green-200 rounded-md overflow-hidden bg-green-50 flex-shrink-0">
+                    <img [src]="editFeatured2Preview" class="w-full h-full object-cover">
+                    <button type="button" (click)="removeEditFeatured2()"
+                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <div class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-green)] text-white text-[0.6rem] uppercase tracking-wider text-center py-0.5">New Featured 2</div>
+                  </div>
+                  <label *ngIf="!editFeatured2Preview"
+                    class="w-24 h-24 border-2 border-dashed border-[var(--color-ixora-green)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-green-400 hover:bg-green-50 transition-colors text-green-400 hover:text-green-600 flex-shrink-0">
+                    <i class="fa-solid fa-star text-xl mb-1"></i>
+                    <span class="text-[0.6rem] uppercase font-bold tracking-wider">Featured 2</span>
+                    <input type="file" accept="image/*" class="hidden" (change)="onEditFeatured2Selected($event)" [disabled]="isEditSubmitting">
+                  </label>
+                  <span *ngIf="!editFeatured2Preview && editHasFeatured2" class="text-xs text-gray-400">Current featured 2 exists — uploading replaces it</span>
+                </div>
+              </div>
+
+              <!-- Existing Images with Badges -->
+              <div *ngIf="editProduct.images?.length">
+                <label class="block text-xs font-semibold text-gray-600 mb-2">Current Images</label>
+                <div class="flex flex-wrap gap-4 items-center">
+                  <div *ngFor="let img of editProduct.images"
+                    class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
+                    <img [src]="getImageUrl(img)" class="w-full h-full object-cover">
+                    <div
+                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button type="button" (click)="deleteExistingImage(productId(editProduct), img)"
+                        class="text-white hover:text-red-400 p-2">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                    <div *ngIf="img.featured1"
+                      class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-blue)] text-white text-[0.55rem] uppercase tracking-wider text-center py-0.5">Feat 1</div>
+                    <div *ngIf="img.featured2"
+                      class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-green)] text-white text-[0.55rem] uppercase tracking-wider text-center py-0.5">Feat 2</div>
                   </div>
                 </div>
+              </div>
 
-                <!-- New Selected Previews -->
-                <div *ngFor="let preview of editImagePreviews; let i = index"
-                  class="relative group w-24 h-24 border border-green-200 rounded-md overflow-hidden bg-green-50 flex-shrink-0">
-                  <img [src]="preview" class="w-full h-full object-cover">
-                  <button type="button" (click)="removeEditNewImage(i)"
-                    class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                  <div class="absolute top-1 right-1">
-                    <span class="bg-green-500 text-white text-[0.6rem] px-1 rounded">NEW</span>
+              <!-- Additional Image Upload -->
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-2">Additional Images</label>
+                <div class="flex flex-wrap gap-4 items-center">
+                  <div *ngFor="let preview of editImagePreviews; let i = index"
+                    class="relative group w-24 h-24 border border-green-200 rounded-md overflow-hidden bg-green-50 flex-shrink-0">
+                    <img [src]="preview" class="w-full h-full object-cover">
+                    <button type="button" (click)="removeEditNewImage(i)"
+                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <div class="absolute top-1 right-1">
+                      <span class="bg-green-500 text-white text-[0.5rem] px-1 rounded">NEW</span>
+                    </div>
                   </div>
+                  <label *ngIf="editImagePreviews.length < 3"
+                    class="w-24 h-24 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600 flex-shrink-0">
+                    <i class="fa-solid fa-plus text-xl mb-1"></i>
+                    <span class="text-[0.65rem] uppercase font-bold tracking-wider">Upload</span>
+                    <input type="file" multiple accept="image/*" class="hidden" (change)="onEditImagesSelected($event)" [disabled]="isEditSubmitting">
+                  </label>
                 </div>
-
-                <!-- Upload Button -->
-                <label *ngIf="(editProduct.images?.length || 0) + editImagePreviews.length < 5"
-                  class="w-24 h-24 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors text-gray-400 hover:text-gray-600 flex-shrink-0">
-                  <i class="fa-solid fa-plus text-xl mb-1"></i>
-                  <span class="text-[0.65rem] uppercase font-bold tracking-wider">Upload</span>
-                  <input type="file" multiple accept="image/*" class="hidden" (change)="onEditImagesSelected($event)"
-                    [disabled]="isEditSubmitting">
-                </label>
               </div>
             </div>
           </div>

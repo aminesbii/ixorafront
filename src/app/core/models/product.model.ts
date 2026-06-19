@@ -6,6 +6,8 @@ export interface ProductImage {
   alt_text?: string | null;
   sort_order: number;
   is_main: boolean;
+  featured1?: boolean;
+  featured2?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

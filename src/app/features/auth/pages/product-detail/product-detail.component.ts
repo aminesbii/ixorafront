@@ -21,6 +21,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   selectedImage: string | null = null;
   quantity = 1;
   cartFeedback = '';
+  brokenImages = new Set<string>();
 
   private fallbackProducts: Record<string, Product> = {
     'rose-radiance-cream': {
@@ -183,20 +184,46 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     });
   }
 
+  normalizeUrl(url: string | undefined | null): string {
+    if (!url) return '';
+    if (url.startsWith('/uploads/')) return '/api' + url;
+    if (url.startsWith('uploads/')) return '/api/' + url;
+    return url;
+  }
+
+  imageError(img: ProductImage): void {
+    const id = img._id || img.id || '';
+    if (id) this.brokenImages.add(id);
+  }
+
+  showImage(img: ProductImage): boolean {
+    const id = img._id || img.id || '';
+    return !!this.normalizeUrl(img.image_url) && !this.brokenImages.has(id);
+  }
+
   get mainImage(): ProductImage | undefined {
-    return this.product?.images?.find(img => img.is_main) || this.product?.images?.[0];
+    return this.product?.images?.find(i => i.featured1) || this.product?.images?.find(i => i.is_main) || this.product?.images?.[0];
+  }
+
+  get mainImageUrl(): string {
+    return this.mainImage ? this.normalizeUrl(this.mainImage.image_url) : '';
   }
 
   get secondImage(): ProductImage | undefined {
-    const imgs = this.product?.images || [];
-    if (imgs.length > 1) {
-      return this.mainImage === imgs[0] ? imgs[1] : imgs[0];
-    }
-    return undefined;
+    return this.product?.images?.find(i => i.featured2) || this.product?.images?.find((i, idx, arr) => i !== this.mainImage && arr.indexOf(i) === idx) || this.product?.images?.[0];
+  }
+
+  get secondImageUrl(): string {
+    return this.secondImage ? this.normalizeUrl(this.secondImage.image_url) : '';
   }
 
   get galleryImages(): ProductImage[] {
-    return this.product?.images?.slice(2, 10) || [];
+    const featuredIds = new Set<string>();
+    const m = this.mainImage;
+    const s = this.secondImage;
+    if (m?._id) featuredIds.add(m._id);
+    if (s?._id) featuredIds.add(s._id);
+    return this.product?.images?.filter(i => !featuredIds.has(i._id || i.id || '')) || [];
   }
 
   get compositionList(): string[] {
@@ -217,7 +244,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   }
 
   selectImage(img: ProductImage) {
-    this.selectedImage = img.image_url;
+    this.selectedImage = this.normalizeUrl(img.image_url);
   }
 
   increaseQty() {

@@ -10,6 +10,10 @@ import { LoginComponent } from './pages/login/login.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { ProductCardComponent } from './components/product-card/product-card.component';
+import { SidebarFilterComponent } from './components/sidebar-filter/sidebar-filter.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { ProductsPageComponent } from './pages/products-page/products-page.component';
 import { HeroComponent } from './components/hero/hero.component';
 import { FeaturedProductsComponent } from './components/featured-products/featured-products.component';
 import { ShopByCategoryComponent } from './components/shop-by-category/shop-by-category.component';
@@ -27,7 +31,11 @@ import { FooterComponent } from './components/footer/footer.component';
     FeaturedProductsComponent,
     ShopByCategoryComponent,
     PromoSplitComponent,
-    FooterComponent
+    FooterComponent,
+    ProductCardComponent,
+    SidebarFilterComponent,
+    SearchBarComponent,
+    ProductsPageComponent
   ],
   imports: [
     CommonModule,

@@ -10,7 +10,7 @@
     <!-- Center links (desktop) -->
     <ul class="hidden lg:flex items-center gap-8 font-sans text-[11px] uppercase tracking-[0.18em] font-semibold">
       <li><a routerLink="/" class="hover:text-[var(--color-ixora-green)] transition-colors duration-200">Home</a></li>
-      <li><a href="#products" class="hover:text-[var(--color-ixora-green)] transition-colors duration-200">Products</a>
+      <li><a routerLink="/products" class="hover:text-[var(--color-ixora-green)] transition-colors duration-200">Products</a>
       </li>
       <li><a href="#brand" class="hover:text-[var(--color-ixora-green)] transition-colors duration-200">Brand</a></li>
       <li><a href="#contact" class="hover:text-[var(--color-ixora-green)] transition-colors duration-200">Contact</a>
@@ -70,7 +70,7 @@
     <ul class="flex flex-col items-center gap-8 font-sans text-2xl uppercase tracking-[0.15em] font-semibold mobile-menu__links">
       <li><a routerLink="/" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="isMobileMenuOpen=false">Home</a></li>
-      <li><a href="#products" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+      <li><a routerLink="/products" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="isMobileMenuOpen=false">Products</a></li>
       <li><a href="#brand" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="isMobileMenuOpen=false">Brand</a></li>

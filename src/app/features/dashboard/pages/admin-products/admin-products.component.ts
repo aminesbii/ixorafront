@@ -24,6 +24,10 @@ export class AdminProductsComponent implements OnInit {
   sortDate = '';
 
   // Image upload (create mode)
+  featured1File: File | null = null;
+  featured1Preview: SafeUrl | null = null;
+  featured2File: File | null = null;
+  featured2Preview: SafeUrl | null = null;
   selectedImages: File[] = [];
   imagePreviews: SafeUrl[] = [];
   isSubmitting = false;
@@ -31,6 +35,10 @@ export class AdminProductsComponent implements OnInit {
   // Edit modal
   editProduct: Product | null = null;
   editForm: FormGroup;
+  editFeatured1File: File | null = null;
+  editFeatured1Preview: SafeUrl | null = null;
+  editFeatured2File: File | null = null;
+  editFeatured2Preview: SafeUrl | null = null;
   editSelectedImages: File[] = [];
   editImagePreviews: SafeUrl[] = [];
   isEditSubmitting = false;
@@ -105,16 +113,74 @@ export class AdminProductsComponent implements OnInit {
     this.showAddForm = !this.showAddForm;
     if (!this.showAddForm) {
       this.productForm.reset({ status: 'draft', is_featured: false });
-      this.selectedImages = [];
-      this.imagePreviews = [];
+      this.resetCreateImages();
     }
   }
 
+  private resetCreateImages(): void {
+    this.featured1File = null;
+    this.featured1Preview = null;
+    this.featured2File = null;
+    this.featured2Preview = null;
+    this.selectedImages = [];
+    this.imagePreviews = [];
+  }
+
+  private makePreview(file: File): SafeUrl {
+    const reader = new FileReader();
+    let preview: SafeUrl | null = null;
+    reader.onload = () => {
+      preview = this.sanitizer.bypassSecurityTrustUrl(reader.result as string);
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+    return preview!;
+  }
+
+  // ─── Featured 1 Upload ─────────────────────────────────────────────────────
+  onFeatured1Selected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    this.featured1File = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.featured1Preview = this.sanitizer.bypassSecurityTrustUrl(reader.result as string);
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(this.featured1File);
+    input.value = '';
+  }
+
+  removeFeatured1(): void {
+    this.featured1File = null;
+    this.featured1Preview = null;
+  }
+
+  // ─── Featured 2 Upload ─────────────────────────────────────────────────────
+  onFeatured2Selected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    this.featured2File = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.featured2Preview = this.sanitizer.bypassSecurityTrustUrl(reader.result as string);
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(this.featured2File);
+    input.value = '';
+  }
+
+  removeFeatured2(): void {
+    this.featured2File = null;
+    this.featured2Preview = null;
+  }
+
+  // ─── Other Images Upload ───────────────────────────────────────────────────
   onImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files) return;
     for (const file of Array.from(input.files)) {
-      if (this.selectedImages.length >= 5) break;
+      if (this.selectedImages.length >= 3) break;
       this.selectedImages.push(file);
       const reader = new FileReader();
       reader.onload = () => {
@@ -133,12 +199,26 @@ export class AdminProductsComponent implements OnInit {
     this.imagePreviews.splice(index, 1);
   }
 
-  private async uploadImagesSequentially(productId: string, files: File[], startIndex: number): Promise<void> {
-    for (let i = 0; i < files.length; i++) {
+  private async uploadAllImages(productId: string): Promise<void> {
+    if (this.featured1File) {
       try {
-        await firstValueFrom(this.productService.addImage(productId, files[i], undefined, startIndex + i));
+        await firstValueFrom(this.productService.uploadFeatured1(productId, this.featured1File));
       } catch (err) {
-        console.error(`Failed to upload image ${startIndex + i}:`, err);
+        console.error('Failed to upload featured1:', err);
+      }
+    }
+    if (this.featured2File) {
+      try {
+        await firstValueFrom(this.productService.uploadFeatured2(productId, this.featured2File));
+      } catch (err) {
+        console.error('Failed to upload featured2:', err);
+      }
+    }
+    for (let i = 0; i < this.selectedImages.length; i++) {
+      try {
+        await firstValueFrom(this.productService.addImage(productId, this.selectedImages[i], undefined, 10 + i));
+      } catch (err) {
+        console.error(`Failed to upload image ${i}:`, err);
       }
     }
   }
@@ -149,16 +229,15 @@ export class AdminProductsComponent implements OnInit {
     this.productService.create(this.productForm.value).pipe(
       switchMap((product: Product) => {
         const id = product.id ?? (product as any)._id;
-        if (!id || !this.selectedImages.length) return of(product);
-        return this.uploadImagesSequentially(id, this.selectedImages, 0);
+        if (!id || (!this.featured1File && !this.featured2File && !this.selectedImages.length)) return of(product);
+        return this.uploadAllImages(id).then(() => product);
       })
     ).subscribe({
       next: () => {
         this.loadProducts();
         this.showAddForm = false;
         this.productForm.reset({ status: 'draft', is_featured: false });
-        this.selectedImages = [];
-        this.imagePreviews = [];
+        this.resetCreateImages();
         this.isSubmitting = false;
       },
       error: () => { this.isSubmitting = false; }
@@ -184,6 +263,10 @@ export class AdminProductsComponent implements OnInit {
 
   closeEditModal(): void {
     this.editProduct = null;
+    this.editFeatured1File = null;
+    this.editFeatured1Preview = null;
+    this.editFeatured2File = null;
+    this.editFeatured2Preview = null;
     this.editSelectedImages = [];
     this.editImagePreviews = [];
     this.isEditSubmitting = false;
@@ -195,12 +278,50 @@ export class AdminProductsComponent implements OnInit {
     });
   }
 
+  // ─── Edit Featured 1 ───────────────────────────────────────────────────────
+  onEditFeatured1Selected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    this.editFeatured1File = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.editFeatured1Preview = this.sanitizer.bypassSecurityTrustUrl(reader.result as string);
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(this.editFeatured1File);
+    input.value = '';
+  }
+
+  removeEditFeatured1(): void {
+    this.editFeatured1File = null;
+    this.editFeatured1Preview = null;
+  }
+
+  // ─── Edit Featured 2 ───────────────────────────────────────────────────────
+  onEditFeatured2Selected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    this.editFeatured2File = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.editFeatured2Preview = this.sanitizer.bypassSecurityTrustUrl(reader.result as string);
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(this.editFeatured2File);
+    input.value = '';
+  }
+
+  removeEditFeatured2(): void {
+    this.editFeatured2File = null;
+    this.editFeatured2Preview = null;
+  }
+
+  // ─── Edit Other Images ─────────────────────────────────────────────────────
   onEditImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files) return;
-    const existing = this.editProduct?.images?.length ?? 0;
     for (const file of Array.from(input.files)) {
-      if (existing + this.editSelectedImages.length >= 5) break;
+      if (this.editSelectedImages.length >= 3) break;
       this.editSelectedImages.push(file);
       const reader = new FileReader();
       reader.onload = () => {
@@ -241,10 +362,16 @@ export class AdminProductsComponent implements OnInit {
     const id = this.productId(this.editProduct);
 
     this.productService.update(id, this.editForm.value).pipe(
-      switchMap(() => {
-        if (!this.editSelectedImages.length) return of(null);
-        const existingCount = this.editProduct?.images?.length ?? 0;
-        return this.uploadImagesSequentially(id, this.editSelectedImages, existingCount);
+      switchMap(async () => {
+        if (this.editFeatured1File) {
+          await firstValueFrom(this.productService.uploadFeatured1(id, this.editFeatured1File));
+        }
+        if (this.editFeatured2File) {
+          await firstValueFrom(this.productService.uploadFeatured2(id, this.editFeatured2File));
+        }
+        for (let i = 0; i < this.editSelectedImages.length; i++) {
+          await firstValueFrom(this.productService.addImage(id, this.editSelectedImages[i], undefined, 10 + i));
+        }
       })
     ).subscribe({
       next: () => {
@@ -287,6 +414,14 @@ export class AdminProductsComponent implements OnInit {
 
   brokenImages: Set<string> = new Set();
 
+  get editHasFeatured1(): boolean {
+    return !!this.editProduct?.images?.some(i => i.featured1);
+  }
+
+  get editHasFeatured2(): boolean {
+    return !!this.editProduct?.images?.some(i => i.featured2);
+  }
+
   onImageLoad(product: Product): void {
     console.debug('[Image] Loaded OK:', product.name);
   }
@@ -304,13 +439,18 @@ export class AdminProductsComponent implements OnInit {
   }
 
   getImageUrl(img: ProductImage): string {
-    return img.image_url?.replace('/uploads/', '/api/uploads/') ?? '';
+    const url = img.image_url;
+    if (!url) return '';
+    if (url.startsWith('/api/uploads/')) return url;
+    if (url.startsWith('/uploads/')) return '/api' + url;
+    if (url.startsWith('uploads/')) return '/api/' + url;
+    return url;
   }
 
   getMainImage(product: Product): string | null {
     if (!product.images?.length) return null;
-    const main = product.images.find((img) => img.is_main);
-    return main ? this.getImageUrl(main) : this.getImageUrl(product.images[0]);
+    const img = product.images.find(i => i.featured1) || product.images.find(i => i.is_main) || product.images[0];
+    return this.getImageUrl(img);
   }
 
   totalStock(variants: ProductVariant[]): number {
