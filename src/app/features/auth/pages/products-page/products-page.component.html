@@ -16,29 +16,27 @@
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-4 md:px-8 py-8">
-    <!-- Mobile filter toggle -->
-    <div class="flex lg:hidden items-center justify-between mb-6">
-      <button (click)="toggleMobileFilter()"
-              class="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-gray-600 hover:text-[var(--color-ixora-black)] transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-        </svg>
-        {{ mobileFilterOpen ? 'Hide Filters' : 'Show Filters' }}
-      </button>
-      <span class="text-xs text-gray-400" *ngIf="!loading">{{ totalProducts }} product{{ totalProducts !== 1 ? 's' : '' }}</span>
-    </div>
+  <!-- Mobile filter button (fixed, always visible on small screens) -->
+  <div class="lg:hidden fixed bottom-6 right-6 z-30">
+    <button (click)="toggleMobileFilter()"
+            class="flex items-center gap-2 px-5 py-3 bg-[var(--color-ixora-black)] text-white text-[10px] uppercase tracking-[0.2em] font-bold shadow-lg hover:bg-opacity-90 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+      </svg>
+      <span>Filter</span>
+    </button>
+  </div>
 
-    <div class="flex gap-10">
-      <!-- Sidebar -->
-      <aside class="w-full lg:w-[260px] xl:w-[280px] flex-shrink-0">
-        <div class="lg:block lg:sticky lg:top-[72px]">
-          <div class="hidden lg:block text-xs text-gray-400 mb-6">{{ totalProducts }} product{{ totalProducts !== 1 ? 's' : '' }}</div>
-          <app-sidebar-filter
-            [mobileOpen]="mobileFilterOpen"
-            (filterChange)="onFilterChange($event)">
-          </app-sidebar-filter>
-        </div>
+  <div class="max-w-7xl mx-auto px-4 md:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-0 lg:gap-10">
+      <!-- Sidebar (hidden on mobile — opened as overlay via drawer classes) -->
+      <aside class="hidden lg:block lg:w-[260px] xl:w-[280px] flex-shrink-0 lg:sticky lg:top-[90px] lg:self-start lg:max-h-[calc(100vh-110px)] lg:overflow-y-auto">
+        <div class="hidden lg:block text-xs text-gray-400 mb-6">{{ totalProducts }} product{{ totalProducts !== 1 ? 's' : '' }}</div>
+        <app-sidebar-filter
+          [mobileOpen]="mobileFilterOpen"
+          (filterChange)="onFilterChange($event)"
+          (mobileClose)="toggleMobileFilter()">
+        </app-sidebar-filter>
       </aside>
 
       <!-- Product Grid -->

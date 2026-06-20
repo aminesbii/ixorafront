@@ -78,6 +78,8 @@ nav ul li a:hover::after {
               visibility 0s linear 0.4s;
   pointer-events: none;
   visibility: hidden;
+  z-index: 55;
+  background: white;
 }
 
 .mobile-menu--open {

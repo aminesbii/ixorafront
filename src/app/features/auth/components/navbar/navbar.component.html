@@ -1,5 +1,6 @@
-<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" [class.shadow-sm]="isScrolled"
-  [ngClass]="isScrolled ? 'bg-white/65 backdrop-blur-md' : 'bg-transparent'">
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+  [class.shadow-sm]="isScrolled && !isMobileMenuOpen"
+  [ngClass]="isScrolled && !isMobileMenuOpen ? 'bg-white/65 backdrop-blur-md' : isMobileMenuOpen ? 'bg-white' : 'bg-transparent'">
   <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-[56px]">
 
     <!-- Logo -->
@@ -53,7 +54,7 @@
     </div>
 
     <!-- Mobile hamburger -->
-    <div class="lg:hidden relative z-[60]">
+    <div class="lg:hidden relative" [style.z-index]="isMobileMenuOpen ? 61 : 60">
       <button class="hamburger-btn p-1.5" [class.hamburger-btn--open]="isMobileMenuOpen" (click)="toggleMobileMenu()">
         <span class="hamburger-bar"></span>
         <span class="hamburger-bar"></span>
@@ -65,38 +66,38 @@
 
   <!-- Mobile full-screen menu -->
   <div
-    class="mobile-menu fixed inset-0 bg-white z-50 flex flex-col items-center justify-center lg:hidden"
+    class="mobile-menu fixed inset-0 flex flex-col items-center justify-center lg:hidden"
     [class.mobile-menu--open]="isMobileMenuOpen">
     <ul class="flex flex-col items-center gap-8 font-sans text-2xl uppercase tracking-[0.15em] font-semibold mobile-menu__links">
       <li><a routerLink="/" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
-          (click)="isMobileMenuOpen=false">Home</a></li>
+          (click)="closeMobileMenu()">Home</a></li>
       <li><a routerLink="/products" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
-          (click)="isMobileMenuOpen=false">Products</a></li>
+          (click)="closeMobileMenu()">Products</a></li>
       <li><a href="#brand" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
-          (click)="isMobileMenuOpen=false">Brand</a></li>
+          (click)="closeMobileMenu()">Brand</a></li>
       <li><a href="#contact" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
-          (click)="isMobileMenuOpen=false">Contact</a></li>
+          (click)="closeMobileMenu()">Contact</a></li>
     </ul>
 
     <div class="mt-12 flex flex-col items-center gap-4 mobile-menu__links">
       <ng-container *ngIf="!isLoggedIn">
         <button
           class="px-8 py-3 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300"
-          (click)="goToLogin(); isMobileMenuOpen=false">
+          (click)="goToLogin(); closeMobileMenu()">
           Login
         </button>
       </ng-container>
       <ng-container *ngIf="isLoggedIn && isAdmin">
         <button
           class="px-8 py-3 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-blue)] text-white hover:bg-blue-600 transition-colors duration-300"
-          (click)="goToDashboard(); isMobileMenuOpen=false">
+          (click)="goToDashboard(); closeMobileMenu()">
           Dashboard
         </button>
       </ng-container>
       <ng-container *ngIf="isLoggedIn">
         <button
           class="text-sm uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors"
-          (click)="logout(); isMobileMenuOpen=false">
+          (click)="logout(); closeMobileMenu()">
           Logout
         </button>
         <span *ngIf="isLoggedIn" class="text-xs font-sans text-gray-400 mt-2">Hi, {{ userName }}</span>

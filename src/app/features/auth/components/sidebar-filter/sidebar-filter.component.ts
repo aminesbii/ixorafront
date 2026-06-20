@@ -18,6 +18,9 @@ export interface FilterState {
 export class SidebarFilterComponent implements OnInit {
   @Output() filterChange = new EventEmitter<FilterState>();
   @Input() mobileOpen = false;
+  @Output() mobileClose = new EventEmitter<void>();
+
+  sortOpen = false;
 
   categories: CategoryTree[] = [];
 
@@ -29,9 +32,13 @@ export class SidebarFilterComponent implements OnInit {
   };
 
   sortOptions = [
-    { value: '-createdAt', label: 'Newest' },
-    { value: 'createdAt', label: 'Oldest' },
+    { value: '-createdAt', label: 'Newest First' },
+    { value: 'createdAt', label: 'Oldest First' },
   ];
+
+  get activeSortLabel(): string {
+    return this.sortOptions.find(o => o.value === this.filters.sort)?.label || 'Sort By';
+  }
 
   priceRanges = [
     { label: 'Under 20 TND', min: null, max: 20 },
@@ -58,7 +65,16 @@ export class SidebarFilterComponent implements OnInit {
 
   setSort(value: string): void {
     this.filters.sort = value;
+    this.sortOpen = false;
     this.emitChange();
+  }
+
+  toggleSort(): void {
+    this.sortOpen = !this.sortOpen;
+  }
+
+  closeSort(): void {
+    this.sortOpen = false;
   }
 
   setPriceRange(min: number | null, max: number | null, label: string): void {
