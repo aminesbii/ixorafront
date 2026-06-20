@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Subscription } from 'rxjs';
+import { DashboardService } from '../../../../core/services/dashboard.service';
 
 interface AnalyticsSummary {
   totalVisits: number;
@@ -45,10 +46,25 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
   daysAgo = 30;
   private subscription = new Subscription();
 
-  constructor(private http: HttpClient) {}
+  productClicks: any[] = [];
+  loadingClicks = false;
+
+  constructor(private http: HttpClient, private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
     this.fetchAnalytics();
+    this.fetchProductClicks();
+  }
+
+  fetchProductClicks(): void {
+    this.loadingClicks = true;
+    this.dashboardService.getProductClicks().subscribe({
+      next: (data) => {
+        this.productClicks = data;
+        this.loadingClicks = false;
+      },
+      error: () => { this.loadingClicks = false; }
+    });
   }
 
   fetchAnalytics(): void {

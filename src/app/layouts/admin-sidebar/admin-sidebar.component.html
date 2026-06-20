@@ -1,10 +1,8 @@
 <aside
-  class="w-[60px] md:w-[240px] shrink-0 bg-[var(--color-ixora-black)] flex flex-col sticky top-0 h-screen transition-all duration-300 z-10">
+  class="w-[60px] md:w-[240px] bg-[var(--color-ixora-black)] flex flex-col fixed top-0 left-0 h-screen transition-all duration-300 z-10">
   <div class="flex items-center justify-center md:justify-start gap-3 py-6 px-0 md:px-6 border-b border-white/10">
     <img src="/icons/IXORLogo.png" alt="IXORA" class="h-7 w-auto invert" />
-    <span
-      class="hidden md:inline text-xl font-extrabold text-[var(--color-ixora-white)] tracking-wide font-serif">IXORA</span>
-  </div>
+     </div>
   <nav class="flex-1 flex flex-col gap-1 p-2 md:p-3 overflow-y-auto">
     <a *ngFor="let item of menuItems" [routerLink]="item.route"
       routerLinkActive="bg-white/10 border-l-[3px] border-[var(--color-ixora-green)] text-white"

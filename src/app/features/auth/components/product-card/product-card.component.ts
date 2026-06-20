@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Product } from '../../../../core/models/product.model';
+import { DashboardService } from '../../../../core/services/dashboard.service';
 
 export interface ProductCardEvent {
   product: Product;
@@ -17,6 +18,8 @@ export class ProductCardComponent {
   @Input() loading = false;
   @Output() addToCart = new EventEmitter<ProductCardEvent>();
   @Output() viewProduct = new EventEmitter<string>();
+
+  constructor(private dashboardService: DashboardService) {}
 
   imgError = false;
 
@@ -63,6 +66,18 @@ export class ProductCardComponent {
   }
 
   onClick(): void {
+    this.trackClick();
     this.viewProduct.emit(this.product.slug);
+  }
+
+  private trackClick(): void {
+    const id = this.product._id || this.product.id;
+    if (!id) return;
+    this.dashboardService.trackEvent({
+      product_id: id,
+      event_type: 'click'
+    }).subscribe({
+      error: (err) => console.error('Failed to track click:', err)
+    });
   }
 }

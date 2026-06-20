@@ -35,4 +35,9 @@ export class DashboardService {
   triggerAggregation(date: string): Observable<{ message: string; data?: any }> {
     return this.http.post<{ message: string; data?: any }>(`${this.API_URL}/performance/aggregate`, { date });
   }
+
+  // Admin: Get all products with lifetime clicks
+  getProductClicks(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/product-clicks`);
+  }
 }
