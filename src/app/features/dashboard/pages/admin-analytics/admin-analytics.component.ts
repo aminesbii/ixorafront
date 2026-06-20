@@ -12,19 +12,6 @@ interface AnalyticsSummary {
   totalViews: number;
 }
 
-interface TopProduct {
-  product_id: string;
-  name: string;
-  slug: string;
-  brand_name?: string | null;
-  image_url: string;
-  clicks: number;
-  views: number;
-  add_to_cart: number;
-  purchases: number;
-  conversion_rate: number;
-}
-
 @Component({
   selector: 'app-admin-analytics',
   templateUrl: './admin-analytics.component.html',
@@ -41,61 +28,51 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
     totalViews: 0
   };
 
-  topProducts: TopProduct[] = [];
+  mostClickedProducts: any[] = [];
   loading = true;
   daysAgo = 30;
+  loadingSummary = true;
   private subscription = new Subscription();
-
-  dailyProductClicks: any[] = [];
-  loadingDailyClicks = false;
-  dailyClicksDays = 30;
 
   constructor(private http: HttpClient, private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
-    this.fetchAnalytics();
-    this.fetchDailyProductClicks();
+    this.fetchSummary();
+    this.fetchMostClicked();
   }
 
-  fetchDailyProductClicks(): void {
-    this.loadingDailyClicks = true;
+  fetchMostClicked(): void {
+    this.loading = true;
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - this.dailyClicksDays);
+    startDate.setDate(startDate.getDate() - this.daysAgo);
     this.dashboardService.getDailyProductClicks(startDate.toISOString().split('T')[0]).subscribe({
       next: (data) => {
-        this.dailyProductClicks = data;
-        this.loadingDailyClicks = false;
+        this.mostClickedProducts = data;
+        this.loading = false;
       },
-      error: () => { this.loadingDailyClicks = false; }
+      error: () => { this.loading = false; }
     });
   }
 
-  setDailyClicksDays(days: number): void {
-    this.dailyClicksDays = days;
-    this.fetchDailyProductClicks();
-  }
-
-  fetchAnalytics(): void {
-    this.loading = true;
+  fetchSummary(): void {
+    this.loadingSummary = true;
     const params = new HttpParams().set('days', this.daysAgo.toString());
     const sub = this.http.get<any>('/api/analytics/public-analytics', { params }).subscribe({
       next: (res) => {
         if (res && res.summary) {
           this.summary = res.summary;
-          this.topProducts = res.topProducts || [];
         }
-        this.loading = false;
+        this.loadingSummary = false;
       },
-      error: () => {
-        this.loading = false;
-      }
+      error: () => { this.loadingSummary = false; }
     });
     this.subscription.add(sub);
   }
 
   setDays(days: number): void {
     this.daysAgo = days;
-    this.fetchAnalytics();
+    this.fetchSummary();
+    this.fetchMostClicked();
   }
 
   getConversionColor(rate: number): string {
