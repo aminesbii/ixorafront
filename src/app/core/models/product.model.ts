@@ -46,7 +46,6 @@ export interface Product {
   details?: ProductDetails;
   status: 'draft' | 'active' | 'archived';
   is_featured: boolean;
-  clicks?: number;
   createdAt?: string;
   updatedAt?: string;
 

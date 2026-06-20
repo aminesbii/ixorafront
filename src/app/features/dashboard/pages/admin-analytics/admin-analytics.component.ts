@@ -46,25 +46,33 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
   daysAgo = 30;
   private subscription = new Subscription();
 
-  productClicks: any[] = [];
-  loadingClicks = false;
+  dailyProductClicks: any[] = [];
+  loadingDailyClicks = false;
+  dailyClicksDays = 30;
 
   constructor(private http: HttpClient, private dashboardService: DashboardService) {}
 
   ngOnInit(): void {
     this.fetchAnalytics();
-    this.fetchProductClicks();
+    this.fetchDailyProductClicks();
   }
 
-  fetchProductClicks(): void {
-    this.loadingClicks = true;
-    this.dashboardService.getProductClicks().subscribe({
+  fetchDailyProductClicks(): void {
+    this.loadingDailyClicks = true;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - this.dailyClicksDays);
+    this.dashboardService.getDailyProductClicks(startDate.toISOString().split('T')[0]).subscribe({
       next: (data) => {
-        this.productClicks = data;
-        this.loadingClicks = false;
+        this.dailyProductClicks = data;
+        this.loadingDailyClicks = false;
       },
-      error: () => { this.loadingClicks = false; }
+      error: () => { this.loadingDailyClicks = false; }
     });
+  }
+
+  setDailyClicksDays(days: number): void {
+    this.dailyClicksDays = days;
+    this.fetchDailyProductClicks();
   }
 
   fetchAnalytics(): void {

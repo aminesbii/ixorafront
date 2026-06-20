@@ -36,8 +36,11 @@ export class DashboardService {
     return this.http.post<{ message: string; data?: any }>(`${this.API_URL}/performance/aggregate`, { date });
   }
 
-  // Admin: Get all products with lifetime clicks
-  getProductClicks(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.API_URL}/product-clicks`);
+  // Admin: Get daily product clicks from ProductPerformanceDaily
+  getDailyProductClicks(startDate?: string, endDate?: string): Observable<any[]> {
+    let params = new HttpParams();
+    if (startDate) params = params.set('start_date', startDate);
+    if (endDate) params = params.set('end_date', endDate);
+    return this.http.get<any[]>(`${this.API_URL}/performance/daily-clicks`, { params });
   }
 }
