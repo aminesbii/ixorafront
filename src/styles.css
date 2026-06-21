@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @plugin "daisyui";
 
@@ -7,8 +8,12 @@
   --color-ixora-green: #10b981;
   --color-ixora-blue: #3b82f6;
 
-  --font-sans: "Montserrat", system-ui, sans-serif;
-  --font-serif: "Montserrat", serif;
+  --font-sans: "Poppins", system-ui, sans-serif;
+  --font-serif: "Poppins", serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html,
@@ -27,6 +32,11 @@ h4,
 h5,
 h6 {
   font-family: var(--font-serif);
+}
+
+img {
+  max-width: 100%;
+  display: block;
 }
 
 /* Fluid scroll animation base classes */

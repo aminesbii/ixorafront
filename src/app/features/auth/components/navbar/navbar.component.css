@@ -1,10 +1,12 @@
 nav {
   color: var(--color-ixora-black);
+  transition: background-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
 }
 
 nav ul li a {
   position: relative;
 }
+
 nav ul li a::after {
   content: '';
   position: absolute;
@@ -15,30 +17,47 @@ nav ul li a::after {
   background-color: var(--color-ixora-green);
   transition: width 0.25s ease;
 }
+
 nav ul li a:hover::after {
   width: 100%;
+}
+
+.navbar-dark {
+  color: #fff;
+}
+
+.navbar-dark .logo-img {
+  filter: brightness(0) invert(1);
+}
+
+.navbar-light .logo-img {
+  filter: none;
+}
+
+.logo-img {
+  transition: filter 0.35s ease;
 }
 
 /* ===== Hamburger Button ===== */
 .hamburger-btn {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  color: var(--color-ixora-black);
-  background: rgba(255, 255, 255, 0.5);
+  color: currentColor;
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(4px);
-  border-radius: 6px;
+  border-radius: 999px;
   transition: background 0.3s ease;
 }
 
 .hamburger-btn:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .hamburger-btn--open {
@@ -49,7 +68,7 @@ nav ul li a:hover::after {
 .hamburger-bar {
   display: block;
   width: 18px;
-  height: 2.5px;
+  height: 2px;
   background-color: currentColor;
   border-radius: 2px;
   transition: all 0.3s ease;
@@ -57,7 +76,7 @@ nav ul li a:hover::after {
 }
 
 .hamburger-btn--open .hamburger-bar:nth-child(1) {
-  transform: translateY(7.5px) rotate(45deg);
+  transform: translateY(7px) rotate(45deg);
 }
 
 .hamburger-btn--open .hamburger-bar:nth-child(2) {
@@ -66,7 +85,7 @@ nav ul li a:hover::after {
 }
 
 .hamburger-btn--open .hamburger-bar:nth-child(3) {
-  transform: translateY(-7.5px) rotate(-45deg);
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ===== Mobile Menu Overlay ===== */

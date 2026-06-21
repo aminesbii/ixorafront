@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener, Inject, PLATFORM_ID } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
@@ -12,6 +13,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class NavbarComponent implements OnInit {
   isScrolled = false;
   isMobileMenuOpen = false;
+  isOnHero = false;
+  isOnHomePage = false;
   isLoggedIn = false;
   isAdmin = false;
   userName = '';
@@ -24,18 +27,50 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      this.router.events
+        .pipe(filter(event => event instanceof NavigationEnd))
+        .subscribe(() => {
+          this.isOnHomePage = this.router.url === '/';
+          this.updateHeroState();
+        });
+
       const user = this.authService.getCurrentUser();
       this.isLoggedIn = this.authService.isLoggedIn();
       if (user) {
         this.isAdmin = this.authService.isAdmin();
         this.userName = user.full_name;
       }
+
+      this.isOnHomePage = this.router.url === '/';
+      this.updateHeroState();
     }
   }
 
   @HostListener('window:scroll')
   onScroll(): void {
     this.isScrolled = window.scrollY > 20;
+    this.updateHeroState();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.updateHeroState();
+  }
+
+  private updateHeroState(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const hero = document.getElementById('home-hero');
+
+    if (!this.isOnHomePage || !hero) {
+      this.isOnHero = false;
+      return;
+    }
+
+    const heroHeight = hero.offsetHeight;
+    this.isOnHero = window.scrollY < heroHeight - 80;
   }
 
   goToLogin(): void {

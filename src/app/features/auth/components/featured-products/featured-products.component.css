@@ -15,8 +15,37 @@
   }
 }
 
+.products-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.products-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.products-track {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+  padding-bottom: 0.5rem;
+}
+
 .product-card {
   width: 100%;
+}
+
+.product-card--deck {
+  flex: 0 0 min(320px, 78vw);
+  max-width: 320px;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+}
+
+.product-card--deck:hover {
+  transform: translateY(-4px);
 }
 
 .product-description {
