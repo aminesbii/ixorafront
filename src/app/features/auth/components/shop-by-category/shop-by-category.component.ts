@@ -1,9 +1,11 @@
 import { Component, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 import gsap from 'gsap';
 import { CategoryService } from '../../../../core/services/category.service';
 
 interface CategoryUI {
+  _id: string;
   name: string;
   image: string;
   slug: string;
@@ -22,31 +24,37 @@ export class ShopByCategoryComponent implements OnInit, AfterViewInit {
 
   private fallbackCategories: CategoryUI[] = [
     {
+      _id: 'serums-treatments',
       name: 'Serums & Treatments',
       image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop',
       slug: 'serums-treatments'
     },
     {
+      _id: 'moisturizers',
       name: 'Moisturizers',
       image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=600&auto=format&fit=crop',
       slug: 'moisturizers'
     },
     {
+      _id: 'cleansers',
       name: 'Cleansers',
       image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=600&auto=format&fit=crop',
       slug: 'cleansers'
     },
     {
+      _id: 'hair-care',
       name: 'Hair Care',
       image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=600&auto=format&fit=crop',
       slug: 'hair-care'
     },
     {
+      _id: 'wellness',
       name: 'Wellness',
       image: 'https://images.unsplash.com/photo-1571781926291-c477eb31f24e?q=80&w=600&auto=format&fit=crop',
       slug: 'wellness'
     },
     {
+      _id: 'body-care',
       name: 'Body Care',
       image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=600&auto=format&fit=crop',
       slug: 'body-care'
@@ -55,6 +63,7 @@ export class ShopByCategoryComponent implements OnInit, AfterViewInit {
 
   constructor(
     private categoryService: CategoryService,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -88,7 +97,7 @@ export class ShopByCategoryComponent implements OnInit, AfterViewInit {
             } else if (nameLower.includes('wellness')) {
               image = 'https://images.unsplash.com/photo-1571781926291-c477eb31f24e?q=80&w=600&auto=format&fit=crop';
             }
-            return { name: cat.name, image, slug: cat.slug };
+            return { _id: cat._id, name: cat.name, image, slug: cat.slug };
           });
         } else {
           this.categories = this.fallbackCategories;
@@ -105,6 +114,10 @@ export class ShopByCategoryComponent implements OnInit, AfterViewInit {
         }
       }
     });
+  }
+
+  onCategoryClick(cat: CategoryUI): void {
+    this.router.navigate(['/products'], { queryParams: { category: cat._id } });
   }
 
   initScrollAnimations() {

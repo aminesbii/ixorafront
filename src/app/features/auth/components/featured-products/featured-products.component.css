@@ -1,51 +1,70 @@
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.featured-products-section {
+  position: relative;
 }
 
-@media (min-width: 640px) {
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.featured-products-inner {
+  position: relative;
 }
 
-@media (min-width: 1024px) {
-  .products-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.products-viewport {
+  position: relative;
 }
 
-.products-scroll-wrapper {
+.products-viewport.has-scroll {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
 }
 
-.products-scroll-wrapper::-webkit-scrollbar {
+.products-viewport.has-scroll::-webkit-scrollbar {
   display: none;
 }
 
 .products-track {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .products-track {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .products-track {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.products-track.is-scrollable {
   display: flex;
-  gap: 1.25rem;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
   width: max-content;
-  padding-bottom: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .product-card {
   width: 100%;
+  scroll-snap-align: start;
 }
 
-.product-card--deck {
-  flex: 0 0 min(320px, 78vw);
-  max-width: 320px;
-  transform: translateX(0);
-  transition: transform 0.3s ease;
+.product-card--scroll {
+  flex: 0 0 auto;
+  width: calc((100vw - 6.5rem) / 4);
+  min-width: 240px;
 }
 
-.product-card--deck:hover {
-  transform: translateY(-4px);
+@media (min-width: 1024px) {
+  .product-card--scroll {
+    max-width: 294px;
+  }
 }
 
 .product-description {
@@ -54,4 +73,37 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
+}
+
+.scroll-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(4px);
+  color: #374151;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.scroll-arrow:hover {
+  background: black;
+  color: white;
+}
+
+.scroll-arrow--left {
+  left: 0rem;
+}
+
+.scroll-arrow--right {
+  right: 0rem;
 }

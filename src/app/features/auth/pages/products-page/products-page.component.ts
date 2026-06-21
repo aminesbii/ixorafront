@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../core/services/product.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { Product } from '../../../../core/models/product.model';
@@ -29,15 +29,21 @@ export class ProductsPageComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
   totalProducts = 0;
+  cartFeedback = '';
 
   constructor(
     private productService: ProductService,
     private cartService: CartService,
     private router: Router,
+    private route: ActivatedRoute,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
+    const categoryId = this.route.snapshot.queryParamMap.get('category');
+    if (categoryId) {
+      this.currentFilters.category_id = categoryId;
+    }
     this.loadProducts();
   }
 
@@ -96,10 +102,22 @@ export class ProductsPageComponent implements OnInit {
   }
 
   onAddToCart(event: ProductCardEvent): void {
-    this.cartService.addItem(event.product._id, event.variantId, 1).subscribe({
-      next: () => {},
-      error: (err) => console.error('Error adding to cart:', err)
+    const prodId = event.product._id || event.product.id;
+    if (!prodId) return;
+
+    if (prodId.startsWith('demo-')) {
+      this.showCartFeedback('Please log in to add items to your cart');
+      return;
+    }
+    this.cartService.addItem(prodId, event.variantId, 1).subscribe({
+      next: () => this.showCartFeedback(`${event.product.name} added to cart!`),
+      error: () => this.showCartFeedback('Failed to add to cart')
     });
+  }
+
+  showCartFeedback(msg: string): void {
+    this.cartFeedback = msg;
+    setTimeout(() => this.cartFeedback = '', 3000);
   }
 
   onViewProduct(slug: string): void {

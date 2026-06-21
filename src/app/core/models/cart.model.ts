@@ -1,6 +1,7 @@
 import { Product, ProductVariant } from './product.model';
 
 export interface CartItem {
+  id?: string;
   _id?: string;
   cart_id: string;
   product_id: string | Product; // Can be ID or populated object
@@ -11,6 +12,7 @@ export interface CartItem {
 }
 
 export interface Cart {
+  id?: string;
   _id: string;
   user_id?: string | null;
   session_token?: string | null;

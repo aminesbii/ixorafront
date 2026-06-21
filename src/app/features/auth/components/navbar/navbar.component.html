@@ -27,8 +27,16 @@
         </svg>
       </button>
 
+      <a routerLink="/cart" class="relative nav-icon hover:text-[var(--color-ixora-green)] transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+        </svg>
+        <span *ngIf="cartTotalItems > 0" class="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 bg-[var(--color-ixora-green)] text-white text-[9px] font-bold flex items-center justify-center rounded-full leading-none">
+          {{ cartTotalItems > 99 ? '99+' : cartTotalItems }}
+        </span>
+      </a>
+
       <ng-container *ngIf="isLoggedIn && isAdmin">
-        <span class="text-[11px] font-sans text-gray-500">Hi, {{ userName }}</span>
         <button
           class="px-5 py-1.5 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-blue)] text-white hover:bg-blue-600 transition-colors duration-200"
           (click)="goToDashboard()">Dashboard</button>
@@ -38,7 +46,6 @@
       </ng-container>
 
       <ng-container *ngIf="isLoggedIn && !isAdmin">
-        <span class="text-[11px] font-sans text-gray-500">Hi, {{ userName }}</span>
         <button
           class="text-[10px] uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="logout()">Logout</button>
@@ -80,6 +87,16 @@
     </ul>
 
     <div class="mt-12 flex flex-col items-center gap-4 mobile-menu__links">
+      <a routerLink="/cart" (click)="closeMobileMenu()"
+        class="relative flex items-center gap-2 text-sm uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+        </svg>
+        Cart
+        <span *ngIf="cartTotalItems > 0" class="min-w-[18px] h-[18px] px-1 bg-[var(--color-ixora-green)] text-white text-[9px] font-bold flex items-center justify-center rounded-full leading-none">
+          {{ cartTotalItems > 99 ? '99+' : cartTotalItems }}
+        </span>
+      </a>
       <ng-container *ngIf="!isLoggedIn">
         <button
           class="px-8 py-3 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300"
@@ -100,7 +117,6 @@
           (click)="logout(); closeMobileMenu()">
           Logout
         </button>
-        <span *ngIf="isLoggedIn" class="text-xs font-sans text-gray-400 mt-2">Hi, {{ userName }}</span>
       </ng-container>
     </div>
   </div>

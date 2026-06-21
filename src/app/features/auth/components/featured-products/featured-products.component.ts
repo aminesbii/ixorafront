@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren, ViewChild, Inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 import { ProductService } from '../../../../core/services/product.service';
@@ -24,9 +24,12 @@ interface FeaturedProductUI {
 })
 export class FeaturedProductsComponent implements OnInit, AfterViewInit {
   @ViewChildren('revealEl') revealElements!: QueryList<ElementRef>;
+  @ViewChild('scrollWrapper') scrollWrapper!: ElementRef;
 
   featuredProducts: FeaturedProductUI[] = [];
   cartFeedbackMessage = '';
+  canScrollLeft = false;
+  canScrollRight = false;
   private fallbackProducts: FeaturedProductUI[] = [
     {
       id: 'fallback-1',
@@ -83,7 +86,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      setTimeout(() => this.initScrollAnimations(), 500);
+      setTimeout(() => this.initScrollAnimations(), 600);
     }
   }
 
@@ -110,7 +113,10 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
           });
 
           if (isPlatformBrowser(this.platformId)) {
-            setTimeout(() => this.initScrollAnimations(), 100);
+            setTimeout(() => {
+              this.initScrollAnimations();
+              this.updateScrollState();
+            }, 100);
           }
         } else {
           this.useFallbackProducts();
@@ -126,7 +132,10 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
   private useFallbackProducts() {
     this.featuredProducts = this.fallbackProducts;
     if (isPlatformBrowser(this.platformId)) {
-      setTimeout(() => this.initScrollAnimations(), 100);
+      setTimeout(() => {
+        this.initScrollAnimations();
+        this.updateScrollState();
+      }, 100);
     }
   }
 
@@ -169,32 +178,99 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
     }, 3000);
   }
 
+  onScroll() {
+    this.updateScrollState();
+  }
+
+  private updateScrollState() {
+    const wrapper = this.scrollWrapper?.nativeElement;
+    if (!wrapper) {
+      this.canScrollLeft = false;
+      this.canScrollRight = false;
+      return;
+    }
+    if (this.featuredProducts.length <= 4) {
+      this.canScrollLeft = false;
+      this.canScrollRight = false;
+      return;
+    }
+    this.canScrollLeft = wrapper.scrollLeft > 4;
+    this.canScrollRight = wrapper.scrollLeft + wrapper.clientWidth < wrapper.scrollWidth - 4;
+  }
+
+  scrollLeft() {
+    const wrapper = this.scrollWrapper?.nativeElement;
+    if (!wrapper) return;
+    const card = wrapper.querySelector('.product-card--scroll');
+    const cardWidth = card ? card.getBoundingClientRect().width : 0;
+    const gap = 24;
+    wrapper.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+    setTimeout(() => this.updateScrollState(), 350);
+  }
+
+  scrollRight() {
+    const wrapper = this.scrollWrapper?.nativeElement;
+    if (!wrapper) return;
+    const card = wrapper.querySelector('.product-card--scroll');
+    const cardWidth = card ? card.getBoundingClientRect().width : 0;
+    const gap = 24;
+    wrapper.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+    setTimeout(() => this.updateScrollState(), 350);
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.updateScrollState();
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeydown(event: KeyboardEvent) {
+    if (this.featuredProducts.length <= 4) return;
+    const wrapper = this.scrollWrapper?.nativeElement;
+    if (!wrapper) return;
+    const rect = wrapper.getBoundingClientRect();
+    const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!isVisible) return;
+
+    if (event.key === 'ArrowLeft') {
+      this.scrollLeft();
+      event.preventDefault();
+    } else if (event.key === 'ArrowRight') {
+      this.scrollRight();
+      event.preventDefault();
+    }
+  }
+
   initScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const el = entry.target;
-          const lineInners = el.querySelectorAll('.line-reveal-inner');
-          if (lineInners.length > 0) {
-            gsap.to(lineInners, {
-              opacity: 1,
-              y: 0,
-              duration: 0.8,
-              stagger: 0.15,
-              ease: "power3.out",
-              delay: Number(el.getAttribute('data-delay') || 0)
-            });
-            gsap.set(el, { opacity: 1, y: 0, x: 0, scale: 1 });
+          const delay = Number(el.getAttribute('data-delay') || 0);
+          const isCard = el.classList.contains('product-card');
+
+          if (isCard) {
+            gsap.fromTo(el,
+              { opacity: 0, y: 60, scale: 0.92 },
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 1.1,
+                delay,
+                ease: "power4.out"
+              }
+            );
           } else {
-            gsap.to(el, {
-              opacity: 1,
-              y: 0,
-              x: 0,
-              scale: 1,
-              duration: 1.2,
-              ease: "power3.out",
-              delay: Number(el.getAttribute('data-delay') || 0)
-            });
+            gsap.fromTo(el,
+              { opacity: 0, y: 30 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.9,
+                ease: "power3.out"
+              }
+            );
           }
 
           observer.unobserve(el);

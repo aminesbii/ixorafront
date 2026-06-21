@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
+import { CartService } from '../../../../core/services/cart.service';
 
 @Component({
   selector: 'app-navbar',
@@ -18,10 +19,12 @@ export class NavbarComponent implements OnInit {
   isLoggedIn = false;
   isAdmin = false;
   userName = '';
+  cartTotalItems = 0;
 
   constructor(
     private router: Router,
     private authService: AuthService,
+    private cartService: CartService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -40,6 +43,11 @@ export class NavbarComponent implements OnInit {
         this.isAdmin = this.authService.isAdmin();
         this.userName = user.full_name;
       }
+
+      this.cartService.cart$.subscribe(cart => {
+        this.cartTotalItems = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+      });
+      this.cartService.getCart().subscribe();
 
       this.isOnHomePage = this.router.url === '/';
       this.updateHeroState();

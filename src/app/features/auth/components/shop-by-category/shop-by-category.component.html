@@ -6,6 +6,7 @@
 
   <div class="flex flex-wrap justify-center gap-1 lg:gap-2">
     <div *ngFor="let cat of categories; let i = index" #revealEl [attr.data-delay]="i * 0.1"
+      (click)="onCategoryClick(cat)"
       class="group relative w-[160px] lg:w-[180px] h-14 lg:h-16 overflow-hidden cursor-pointer gsap-reveal border border-gray-200 hover:border-transparent transition-all duration-500">
 
       <img [src]="cat.image" [alt]="cat.name"

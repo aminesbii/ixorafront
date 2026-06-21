@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { CartService } from '../../../../core/services/cart.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,11 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private cartService: CartService
+  ) { }
 
   onLogin() {
     if (this.isLoading) return;
@@ -28,7 +33,15 @@ export class LoginComponent {
         if (res.role === 'ADMIN') {
           this.router.navigate(['/dashboard/products']);
         } else {
-          this.router.navigate(['/']);
+          this.cartService.merge().subscribe({
+            next: () => {
+              this.router.navigate(['/']);
+            },
+            error: (err) => {
+              console.error('Failed to merge cart on login:', err);
+              this.router.navigate(['/']);
+            }
+          });
         }
       },
       error: (err) => {

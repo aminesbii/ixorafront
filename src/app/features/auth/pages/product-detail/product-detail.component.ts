@@ -172,12 +172,13 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   }
 
   trackProductView() {
-    if (!this.product || !this.product._id || this.product._id.startsWith('demo-')) {
+    const prodId = this.product ? (this.product._id || this.product.id) : undefined;
+    if (!prodId || prodId.startsWith('demo-')) {
       return;
     }
 
     this.dashboardService.trackEvent({
-      product_id: this.product._id,
+      product_id: prodId,
       event_type: 'view'
     }).subscribe({
       error: (err) => console.error('Failed to track view:', err)
@@ -221,8 +222,10 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     const featuredIds = new Set<string>();
     const m = this.mainImage;
     const s = this.secondImage;
-    if (m?._id) featuredIds.add(m._id);
-    if (s?._id) featuredIds.add(s._id);
+    const mId = m?._id || m?.id;
+    const sId = s?._id || s?.id;
+    if (mId) featuredIds.add(mId);
+    if (sId) featuredIds.add(sId);
     return this.product?.images?.filter(i => !featuredIds.has(i._id || i.id || '')) || [];
   }
 
@@ -263,7 +266,15 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       this.showFeedback('No variant available');
       return;
     }
-    this.cartService.addItem(this.product._id, variant._id!, this.quantity).subscribe({
+    const prodId = this.product._id || this.product.id;
+    if (!prodId) return;
+
+    if (prodId.startsWith('demo-')) {
+      this.showFeedback('Please log in to add items to your cart');
+      return;
+    }
+    const variantId = variant._id || variant.id || null;
+    this.cartService.addItem(prodId, variantId, this.quantity).subscribe({
       next: () => this.showFeedback(`${this.product!.name} added to cart!`),
       error: () => this.showFeedback('Failed to add to cart')
     });

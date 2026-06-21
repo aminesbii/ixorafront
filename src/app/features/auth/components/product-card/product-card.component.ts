@@ -51,7 +51,8 @@ export class ProductCardComponent {
   }
 
   get firstVariantId(): string {
-    return this.product.variants?.[0]?._id || '';
+    const v = this.product.variants?.[0];
+    return v ? (v._id || v.id || '') : '';
   }
 
   get tag(): string {

@@ -19,6 +19,11 @@ export class SidebarFilterComponent implements OnInit {
   @Output() filterChange = new EventEmitter<FilterState>();
   @Input() mobileOpen = false;
   @Output() mobileClose = new EventEmitter<void>();
+  @Input() set initialCategoryId(value: string | null) {
+    if (value && this.filters) {
+      this.filters.category_id = value;
+    }
+  }
 
   sortOpen = false;
 

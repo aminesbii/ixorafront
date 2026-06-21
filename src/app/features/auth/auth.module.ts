@@ -19,6 +19,7 @@ import { FeaturedProductsComponent } from './components/featured-products/featur
 import { ShopByCategoryComponent } from './components/shop-by-category/shop-by-category.component';
 import { PromoSplitComponent } from './components/promo-split/promo-split.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { CartComponent } from './pages/cart/cart.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { FooterComponent } from './components/footer/footer.component';
     ProductCardComponent,
     SidebarFilterComponent,
     SearchBarComponent,
-    ProductsPageComponent
+    ProductsPageComponent,
+    CartComponent
   ],
   imports: [
     CommonModule,

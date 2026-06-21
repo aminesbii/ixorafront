@@ -4,11 +4,11 @@
   <div class="max-w-7xl relative mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-6rem)] flex items-center">
     <div class="grid w-full grid-cols-1 lg:grid-cols-[1.02fr_0.98fr] gap-12 lg:gap-16 items-center">
       <div #revealEl class="hero-text relative z-10 max-w-2xl mx-auto lg:mx-0 text-center lg:text-left">
-        <div class="hero-line mb-4"></div>
-        <p class="uppercase tracking-[0.52em] text-[0.68rem] sm:text-xs text-white/55 mb-5">Skincare Ritual</p>
+         <div id="hero-green-line" class="hero-line line-reveal-wrapper mb-4"></div>
         <h1 class=" font-semibold leading-[0.88] text-white">
-          <span class="line-reveal-wrapper text-5xl sm:text-6xl lg:text-[5.9rem] xl:text-[6.5rem]"><span class="line-reveal-inner">IXORA</span></span><br />
-          <span class="line-reveal-wrapper text-3xl sm:text-4xl lg:text-[2.9rem] xl:text-[3.5rem]"><span class="line-reveal-inner">Une marque 100% Tunisienne</span></span>
+          <span class="line-reveal-wrapper mb-4 text-6xl sm:text-7xl lg:text-[6.9rem] xl:text-[7.5rem]"><span class="line-reveal-inner">IXORA</span></span><br />
+          <span class="line-reveal-wrapper text-2xl sm:text-3xl lg:text-[1.9rem] xl:text-[2.5rem]"><span class="line-reveal-inner">Une marque 100% <br/>
+            <span class="text-[var(--color-ixora-green)]">Tunisienne</span></span></span>
         </h1>
 
         <p class="text-base sm:text-lg text-white/72 max-w-xl mx-auto lg:mx-0 mt-7 leading-7">
@@ -20,12 +20,12 @@
       </div>
 
       <div #revealEl data-delay="0.4" class="hero-visual relative z-10 flex justify-center lg:justify-end">
-        <div class="hero-product-shell relative w-full max-w-[660px]">
+        <div #revealEl data-delay="0.2"  class="hero-product-shell relative w-full max-w-[660px]">
           <div class="hero-panel"></div>
           <div class="hero-orb hero-orb-left"></div>
           <div class="hero-orb hero-orb-right"></div>
-          <div class="hero-badge">Best Seller</div>
-          <figure class="hero-product-card relative z-10 mx-auto">
+          <div #revealEl data-delay="0.15" class="hero-badge">Best Seller</div>
+          <figure #revealEl data-delay="0.2"  class="hero-product-card relative z-10 mx-auto">
                 <div #revealEl data-delay="0.2" class="relative gsap-reveal-right">
         <div class="hover-3d">
           <!-- content -->
@@ -44,7 +44,7 @@
         </div>
       </div>
           </figure>
-          <div class="floating-card">
+          <div #revealEl data-delay="0.25" class="floating-card">
             <span>48H</span>
             <p>Hydration</p>
           </div>

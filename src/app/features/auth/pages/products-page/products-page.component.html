@@ -34,6 +34,7 @@
         <div class="hidden lg:block text-xs text-gray-400 mb-6">{{ totalProducts }} product{{ totalProducts !== 1 ? 's' : '' }}</div>
         <app-sidebar-filter
           [mobileOpen]="mobileFilterOpen"
+          [initialCategoryId]="currentFilters.category_id"
           (filterChange)="onFilterChange($event)"
           (mobileClose)="toggleMobileFilter()">
         </app-sidebar-filter>
@@ -107,5 +108,11 @@
     </div>
   </div>
 </section>
+
+<!-- Cart Feedback -->
+<div *ngIf="cartFeedback"
+     class="fixed bottom-8 right-8 z-50 bg-[var(--color-ixora-black)] text-white px-6 py-4 shadow-xl border border-gray-800 transition-all duration-300">
+  <span class="text-sm font-sans tracking-wide uppercase">{{ cartFeedback }}</span>
+</div>
 
 <app-footer></app-footer>

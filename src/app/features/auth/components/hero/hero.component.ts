@@ -15,7 +15,49 @@ export class HeroComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      setTimeout(() => this.initScrollAnimations(), 500);
+      setTimeout(() => {
+        this.initScrollAnimations();
+        this.animateHeroLoad();
+      }, 300);
+    }
+  }
+
+  private animateHeroLoad(): void {
+    const line = document.getElementById('hero-green-line');
+    const badge = document.querySelector('.hero-badge') as HTMLElement | null;
+    const floatingCard = document.querySelector('.floating-card') as HTMLElement | null;
+
+    if (!line && !badge && !floatingCard) {
+      return;
+    }
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    if (line) {
+      tl.fromTo(
+        line,
+        { width: 0, opacity: 0 },
+        { width: '300px', opacity: 1, duration: 0.9 },
+        0
+      );
+    }
+
+    if (badge) {
+      tl.fromTo(
+        badge,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.7 },
+        0.15
+      );
+    }
+
+    if (floatingCard) {
+      tl.fromTo(
+        floatingCard,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.7 },
+        0.3
+      );
     }
   }
 
