@@ -25,28 +25,28 @@
             clip-rule="evenodd" />
         </svg>
       </div>
-      <input type="text" [(ngModel)]="searchTerm" placeholder="Search"
+      <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" placeholder="Search"
         class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md leading-5 bg-white placeholder-gray-400 focus:outline-none focus:border-gray-300 sm:text-sm transition duration-150 ease-in-out" />
     </div>
-    <div class="flex gap-4">
-      <select [(ngModel)]="filterBrand"
-        class="block w-40 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:border-gray-300 sm:text-sm rounded-md bg-white border">
-        <option value="">Brand</option>
-        <option value="IXORA">IXORA</option>
-      </select>
-      <select [(ngModel)]="filterStatus"
+    <div class="flex flex-wrap items-center gap-4">
+      <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()"
         class="block w-40 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:border-gray-300 sm:text-sm rounded-md bg-white border">
         <option value="">Status</option>
         <option value="active">Active</option>
         <option value="draft">Draft</option>
         <option value="archived">Archived</option>
       </select>
-      <select [(ngModel)]="sortDate"
+      <select [(ngModel)]="sortDate" (ngModelChange)="applyFilters()"
         class="block w-40 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:border-gray-300 sm:text-sm rounded-md bg-white border">
         <option value="">Date Added</option>
         <option value="newest">Newest First</option>
         <option value="oldest">Oldest First</option>
       </select>
+      <label class="flex items-center gap-2 cursor-pointer select-none">
+        <input type="checkbox" [(ngModel)]="filterFeatured" (ngModelChange)="applyFilters()"
+          class="w-4 h-4 border-gray-300 text-[var(--color-ixora-black)] rounded focus:ring-black" />
+        <span class="text-sm font-medium text-gray-700">Featured</span>
+      </label>
     </div>
   </div>
 
@@ -67,11 +67,6 @@
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-2">Slug</label>
           <input type="text" formControlName="slug" placeholder="product-slug"
-            class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-2">Brand Name</label>
-          <input type="text" formControlName="brand_name" placeholder="Brand name"
             class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
         </div>
         <div class="md:col-span-2">
@@ -99,6 +94,22 @@
               class="w-4 h-4 border-gray-300 text-[var(--color-ixora-black)] rounded focus:ring-black" />
             <span class="text-sm font-medium text-gray-700">Featured product</span>
           </label>
+        </div>
+
+        <div class="md:col-span-2" formGroupName="details">
+          <div class="grid grid-cols-1 gap-6">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-2">Composition</label>
+              <input type="text" formControlName="composition" placeholder="Ingredient 1, Ingredient 2, ..."
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+              <p class="text-xs text-gray-400 mt-1">Separate ingredients with commas</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 mb-2">Utilisation</label>
+              <textarea formControlName="usage" placeholder="How to use this product..." rows="3"
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors resize-y min-h-[80px]"></textarea>
+            </div>
+          </div>
         </div>
 
         <!-- Featured Image 1 -->
@@ -196,7 +207,6 @@
           <tr class="bg-white border-b border-gray-200">
             <th class="w-20 px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">IMAGE</th>
             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">NAME & SKU</th>
-            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">BRAND</th>
             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">STATUS</th>
             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">VARIANTS</th>
             <th class="w-24 px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">ACTIONS
@@ -222,9 +232,6 @@
             <td class="px-6 py-4">
               <p class="text-base font-serif font-bold text-[var(--color-ixora-black)] mb-0.5">{{ product.name }}</p>
               <p class="text-sm text-gray-500">SKU: {{ product.slug | uppercase }}</p>
-            </td>
-            <td class="px-6 py-4">
-              <span class="text-sm font-medium text-gray-800">{{ product.brand_name || 'IXORA' }}</span>
             </td>
             <td class="px-6 py-4">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -259,7 +266,7 @@
             </td>
           </tr>
           <tr *ngIf="products.length === 0">
-            <td colspan="6" class="px-6 py-16 text-center">
+            <td colspan="5" class="px-6 py-16 text-center">
               <div class="flex flex-col items-center">
                 <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                   <svg class="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -309,11 +316,6 @@
               <input type="text" formControlName="slug" placeholder="product-slug"
                 class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-2">Brand Name</label>
-              <input type="text" formControlName="brand_name" placeholder="Brand name"
-                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
-            </div>
             <div class="md:col-span-2">
               <label class="block text-xs font-semibold text-gray-600 mb-2">Short Description</label>
               <input type="text" formControlName="short_description" placeholder="Brief description"
@@ -339,6 +341,23 @@
                   class="w-4 h-4 border-gray-300 text-[var(--color-ixora-black)] rounded focus:ring-black" />
                 <span class="text-sm font-medium text-gray-700">Featured product</span>
               </label>
+            </div>
+
+            <!-- Composition & Utilisation -->
+            <div class="md:col-span-2" formGroupName="details">
+              <div class="grid grid-cols-1 gap-6">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-600 mb-2">Composition</label>
+                  <input type="text" formControlName="composition" placeholder="Ingredient 1, Ingredient 2, ..."
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+                  <p class="text-xs text-gray-400 mt-1">Separate ingredients with commas</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-600 mb-2">Utilisation</label>
+                  <textarea formControlName="usage" placeholder="How to use this product..." rows="3"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors resize-y min-h-[80px]"></textarea>
+                </div>
+              </div>
             </div>
 
             <!-- Edit Image Section -->

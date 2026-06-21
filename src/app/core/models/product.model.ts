@@ -40,7 +40,6 @@ export interface Product {
   category_id?: string | null;
   name: string;
   slug: string;
-  brand_name?: string | null;
   short_description?: string | null;
   description?: string | null;
   details?: ProductDetails;

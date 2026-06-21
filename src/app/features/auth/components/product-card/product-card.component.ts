@@ -55,10 +55,6 @@ export class ProductCardComponent {
     return v ? (v._id || v.id || '') : '';
   }
 
-  get tag(): string {
-    return this.product.brand_name || 'IXORA';
-  }
-
   onAddToCart(event: MouseEvent): void {
     event.stopPropagation();
     const vid = this.firstVariantId;

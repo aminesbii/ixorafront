@@ -22,8 +22,7 @@ export class ProductsPageComponent implements OnInit {
   currentFilters: FilterState = {
     category_id: null,
     sort: '-createdAt',
-    priceRange: [null, null],
-    brand_name: null
+    priceRange: [null, null]
   };
   searchQuery = '';
   currentPage = 1;

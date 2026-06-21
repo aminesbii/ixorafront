@@ -37,7 +37,6 @@ export interface DashboardReport {
   topProducts: Array<{
     productId: string;
     name: string;
-    brandName: string;
     clicks: number;
     addToCart: number;
     purchases: number;

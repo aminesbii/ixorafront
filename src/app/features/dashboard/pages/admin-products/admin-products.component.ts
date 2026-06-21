@@ -19,9 +19,9 @@ export class AdminProductsComponent implements OnInit {
 
   // Filters
   searchTerm = '';
-  filterBrand = '';
   filterStatus = '';
   sortDate = '';
+  filterFeatured = false;
 
   // Image upload (create mode)
   featured1File: File | null = null;
@@ -59,21 +59,27 @@ export class AdminProductsComponent implements OnInit {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
       slug: ['', Validators.required],
-      brand_name: [''],
       short_description: [''],
       description: [''],
       status: ['draft', Validators.required],
-      is_featured: [false]
+      is_featured: [false],
+      details: this.fb.group({
+        usage: [''],
+        composition: ['']
+      })
     });
 
     this.editForm = this.fb.group({
       name: ['', Validators.required],
       slug: ['', Validators.required],
-      brand_name: [''],
       short_description: [''],
       description: [''],
       status: ['draft', Validators.required],
-      is_featured: [false]
+      is_featured: [false],
+      details: this.fb.group({
+        usage: [''],
+        composition: ['']
+      })
     });
   }
 
@@ -84,13 +90,23 @@ export class AdminProductsComponent implements OnInit {
   loadProducts(): void {
     this.loading = true;
     this.brokenImages.clear();
-    this.productService.list({ limit: 100 }).subscribe({
+    const params: any = { limit: 100 };
+    if (this.searchTerm) params.search = this.searchTerm;
+    if (this.filterStatus) params.status = this.filterStatus;
+    if (this.filterFeatured) params.is_featured = true;
+    if (this.sortDate === 'newest') params.sort = '-createdAt';
+    else if (this.sortDate === 'oldest') params.sort = 'createdAt';
+    this.productService.list(params).subscribe({
       next: (res: { products: Product[]; pagination: any }) => {
         this.products = res.products;
         this.loading = false;
       },
       error: () => (this.loading = false)
     });
+  }
+
+  applyFilters(): void {
+    this.loadProducts();
   }
 
   productId(p: Product): string {
@@ -112,7 +128,7 @@ export class AdminProductsComponent implements OnInit {
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
     if (!this.showAddForm) {
-      this.productForm.reset({ status: 'draft', is_featured: false });
+      this.productForm.reset({ status: 'draft', is_featured: false, details: { usage: '', composition: '' } });
       this.resetCreateImages();
     }
   }
@@ -223,10 +239,23 @@ export class AdminProductsComponent implements OnInit {
     }
   }
 
+  private prepareFormValue(form: FormGroup): any {
+    const raw = form.value;
+    if (raw.details) {
+      raw.details = {
+        ...raw.details,
+        composition: raw.details.composition
+          ? raw.details.composition.split(',').map((s: string) => s.trim()).filter(Boolean)
+          : []
+      };
+    }
+    return raw;
+  }
+
   onSubmit(): void {
     if (this.productForm.invalid || this.isSubmitting) return;
     this.isSubmitting = true;
-    this.productService.create(this.productForm.value).pipe(
+    this.productService.create(this.prepareFormValue(this.productForm)).pipe(
       switchMap((product: Product) => {
         const id = product.id ?? (product as any)._id;
         if (!id || (!this.featured1File && !this.featured2File && !this.selectedImages.length)) return of(product);
@@ -236,7 +265,7 @@ export class AdminProductsComponent implements OnInit {
       next: () => {
         this.loadProducts();
         this.showAddForm = false;
-        this.productForm.reset({ status: 'draft', is_featured: false });
+        this.productForm.reset({ status: 'draft', is_featured: false, details: { usage: '', composition: '' } });
         this.resetCreateImages();
         this.isSubmitting = false;
       },
@@ -253,11 +282,14 @@ export class AdminProductsComponent implements OnInit {
     this.editForm.patchValue({
       name: product.name,
       slug: product.slug,
-      brand_name: product.brand_name ?? '',
       short_description: product.short_description ?? '',
       description: product.description ?? '',
       status: product.status,
-      is_featured: product.is_featured
+      is_featured: product.is_featured,
+      details: {
+        usage: product.details?.usage ?? '',
+        composition: product.details?.composition?.join(', ') ?? ''
+      }
     });
   }
 
@@ -361,7 +393,7 @@ export class AdminProductsComponent implements OnInit {
     this.isEditSubmitting = true;
     const id = this.productId(this.editProduct);
 
-    this.productService.update(id, this.editForm.value).pipe(
+    this.productService.update(id, this.prepareFormValue(this.editForm)).pipe(
       switchMap(async () => {
         if (this.editFeatured1File) {
           await firstValueFrom(this.productService.uploadFeatured1(id, this.editFeatured1File));
@@ -441,10 +473,16 @@ export class AdminProductsComponent implements OnInit {
   getImageUrl(img: ProductImage): string {
     const url = img.image_url;
     if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      const parsed = new URL(url);
+      if (parsed.pathname.startsWith('/uploads/')) return '/api' + parsed.pathname;
+      if (parsed.pathname.startsWith('/api/uploads/')) return parsed.pathname;
+      return parsed.pathname;
+    }
     if (url.startsWith('/api/uploads/')) return url;
     if (url.startsWith('/uploads/')) return '/api' + url;
     if (url.startsWith('uploads/')) return '/api/' + url;
-    return url;
+    return '/api/uploads/' + url;
   }
 
   getMainImage(product: Product): string | null {

@@ -15,7 +15,6 @@ interface TopProduct {
   product_id: string;
   name: string;
   slug: string;
-  brand_name?: string | null;
   image_url: string;
   clicks: number;
   views: number;

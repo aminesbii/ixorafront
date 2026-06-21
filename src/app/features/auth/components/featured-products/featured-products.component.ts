@@ -108,7 +108,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
               name: prod.name,
               price: priceStr,
               image: imageUrl,
-              tag: prod.brand_name || 'Xora'
+              tag: ''
             };
           });
 

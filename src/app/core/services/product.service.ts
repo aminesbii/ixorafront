@@ -14,7 +14,6 @@ export class ProductService {
   // ─── Products (Public & Admin) ──────────────────────────────────────────────
   list(queryParams?: {
     category_id?: string;
-    brand_name?: string;
     status?: 'draft' | 'active' | 'archived';
     is_featured?: boolean;
     search?: string;

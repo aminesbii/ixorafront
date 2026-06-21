@@ -6,7 +6,6 @@ export interface FilterState {
   category_id: string | null;
   sort: string;
   priceRange: [number | null, number | null];
-  brand_name: string | null;
 }
 
 @Component({
@@ -32,8 +31,7 @@ export class SidebarFilterComponent implements OnInit {
   filters: FilterState = {
     category_id: null,
     sort: '-createdAt',
-    priceRange: [null, null],
-    brand_name: null
+    priceRange: [null, null]
   };
 
   sortOptions = [
@@ -94,7 +92,7 @@ export class SidebarFilterComponent implements OnInit {
   }
 
   clearAll(): void {
-    this.filters = { category_id: null, sort: '-createdAt', priceRange: [null, null], brand_name: null };
+    this.filters = { category_id: null, sort: '-createdAt', priceRange: [null, null] };
     this.selectedPriceLabel = '';
     this.emitChange();
   }
