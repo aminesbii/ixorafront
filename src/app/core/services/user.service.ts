@@ -19,6 +19,10 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   // Self Operations
+  getProfile(): Observable<User> {
+    return this.http.get<User>(`${this.API_URL}/profile`);
+  }
+
   updateProfile(data: { full_name?: string; phone?: string }): Observable<User> {
     return this.http.put<User>(`${this.API_URL}/profile`, data);
   }

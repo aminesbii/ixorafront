@@ -20,6 +20,7 @@ export class NavbarComponent implements OnInit {
   isAdmin = false;
   userName = '';
   cartTotalItems = 0;
+  isProfileDropdownOpen = false;
 
   constructor(
     private router: Router,
@@ -63,6 +64,22 @@ export class NavbarComponent implements OnInit {
   @HostListener('window:resize')
   onResize(): void {
     this.updateHeroState();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.isProfileDropdownOpen && !target.closest('.profile-dropdown-wrapper')) {
+      this.isProfileDropdownOpen = false;
+    }
+  }
+
+  toggleProfileDropdown(): void {
+    this.isProfileDropdownOpen = !this.isProfileDropdownOpen;
+  }
+
+  closeProfileDropdown(): void {
+    this.isProfileDropdownOpen = false;
   }
 
   private updateHeroState(): void {

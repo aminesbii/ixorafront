@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { AuthRoutingModule } from './auth-routing.module';
@@ -20,6 +20,7 @@ import { ShopByCategoryComponent } from './components/shop-by-category/shop-by-c
 import { PromoSplitComponent } from './components/promo-split/promo-split.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { CartComponent } from './pages/cart/cart.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 
 @NgModule({
@@ -37,11 +38,13 @@ import { CartComponent } from './pages/cart/cart.component';
     SidebarFilterComponent,
     SearchBarComponent,
     ProductsPageComponent,
-    CartComponent
+    CartComponent,
+    ProfileComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     AuthRoutingModule,
     LayoutsModule,

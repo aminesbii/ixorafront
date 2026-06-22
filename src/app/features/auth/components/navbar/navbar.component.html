@@ -36,19 +36,32 @@
         </span>
       </a>
 
-      <ng-container *ngIf="isLoggedIn && isAdmin">
-        <button
-          class="px-5 py-1.5 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-blue)] text-white hover:bg-blue-600 transition-colors duration-200"
-          (click)="goToDashboard()">Dashboard</button>
-        <button
-          class="text-[10px] uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors"
-          (click)="logout()">Logout</button>
-      </ng-container>
+      <ng-container *ngIf="isLoggedIn">
+        <div class="relative profile-dropdown-wrapper">
+          <button (click)="toggleProfileDropdown()" class="w-9 h-9 rounded-full bg-[var(--color-ixora-black)] text-white flex items-center justify-center text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer">
+            {{ userName ? userName.charAt(0).toUpperCase() : 'U' }}
+          </button>
 
-      <ng-container *ngIf="isLoggedIn && !isAdmin">
-        <button
-          class="text-[10px] uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors"
-          (click)="logout()">Logout</button>
+          <div *ngIf="isProfileDropdownOpen"
+            class="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 shadow-lg rounded-lg py-2 z-50">
+            <a routerLink="/profile" (click)="closeProfileDropdown()"
+              class="flex items-center gap-3 px-4 py-2.5 text-[11px] uppercase tracking-widest font-semibold text-gray-700 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 transition-colors">
+              <i class="fa-solid fa-user w-4 text-center text-xs"></i>
+              Profile
+            </a>
+            <a *ngIf="isAdmin" routerLink="/dashboard" (click)="closeProfileDropdown()"
+              class="flex items-center gap-3 px-4 py-2.5 text-[11px] uppercase tracking-widest font-semibold text-gray-700 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 transition-colors">
+              <i class="fa-solid fa-chart-bar w-4 text-center text-xs"></i>
+              Dashboard
+            </a>
+            <div class="border-t border-gray-100 my-1"></div>
+            <button (click)="logout()"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-[11px] uppercase tracking-widest font-semibold text-gray-700 hover:text-red-500 hover:bg-gray-50 transition-colors cursor-pointer">
+              <i class="fa-solid fa-right-from-bracket w-4 text-center text-xs"></i>
+              Logout
+            </button>
+          </div>
+        </div>
       </ng-container>
 
       <ng-container *ngIf="!isLoggedIn">
@@ -104,14 +117,17 @@
           Login
         </button>
       </ng-container>
-      <ng-container *ngIf="isLoggedIn && isAdmin">
-        <button
-          class="px-8 py-3 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-blue)] text-white hover:bg-blue-600 transition-colors duration-300"
-          (click)="goToDashboard(); closeMobileMenu()">
-          Dashboard
-        </button>
-      </ng-container>
       <ng-container *ngIf="isLoggedIn">
+        <a routerLink="/profile" (click)="closeMobileMenu()"
+          class="flex items-center gap-2 text-sm uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors">
+          <i class="fa-solid fa-user w-4 text-center"></i>
+          Profile
+        </a>
+        <a *ngIf="isAdmin" routerLink="/dashboard" (click)="closeMobileMenu()"
+          class="flex items-center gap-2 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-blue)] text-white hover:bg-blue-600 transition-colors duration-300 px-8 py-3">
+          <i class="fa-solid fa-chart-bar w-4 text-center"></i>
+          Dashboard
+        </a>
         <button
           class="text-sm uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="logout(); closeMobileMenu()">
