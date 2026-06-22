@@ -73,30 +73,110 @@
         </div>
       </div>
 
-      <!-- Summary -->
-      <div class="w-full lg:w-[320px] flex-shrink-0">
-        <div class="bg-gray-50 p-6 md:p-8 lg:sticky lg:top-[90px]">
-          <h3 class="text-sm uppercase tracking-[0.2em] font-semibold text-gray-800 mb-6">Order Summary</h3>
+      <!-- Summary + Checkout -->
+      <div class="w-full lg:w-[380px] flex-shrink-0">
+        <div class="lg:sticky lg:top-[90px] space-y-6">
+          <div class="bg-gray-50 p-6 md:p-8">
+            <h3 class="text-sm uppercase tracking-[0.2em] font-semibold text-gray-800 mb-6">Order Summary</h3>
 
-          <div class="space-y-3 text-sm">
-            <div class="flex justify-between text-gray-500">
-              <span>Subtotal</span>
-              <span>{{ subtotal | number:'1.2-2' }} TND</span>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between text-gray-500">
+                <span>Subtotal</span>
+                <span>{{ subtotal | number:'1.2-2' }} TND</span>
+              </div>
+              <div class="flex justify-between text-gray-500">
+                <span>Shipping</span>
+                <span>{{ shipping | number:'1.2-2' }} TND</span>
+              </div>
+              <div class="border-t border-gray-200 pt-3 flex justify-between font-semibold text-gray-800">
+                <span>Total</span>
+                <span>{{ total | number:'1.2-2' }} TND</span>
+              </div>
             </div>
-            <div class="flex justify-between text-gray-500">
-              <span>Shipping</span>
-              <span>{{ shipping | number:'1.2-2' }} TND</span>
-            </div>
-            <div class="border-t border-gray-200 pt-3 flex justify-between font-semibold text-gray-800">
-              <span>Total</span>
-              <span>{{ total | number:'1.2-2' }} TND</span>
-            </div>
+
+            <button *ngIf="!showOrderForm" (click)="openOrderForm()"
+              class="mt-6 w-full px-6 py-3 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-green)] text-white hover:bg-[var(--color-ixora-black)] transition-colors duration-300 cursor-pointer">
+              Order Now
+            </button>
+
+            <a routerLink="/products"
+              class="mt-3 block w-full text-center px-6 py-3 text-[10px] uppercase tracking-widest font-semibold border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors duration-300">
+              Continue Shopping
+            </a>
           </div>
 
-          <a routerLink="/products"
-            class="mt-6 block w-full text-center px-6 py-3 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300">
-            Continue Shopping
-          </a>
+          <!-- Checkout Form -->
+          <div *ngIf="showOrderForm" class="bg-white border border-gray-200 p-6 md:p-8">
+            <h3 class="text-sm uppercase tracking-[0.2em] font-semibold text-gray-800 mb-6">Order Details</h3>
+
+            <div *ngIf="orderError" class="flex items-center gap-3 p-3 mb-5 bg-rose-50 border-l-4 border-rose-500 text-rose-700 text-sm">
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{{ orderError }}</span>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Full Name <span class="text-rose-500">*</span></label>
+                <input [(ngModel)]="customerName" type="text" placeholder="Recipient name"
+                  class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Email <span class="text-rose-500">*</span></label>
+                <input [(ngModel)]="customerEmail" type="email" placeholder="Email address"
+                  class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+              </div>
+              <div>
+                <label class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Phone</label>
+                <input [(ngModel)]="customerPhone" type="tel" placeholder="Phone number"
+                  class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+              </div>
+
+              <div class="border-t border-gray-100 pt-4">
+                <p class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-3">Shipping Address</p>
+                <div class="space-y-3">
+                  <div>
+                    <label class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Street <span class="text-rose-500">*</span></label>
+                    <input [(ngModel)]="addressStreet" type="text" placeholder="Street address"
+                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">City <span class="text-rose-500">*</span></label>
+                      <input [(ngModel)]="addressCity" type="text" placeholder="City"
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Zip Code</label>
+                      <input [(ngModel)]="addressPostalCode" type="text" placeholder="Zip code"
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Country <span class="text-rose-500">*</span></label>
+                    <input [(ngModel)]="addressCountry" type="text" placeholder="Country"
+                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col gap-2">
+              <button (click)="placeOrder()" [disabled]="isPlacingOrder"
+                class="w-full px-6 py-3 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-green)] text-white hover:bg-[var(--color-ixora-black)] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-300 flex items-center justify-center gap-2 cursor-pointer">
+                <svg *ngIf="isPlacingOrder" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                {{ isPlacingOrder ? 'Placing Order...' : 'Place Order' }}
+              </button>
+              <button (click)="closeOrderForm()"
+                class="w-full px-6 py-2.5 text-[10px] uppercase tracking-widest font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer">
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

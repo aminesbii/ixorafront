@@ -86,4 +86,14 @@ export class OrderService {
   updateStatus(id: string, status: Order['status']): Observable<Order> {
     return this.http.patch<Order>(`${this.API_URL}/${id}/status`, { status });
   }
+
+  // Admin - Update Order Details
+  update(id: string, data: Partial<Order>): Observable<Order> {
+    return this.http.put<Order>(`${this.API_URL}/${id}`, data);
+  }
+
+  // Admin - Delete Order
+  delete(id: string): Observable<any> {
+    return this.http.delete(`${this.API_URL}/${id}`);
+  }
 }

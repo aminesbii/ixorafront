@@ -5,6 +5,7 @@ import { AdminLayoutComponent } from '../../layouts/admin-layout/admin-layout.co
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
 import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
+import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
 import { AuthGuard } from '../../core/guards/auth.guard';
 import { AdminGuard } from '../../core/guards/admin.guard';
 
@@ -31,6 +32,11 @@ const routes: Routes = [
       {
         path: 'analytics',
         component: AdminAnalyticsComponent,
+        canActivate: [AuthGuard, AdminGuard]
+      },
+      {
+        path: 'orders',
+        component: AdminOrdersComponent,
         canActivate: [AuthGuard, AdminGuard]
       }
     ]

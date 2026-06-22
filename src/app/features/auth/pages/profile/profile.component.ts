@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../../../core/services/user.service';
+import { AddressService } from '../../../../core/services/address.service';
+import { Address } from '../../../../core/models/address.model';
 
 @Component({
   selector: 'app-profile',
@@ -24,18 +26,33 @@ export class ProfileComponent implements OnInit {
     createdAt: string;
   } | null = null;
 
+  addresses: Address[] = [];
+  isLoadingAddresses = false;
+  showAddressForm = false;
+  editingAddressId: string | null = null;
+  isSavingAddress = false;
+  addressForm: FormGroup;
+
   constructor(
     private fb: FormBuilder,
-    private userService: UserService
+    private userService: UserService,
+    private addressService: AddressService
   ) {
     this.profileForm = this.fb.group({
       full_name: ['', Validators.required],
       phone: ['']
     });
+    this.addressForm = this.fb.group({
+      street: ['', Validators.required],
+      city: ['', Validators.required],
+      postal_code: [''],
+      country: ['', Validators.required]
+    });
   }
 
   ngOnInit(): void {
     this.loadProfile();
+    this.loadAddresses();
   }
 
   loadProfile(): void {
@@ -89,5 +106,95 @@ export class ProfileComponent implements OnInit {
     if (!this.user?.createdAt) return '';
     const d = new Date(this.user.createdAt);
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  // ─── Address Management ────────────────────────────────────
+
+  loadAddresses(): void {
+    this.isLoadingAddresses = true;
+    this.addressService.myAddresses().subscribe({
+      next: (addresses) => {
+        this.addresses = addresses;
+        this.isLoadingAddresses = false;
+      },
+      error: () => {
+        this.isLoadingAddresses = false;
+      }
+    });
+  }
+
+  openAddAddress(): void {
+    this.editingAddressId = null;
+    this.addressForm.reset({
+      street: '',
+      city: '',
+      postal_code: '',
+      country: ''
+    });
+    this.showAddressForm = true;
+  }
+
+  openEditAddress(address: Address): void {
+    this.editingAddressId = address.id || null;
+    this.addressForm.patchValue({
+      street: address.street,
+      city: address.city,
+      postal_code: address.postal_code || '',
+      country: address.country
+    });
+    this.showAddressForm = true;
+  }
+
+  closeAddressForm(): void {
+    this.showAddressForm = false;
+    this.editingAddressId = null;
+    this.addressForm.reset();
+  }
+
+  saveAddress(): void {
+    if (this.addressForm.invalid) return;
+
+    this.isSavingAddress = true;
+    const data: Partial<Address> = {
+      type: 'shipping',
+      full_name: this.user?.full_name || '',
+      ...this.addressForm.value
+    };
+
+    if (this.editingAddressId) {
+      this.addressService.update(this.editingAddressId, data).subscribe({
+        next: () => {
+          this.isSavingAddress = false;
+          this.closeAddressForm();
+          this.loadAddresses();
+        },
+        error: () => {
+          this.isSavingAddress = false;
+        }
+      });
+    } else {
+      this.addressService.create(data).subscribe({
+        next: () => {
+          this.isSavingAddress = false;
+          this.closeAddressForm();
+          this.loadAddresses();
+        },
+        error: () => {
+          this.isSavingAddress = false;
+        }
+      });
+    }
+  }
+
+  deleteAddress(id: string): void {
+    this.addressService.remove(id).subscribe({
+      next: () => {
+        this.loadAddresses();
+      }
+    });
+  }
+
+  getFullAddressDisplay(a: Address): string {
+    return [a.street, a.city, a.postal_code, a.country].filter(Boolean).join(', ');
   }
 }

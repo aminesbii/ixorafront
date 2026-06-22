@@ -21,6 +21,7 @@ import { PromoSplitComponent } from './components/promo-split/promo-split.compon
 import { FooterComponent } from './components/footer/footer.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { ProfileComponent } from './pages/profile/profile.component';
     SearchBarComponent,
     ProductsPageComponent,
     CartComponent,
-    ProfileComponent
+    ProfileComponent,
+    RegisterComponent
   ],
   imports: [
     CommonModule,

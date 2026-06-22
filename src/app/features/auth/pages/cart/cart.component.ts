@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { CartService } from '../../../../core/services/cart.service';
 import { ProductService } from '../../../../core/services/product.service';
+import { OrderService, CheckoutPayload } from '../../../../core/services/order.service';
+import { AddressService } from '../../../../core/services/address.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Cart, CartItem } from '../../../../core/models/cart.model';
 import { Product } from '../../../../core/models/product.model';
 
@@ -17,9 +21,26 @@ export class CartComponent implements OnInit {
   loading = true;
   private productsMap = new Map<string, Product>();
 
+  showOrderForm = false;
+  isPlacingOrder = false;
+  orderError = '';
+
+  customerName = '';
+  customerEmail = '';
+  customerPhone = '';
+
+  addressStreet = '';
+  addressCity = '';
+  addressPostalCode = '';
+  addressCountry = '';
+
   constructor(
     private cartService: CartService,
-    private productService: ProductService
+    private productService: ProductService,
+    private orderService: OrderService,
+    private addressService: AddressService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -108,5 +129,93 @@ export class CartComponent implements OnInit {
 
   clearCart(): void {
     this.cartService.clear().subscribe();
+  }
+
+  // ─── Order Form ──────────────────────────────────────
+
+  openOrderForm(): void {
+    const user = this.authService.getCurrentUser();
+
+    if (user) {
+      this.customerName = user.full_name || '';
+      this.customerEmail = user.email || '';
+
+      this.addressService.myAddresses().subscribe(addresses => {
+        if (addresses.length > 0) {
+          const addr = addresses[0];
+          this.addressStreet = addr.street || '';
+          this.addressCity = addr.city || '';
+          this.addressPostalCode = addr.postal_code || '';
+          this.addressCountry = addr.country || '';
+          this.customerPhone = addr.phone || '';
+        }
+        this.showOrderForm = true;
+      });
+    } else {
+      this.customerName = '';
+      this.customerEmail = '';
+      this.customerPhone = '';
+      this.addressStreet = '';
+      this.addressCity = '';
+      this.addressPostalCode = '';
+      this.addressCountry = '';
+      this.showOrderForm = true;
+    }
+  }
+
+  closeOrderForm(): void {
+    this.showOrderForm = false;
+    this.orderError = '';
+  }
+
+  placeOrder(): void {
+    this.orderError = '';
+
+    if (!this.customerName || !this.customerEmail) {
+      this.orderError = 'Name and email are required.';
+      return;
+    }
+    if (!this.addressStreet || !this.addressCity || !this.addressCountry) {
+      this.orderError = 'Street, city, and country are required.';
+      return;
+    }
+
+    const cartId = this.cart?._id || this.cart?.id;
+    if (!cartId) {
+      this.orderError = 'Cart not found.';
+      return;
+    }
+
+    this.isPlacingOrder = true;
+
+    const payload: CheckoutPayload = {
+      cart_id: cartId,
+      customer_name: this.customerName,
+      customer_email: this.customerEmail,
+      customer_phone: this.customerPhone || null,
+      shipping_address: {
+        type: 'shipping',
+        full_name: this.customerName,
+        phone: this.customerPhone || null,
+        street: this.addressStreet,
+        city: this.addressCity,
+        postal_code: this.addressPostalCode || null,
+        country: this.addressCountry
+      },
+      shipping_fee: this.shipping,
+      currency: 'TND'
+    };
+
+    this.orderService.checkout(payload).subscribe({
+      next: () => {
+        this.isPlacingOrder = false;
+        this.cartService.getCart().subscribe();
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        this.isPlacingOrder = false;
+        this.orderError = err?.error?.message || 'Failed to place order. Please try again.';
+      }
+    });
   }
 }

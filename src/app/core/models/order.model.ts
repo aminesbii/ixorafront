@@ -30,4 +30,11 @@ export interface Order {
   
   // Populated fields
   items?: OrderItem[];
+  addresses?: Array<{
+    full_name: string;
+    street: string;
+    city: string;
+    postal_code?: string | null;
+    country: string;
+  }>;
 }

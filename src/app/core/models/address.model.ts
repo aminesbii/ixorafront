@@ -1,5 +1,5 @@
 export interface Address {
-  _id?: string;
+  id?: string;
   user_id?: string | null;
   order_id?: string | null;
   type: 'billing' | 'shipping';

@@ -40,8 +40,8 @@ export class AuthService {
     );
   }
 
-  register(full_name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/register', { full_name, email, password }).pipe(
+  register(full_name: string, email: string, password: string, phone?: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>('/api/auth/register', { full_name, email, password, phone }).pipe(
       tap(res => this.persist(res))
     );
   }
