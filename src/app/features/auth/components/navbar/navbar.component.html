@@ -12,9 +12,10 @@
 
     <!-- Center links (desktop) -->
     <ul class="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.18em] font-semibold">
-      <li><a routerLink="/" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Home</a></li>
-      <li><a routerLink="/products" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Products</a></li>
+      <li><a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Home</a></li>
+      <li><a routerLink="/products" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Products</a></li>
       <li><a href="#brand" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Brand</a></li>
+      <li><a routerLink="/track-order" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Track Order</a></li>
       <li><a href="#contact" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Contact</a></li>
     </ul>
 
@@ -95,6 +96,8 @@
           (click)="closeMobileMenu()">Products</a></li>
       <li><a href="#brand" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="closeMobileMenu()">Brand</a></li>
+      <li><a routerLink="/track-order" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+          (click)="closeMobileMenu()">Track Order</a></li>
       <li><a href="#contact" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="closeMobileMenu()">Contact</a></li>
     </ul>

@@ -8,6 +8,7 @@ import { ProductsPageComponent } from './pages/products-page/products-page.compo
 import { CartComponent } from './pages/cart/cart.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { OrderTrackerComponent } from './pages/order-tracker/order-tracker.component';
 import { AuthGuard } from '../../core/guards/auth.guard';
 
 const routes: Routes = [
@@ -38,6 +39,10 @@ const routes: Routes = [
       {
         path: 'cart',
         component: CartComponent
+      },
+      {
+        path: 'track-order',
+        component: OrderTrackerComponent
       },
       {
         path: 'profile',

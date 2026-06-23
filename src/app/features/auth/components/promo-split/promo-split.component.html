@@ -8,15 +8,21 @@
     <div #revealEl class="space-y-8 max-w-md relative z-10">
       <div class="flex items-center gap-3">
         <span class="w-8 h-[1.5px]" [style.background-color]="accentVar"></span>
-        <span class="text-[10px] uppercase tracking-[0.3em] font-semibold" [style.color]="accentVar">{{ tag }}</span>
+        <span class="text-[10px] uppercase tracking-[0.3em] font-semibold line-reveal-wrapper" [style.color]="accentVar">
+          <span class="line-reveal-inner">{{ tag }}</span>
+        </span>
       </div>
-      <h2 class="text-4xl lg:text-6xl font-serif leading-[1.1]" [innerHTML]="title"></h2>
+      <h2 class="text-4xl lg:text-6xl font-serif leading-[1.1] line-reveal-wrapper">
+        <span class="line-reveal-inner" [innerHTML]="title"></span>
+      </h2>
       <div class="w-12 h-[1.5px]" [style.background-color]="accentVar"></div>
-      <p class="font-sans text-gray-500 leading-relaxed text-base lg:text-lg max-w-sm">{{ description }}</p>
+      <p class="font-sans text-gray-500 leading-relaxed text-base lg:text-lg max-w-sm line-reveal-wrapper">
+        <span class="line-reveal-inner">{{ description }}</span>
+      </p>
       <button
         [ngClass]="accentColor === 'green' ? 'hover:text-[var(--color-ixora-green)]' : 'hover:text-[var(--color-ixora-blue)]'"
         class="relative inline-flex items-center gap-3 group/btn text-sm uppercase tracking-[0.25em] font-semibold text-[var(--color-ixora-black)] transition-colors duration-300">
-        <span>{{ buttonText }}</span>
+        <span class="line-reveal-wrapper"><span class="line-reveal-inner">{{ buttonText }}</span></span>
         <span class="w-8 h-[1.5px] bg-[var(--color-ixora-black)] transition-colors duration-300"
              [ngClass]="accentColor === 'green' ? 'group-hover/btn:bg-[var(--color-ixora-green)]' : 'group-hover/btn:bg-[var(--color-ixora-blue)]'"></span>
       </button>

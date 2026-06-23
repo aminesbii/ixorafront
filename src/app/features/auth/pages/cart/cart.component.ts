@@ -25,6 +25,10 @@ export class CartComponent implements OnInit {
   isPlacingOrder = false;
   orderError = '';
 
+  showOrderSuccess = false;
+  placedOrderNumber = '';
+  placedOrderCurrency = '';
+
   customerName = '';
   customerEmail = '';
   customerPhone = '';
@@ -168,6 +172,12 @@ export class CartComponent implements OnInit {
     this.orderError = '';
   }
 
+  closeOrderSuccess(): void {
+    this.showOrderSuccess = false;
+    this.placedOrderNumber = '';
+    this.router.navigate(['/']);
+  }
+
   placeOrder(): void {
     this.orderError = '';
 
@@ -207,10 +217,13 @@ export class CartComponent implements OnInit {
     };
 
     this.orderService.checkout(payload).subscribe({
-      next: () => {
+      next: (res) => {
         this.isPlacingOrder = false;
+        this.showOrderForm = false;
+        this.placedOrderNumber = (res as any).order?.order_number || '';
+        this.placedOrderCurrency = (res as any).order?.currency || 'TND';
+        this.showOrderSuccess = true;
         this.cartService.getCart().subscribe();
-        this.router.navigate(['/']);
       },
       error: (err) => {
         this.isPlacingOrder = false;

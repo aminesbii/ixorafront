@@ -19,6 +19,10 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
   totalPages = 1;
   totalOrders = 0;
 
+  userFilterId: string | null = null;
+  userFilterName = '';
+  userFilterEmail = '';
+
   selectedOrder: (Order & { items?: OrderItem[] }) | null = null;
   loadingDetail = false;
 
@@ -73,7 +77,11 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     if (this.sortDate === 'newest') params.sort = '-createdAt';
     else if (this.sortDate === 'oldest') params.sort = 'createdAt';
 
-    this.orderService.listAll(params).subscribe({
+    const obs = this.userFilterId
+      ? this.orderService.listByUser(this.userFilterId, params)
+      : this.orderService.listAll(params);
+
+    obs.subscribe({
       next: (res) => {
         this.orders = res.orders;
         this.totalPages = res.pages;
@@ -253,5 +261,25 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
 
   orderTotal(order: Order): number {
     return order.grand_total ?? 0;
+  }
+
+  // ─── User Order History ─────────────────────────────────────────────────────
+
+  viewUserOrders(order: Order): void {
+    this.userFilterId = order.user_id || null;
+    this.userFilterName = order.customer_name || '';
+    this.userFilterEmail = order.customer_email || '';
+    this.searchTerm = '';
+    this.filterStatus = '';
+    this.currentPage = 1;
+    this.loadOrders();
+  }
+
+  clearUserFilter(): void {
+    this.userFilterId = null;
+    this.userFilterName = '';
+    this.userFilterEmail = '';
+    this.currentPage = 1;
+    this.loadOrders();
   }
 }

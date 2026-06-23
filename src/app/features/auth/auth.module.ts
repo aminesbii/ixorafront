@@ -22,6 +22,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { OrderTrackerComponent } from './pages/order-tracker/order-tracker.component';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { RegisterComponent } from './pages/register/register.component';
     ProductsPageComponent,
     CartComponent,
     ProfileComponent,
-    RegisterComponent
+    RegisterComponent,
+    OrderTrackerComponent
   ],
   imports: [
     CommonModule,
