@@ -46,9 +46,42 @@
     </div>
   </div>
 
+  <!-- Charts Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    <!-- Earnings & Orders Chart -->
+    <div class="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-5">
+      <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-4">
+        <h2 class="text-lg font-serif text-[var(--color-ixora-black)]">Revenue & Orders Overview</h2>
+        <div *ngIf="loadingChart" class="flex items-center space-x-2 text-sm text-gray-500">
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
+          <span>Loading...</span>
+        </div>
+      </div>
+
+      <div class="relative w-full" style="height: 400px;">
+        <canvas id="earningsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Order Status Chart -->
+    <div class="bg-white rounded-lg border border-gray-200 p-5 flex flex-col">
+      <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-4">
+        <h2 class="text-lg font-serif text-[var(--color-ixora-black)]">Orders by Status</h2>
+        <div *ngIf="loadingStatusChart" class="flex items-center space-x-2 text-sm text-gray-500">
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
+          <span>Loading...</span>
+        </div>
+      </div>
+      <div class="relative w-full flex-1 flex items-center justify-center min-h-[300px]">
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+  </div>
+
   <!-- Most Clicked Products (ProductPerformanceDaily) -->
   <div class="bg-white rounded-lg border border-gray-200">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 border-b border-gray-200">
+    <div
+      class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 border-b border-gray-200">
       <h2 class="text-lg font-serif text-[var(--color-ixora-black)]">Most Clicked Products</h2>
       <div class="flex gap-2">
         <button (click)="setDays(7)" [class.bg-[var(--color-ixora-black)]]="daysAgo === 7"
@@ -84,7 +117,8 @@
         <thead>
           <tr class="border-b border-gray-100">
             <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
-            <th class="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Clicks</th>
+            <th class="px-5 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Clicks
+            </th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -97,7 +131,7 @@
                 </div>
                 <div>
                   <div class="text-sm font-medium text-[var(--color-ixora-black)]">{{ product.name }}</div>
-                
+
                 </div>
               </div>
             </td>
