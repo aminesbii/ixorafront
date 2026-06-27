@@ -210,7 +210,7 @@
     <p class="text-sm text-gray-500 mb-1">Your order number is</p>
     <p class="text-xl font-mono font-bold text-[var(--color-ixora-green)] mb-6 select-all">{{ placedOrderNumber }}</p>
     <div class="flex flex-col gap-2">
-      <a [routerLink]="['/track-order']" [queryParams]="{order: placedOrderNumber}"
+      <a [routerLink]="['/track-order']"
         class="px-6 py-3 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300 text-center">
         Track Your Order
       </a>
