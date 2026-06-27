@@ -45,8 +45,7 @@ import { ContactComponent } from './pages/contact/contact.component';
     CartComponent,
     ProfileComponent,
     RegisterComponent,
-    OrderTrackerComponent
-    RegisterComponent,
+    OrderTrackerComponent,
     AboutComponent,
     ContactComponent
   ],
