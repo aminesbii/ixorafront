@@ -9,6 +9,8 @@ import { CartComponent } from './pages/cart/cart.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { AuthGuard } from '../../core/guards/auth.guard';
+import { AboutComponent } from './pages/about/about.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 const routes: Routes = [
   {
@@ -43,6 +45,14 @@ const routes: Routes = [
         path: 'profile',
         component: ProfileComponent,
         canActivate: [AuthGuard]
+      },
+      {
+        path: 'about',
+        component: AboutComponent
+      },
+      {
+        path: 'contact',
+        component: ContactComponent
       }
     ]
   }

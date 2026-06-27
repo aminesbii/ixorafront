@@ -1,0 +1,133 @@
+<app-navbar></app-navbar>
+
+<main class="w-full overflow-hidden bg-[var(--color-ixora-white)] text-[var(--color-ixora-black)]">
+  <!-- Hero Section -->
+  <section class="relative min-h-[70vh] flex items-center bg-[var(--color-ixora-black)] text-white overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1920&auto=format&fit=crop" alt="" class="w-full h-full object-cover" noParallax />
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-24 md:py-32">
+      <div #revealEl class="max-w-3xl">
+        <p class="uppercase tracking-[0.3em] text-[var(--color-ixora-green)] text-xs font-semibold mb-6 line-reveal-wrapper">
+          <span class="line-reveal-inner">Our Story</span>
+        </p>
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-serif leading-tight mb-6">
+          <span class="line-reveal-wrapper"><span class="line-reveal-inner">Science Meets</span></span><br />
+          <span class="line-reveal-wrapper"><span class="line-reveal-inner">Mediterranean</span></span><br />
+          <span class="line-reveal-wrapper"><span class="line-reveal-inner">Heritage</span></span>
+        </h1>
+        <p class="text-gray-400 text-base md:text-lg max-w-xl leading-relaxed">
+          IXORA was born from a simple belief: that effective skincare should honor both nature and science.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Brand Story -->
+  <section class="py-24 md:py-32">
+    <div class="max-w-7xl mx-auto px-6 md:px-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div #revealEl>
+          <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=800&auto=format&fit=crop" alt="IXORA ingredients" class="w-full h-[500px] object-cover" noParallax />
+        </div>
+        <div #revealEl class="space-y-6">
+          <p class="uppercase tracking-[0.3em] text-[var(--color-ixora-green)] text-xs font-semibold">Our Philosophy</p>
+          <h2 class="text-3xl md:text-4xl font-serif leading-tight">The dermocosmetic brand that understands your skin</h2>
+          <div class="w-12 h-0.5 bg-[var(--color-ixora-green)]"></div>
+          <div class="space-y-4 text-gray-600 text-sm leading-relaxed">
+            <p>Founded in Tunisia by Dr. Nadia Belhaj, IXORA bridges the gap between clinical-grade dermatology and the rich botanical heritage of the Mediterranean. Every formula is developed in our lab using advanced active ingredients, rigorously tested for safety and efficacy.</p>
+            <p>We believe your skin deserves more than empty promises. That's why we avoid fillers, harsh preservatives, and unnecessary fragrances. Instead, we focus on what works — concentrated actives at their optimal levels, delivered in sensorial textures you'll look forward to using every day.</p>
+            <p>From our first serum to our latest collection, every product carries the same commitment: transparency, integrity, and results you can see.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6 md:px-10">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
+        <div #revealEl *ngFor="let stat of stats">
+          <p class="text-4xl md:text-5xl font-serif text-[var(--color-ixora-black)] mb-2">{{ stat.value }}</p>
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-500 font-semibold">{{ stat.label }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="py-24 md:py-32" id="ingredients">
+    <div class="max-w-7xl mx-auto px-6 md:px-10">
+      <div #revealEl class="text-center max-w-2xl mx-auto mb-16">
+        <p class="uppercase tracking-[0.3em] text-[var(--color-ixora-green)] text-xs font-semibold mb-4">What We Stand For</p>
+        <h2 class="text-3xl md:text-4xl font-serif">Our Core Values</h2>
+        <div class="w-12 h-0.5 bg-[var(--color-ixora-green)] mx-auto mt-4"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div #revealEl *ngFor="let value of values" class="p-8 bg-white border border-gray-100 hover:border-[var(--color-ixora-green)]/30 transition-colors duration-300">
+          <div class="w-10 h-10 bg-[var(--color-ixora-green)]/10 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-[var(--color-ixora-green)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-3">{{ value.title }}</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">{{ value.desc }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ingredients Spotlight -->
+  <section class="py-24 bg-[var(--color-ixora-black)] text-white" id="sustainability">
+    <div class="max-w-7xl mx-auto px-6 md:px-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div #revealEl class="space-y-6">
+          <p class="uppercase tracking-[0.3em] text-[var(--color-ixora-green)] text-xs font-semibold">Clean Ingredients</p>
+          <h2 class="text-3xl md:text-4xl font-serif leading-tight">Thoughtfully sourced, scientifically proven</h2>
+          <div class="w-12 h-0.5 bg-[var(--color-ixora-green)]"></div>
+          <div class="space-y-4 text-gray-400 text-sm leading-relaxed">
+            <p>We partner with sustainable farms across the Mediterranean for our botanical extracts — from Tunisian rosemary to Moroccan argan oil. Every ingredient is traceable, ethically harvested, and selected for its proven dermatological benefits.</p>
+            <p>Our packaging is 100% recyclable, and we offset our carbon footprint through reforestation partnerships in North Africa. Beauty should never come at the cost of the planet.</p>
+          </div>
+        </div>
+        <div #revealEl>
+          <img src="https://images.unsplash.com/photo-1570194065650-d99fb4b38b11?q=80&w=800&auto=format&fit=crop" alt="Natural ingredients" class="w-full h-[450px] object-cover" noParallax />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="py-24 md:py-32">
+    <div class="max-w-7xl mx-auto px-6 md:px-10">
+      <div #revealEl class="text-center max-w-2xl mx-auto mb-16">
+        <p class="uppercase tracking-[0.3em] text-[var(--color-ixora-green)] text-xs font-semibold mb-4">The People Behind IXORA</p>
+        <h2 class="text-3xl md:text-4xl font-serif">Meet Our Team</h2>
+        <div class="w-12 h-0.5 bg-[var(--color-ixora-green)] mx-auto mt-4"></div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div #revealEl *ngFor="let member of team" class="group text-center">
+          <div class="overflow-hidden mb-5">
+            <img [src]="member.image" [alt]="member.name" class="w-full h-72 object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-out" noParallax />
+          </div>
+          <h3 class="text-base font-semibold">{{ member.name }}</h3>
+          <p class="text-xs uppercase tracking-[0.2em] text-gray-500 mt-1">{{ member.role }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-24 bg-gray-50 text-center px-4">
+    <div #revealEl class="max-w-2xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-serif mb-4">Ready to transform your skincare routine?</h2>
+      <p class="text-gray-500 text-sm mb-8">Explore our full range of dermocosmetic products.</p>
+      <a routerLink="/products" class="inline-block bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] text-[10px] uppercase tracking-widest font-semibold px-8 py-4 transition-colors duration-300 cursor-pointer">
+        Shop Now
+      </a>
+    </div>
+  </section>
+</main>
+
+<app-footer></app-footer>
