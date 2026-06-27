@@ -9,7 +9,7 @@ import { ProductEvent, ProductPerformanceDaily, DashboardReport } from '../model
 export class DashboardService {
   private readonly API_URL = '/api/analytics';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Public Event Tracking
   trackEvent(event: Omit<ProductEvent, '_id' | 'created_at'>): Observable<{ message: string }> {
@@ -42,5 +42,19 @@ export class DashboardService {
     if (startDate) params = params.set('start_date', startDate);
     if (endDate) params = params.set('end_date', endDate);
     return this.http.get<any[]>(`${this.API_URL}/performance/daily-clicks`, { params });
+  }
+
+  // Admin: Get earnings stats
+  getEarningsStats(days?: number): Observable<{ date: string, orders: number, earnings: number }[]> {
+    let params = new HttpParams();
+    if (days) params = params.set('days', days.toString());
+    return this.http.get<{ date: string, orders: number, earnings: number }[]>('/api/orders/earnings-stats', { params });
+  }
+
+  // Admin: Get order status stats
+  getOrderStatusStats(days?: number): Observable<{ status: string, count: number }[]> {
+    let params = new HttpParams();
+    if (days) params = params.set('days', days.toString());
+    return this.http.get<{ status: string, count: number }[]>('/api/orders/status-stats', { params });
   }
 }

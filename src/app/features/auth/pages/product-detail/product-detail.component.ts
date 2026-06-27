@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { ProductService } from '../../../../core/services/product.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { DashboardService } from '../../../../core/services/dashboard.service';
-import { Product, ProductImage } from '../../../../core/models/product.model';
+import { Product, ProductImage, ProductVariant } from '../../../../core/models/product.model';
 
 @Component({
   selector: 'app-product-detail',
@@ -22,6 +22,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   quantity = 1;
   cartFeedback = '';
   brokenImages = new Set<string>();
+  selectedVariant: ProductVariant | null = null;
 
   private fallbackProducts: Record<string, Product> = {
     'rose-radiance-cream': {
@@ -46,7 +47,10 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
         { _id: 'dimg-6', product_id: 'demo-3', image_url: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&q=80', alt_text: 'Rose petals', sort_order: 5, is_main: false }
       ],
       variants: [
-        { _id: 'dvar-3', product_id: 'demo-3', sku: 'ROSE-CREAM-50', variant_name: '50ml', price: 54, currency: 'MAD', stock_qty: 25, is_active: true },
+        { _id: 'dvar-3a', product_id: 'demo-3', sku: 'ROSE-CREAM-30', variant_name: '30ml', price: 34, currency: 'MAD', stock_qty: 30, is_active: true },
+        { _id: 'dvar-3b', product_id: 'demo-3', sku: 'ROSE-CREAM-50', variant_name: '50ml', price: 54, currency: 'MAD', stock_qty: 25, is_active: true },
+        { _id: 'dvar-3c', product_id: 'demo-3', sku: 'ROSE-CREAM-100', variant_name: '100ml', price: 89, currency: 'MAD', stock_qty: 15, is_active: true },
+        { _id: 'dvar-3d', product_id: 'demo-3', sku: 'ROSE-CREAM-TRAVEL', variant_name: 'Travel Set', price: 72, currency: 'MAD', stock_qty: 0, is_active: false },
       ]
     },
     'pure-green-tea-serum': {
@@ -146,6 +150,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       next: (res: any) => {
         this.product = res.product || res;
         this.selectedImage = this.mainImage?.image_url || null;
+        this.selectedVariant = this.product?.variants?.[0] || null;
         this.loading = false;
         this.trackProductView();
         if (isPlatformBrowser(this.platformId)) {
@@ -158,6 +163,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
         if (fallback) {
           this.product = fallback;
           this.selectedImage = this.mainImage?.image_url || null;
+          this.selectedVariant = this.product?.variants?.[0] || null;
         }
         this.loading = false;
         if (isPlatformBrowser(this.platformId)) {
@@ -234,12 +240,12 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   }
 
   get price(): string {
-    const v = this.product?.variants?.[0];
+    const v = this.selectedVariant || this.product?.variants?.[0];
     return v ? `${v.price} ${v.currency}` : '';
   }
 
   get comparePrice(): number | null {
-    return this.product?.variants?.[0]?.compare_at_price || null;
+    return this.selectedVariant?.compare_at_price || this.product?.variants?.[0]?.compare_at_price || null;
   }
 
   selectImage(img: ProductImage) {
@@ -247,7 +253,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   }
 
   increaseQty() {
-    const stock = this.product?.variants?.[0]?.stock_qty || 99;
+    const stock = this.selectedVariant?.stock_qty || this.product?.variants?.[0]?.stock_qty || 99;
     if (this.quantity < stock) this.quantity++;
   }
 
@@ -255,9 +261,14 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     if (this.quantity > 1) this.quantity--;
   }
 
+  selectVariant(v: ProductVariant): void {
+    this.selectedVariant = v;
+    this.quantity = 1;
+  }
+
   addToCart() {
     if (!this.product) return;
-    const variant = this.product.variants?.[0];
+    const variant = this.selectedVariant || this.product.variants?.[0];
     if (!variant) {
       this.showFeedback('No variant available');
       return;

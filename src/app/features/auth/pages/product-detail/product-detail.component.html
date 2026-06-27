@@ -70,6 +70,22 @@
           </button>
         </div>
 
+        <!-- Variant Cards Carousel -->
+        <div *ngIf="product.variants && product.variants.length > 0" class="border-t border-gray-100 pt-6 mt-6">
+          <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-3">Size / Variant</p>
+          <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent" style="scrollbar-width: thin;">
+            <button *ngFor="let v of product.variants"
+              (click)="selectVariant(v)"
+              class="flex-shrink-0 px-5 py-3 border-2 text-sm font-semibold transition-all duration-200 cursor-pointer"
+              [class.border-[var(--color-ixora-black)] bg-[var(--color-ixora-black)] text-white]="selectedVariant?._id === v._id || selectedVariant?.id === v.id"
+              [class.border-gray-200 bg-white text-gray-700 hover:border-gray-400]="!(selectedVariant?._id === v._id || selectedVariant?.id === v.id)"
+              [class.opacity-50 cursor-not-allowed]="!v.is_active">
+              <span class="block text-xs uppercase tracking-wider">{{ v.variant_name || v.sku }}</span>
+              <span class="block text-[10px] mt-0.5 opacity-70">{{ v.price }} {{ v.currency }}</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Details list -->
         <div *ngIf="product.details" class="border-t border-gray-100 pt-8 mt-8 space-y-4">
           <div *ngIf="product.details.indication" class="flex items-start gap-4">

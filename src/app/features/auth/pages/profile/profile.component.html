@@ -206,4 +206,63 @@
       </div>
     </div>
   </div>
+
+  <!-- ─── Order History ────────────────────────────── -->
+  <div class="mt-10">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-xl font-bold text-[var(--color-ixora-black)]">Order History</h2>
+        <p class="text-sm text-[var(--color-ixora-black)]/50 mt-0.5">View your past orders</p>
+      </div>
+    </div>
+
+    <div *ngIf="ordersLoading" class="flex items-center justify-center py-10">
+      <div class="w-6 h-6 border-2 border-[var(--color-ixora-green)] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
+    <div *ngIf="!ordersLoading && orders.length === 0" class="text-center py-12 border border-dashed border-gray-200">
+      <svg class="w-10 h-10 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <p class="text-sm text-gray-400">No orders yet.</p>
+      <a routerLink="/products" class="inline-block mt-4 px-6 py-2 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300">
+        Start Shopping
+      </a>
+    </div>
+
+    <div *ngIf="!ordersLoading && orders.length > 0" class="space-y-3">
+      <div *ngFor="let order of orders"
+        class="bg-white border border-[var(--color-ixora-black)]/10 p-5 hover:border-[var(--color-ixora-green)] transition-all duration-200">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wider">Order</p>
+            <p class="text-sm font-mono font-bold text-[var(--color-ixora-black)]">{{ order.order_number }}</p>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase"
+            [class]="orderStatusColor(order.status)">
+            {{ order.status }}
+          </span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-gray-500">{{ formatDate(order.createdAt) }}</span>
+          <span class="font-semibold text-gray-800">{{ order.grand_total | number:'1.2-2' }} {{ order.currency }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="ordersPages > 1" class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+      <p class="text-xs text-gray-500">Page {{ ordersPage }} of {{ ordersPages }}</p>
+      <div class="flex items-center gap-2">
+        <button (click)="ordersPagePrev()" [disabled]="ordersPage <= 1"
+          class="px-3 py-1 text-[10px] font-semibold border border-gray-200 rounded-sm hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer">
+          Previous
+        </button>
+        <button (click)="ordersPageNext()" [disabled]="ordersPage >= ordersPages"
+          class="px-3 py-1 text-[10px] font-semibold border border-gray-200 rounded-sm hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
 </main>

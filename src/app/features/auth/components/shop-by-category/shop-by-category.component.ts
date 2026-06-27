@@ -130,9 +130,9 @@ export class ShopByCategoryComponent implements OnInit, AfterViewInit {
             gsap.to(lineInners, {
               opacity: 1,
               y: 0,
-              duration: 0.8,
-              stagger: 0.15,
-              ease: "power3.out",
+              duration: 0.5,
+              stagger: 0.08,
+              ease: "power2.out",
               delay: Number(el.getAttribute('data-delay') || 0)
             });
             gsap.set(el, { opacity: 1, y: 0, x: 0, scale: 1 });
@@ -142,15 +142,15 @@ export class ShopByCategoryComponent implements OnInit, AfterViewInit {
               y: 0,
               x: 0,
               scale: 1,
-              duration: 1.2,
-              ease: "power3.out",
+              duration: 0.5,
+              ease: "power2.out",
               delay: Number(el.getAttribute('data-delay') || 0)
             });
           }
           observer.unobserve(el);
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.2 });
     this.revealElements.forEach(elRef => {
       if (elRef.nativeElement) {
         observer.observe(elRef.nativeElement);

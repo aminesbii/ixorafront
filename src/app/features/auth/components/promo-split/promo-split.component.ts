@@ -39,14 +39,27 @@ export class PromoSplitComponent implements AfterViewInit {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const el = entry.target;
-          gsap.to(el, {
-            opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
-            delay: Number(el.getAttribute('data-delay') || 0)
-          });
+          const lineInners = el.querySelectorAll('.line-reveal-inner');
+          if (lineInners.length > 0) {
+            gsap.to(lineInners, {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              stagger: 0.12,
+              ease: "power3.out",
+              delay: Number(el.getAttribute('data-delay') || 0)
+            });
+            gsap.set(el, { opacity: 1, y: 0, x: 0, scale: 1 });
+          } else {
+            gsap.to(el, {
+              opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
+              delay: Number(el.getAttribute('data-delay') || 0)
+            });
+          }
           observer.unobserve(el);
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.15 });
     this.revealElements.forEach(elRef => {
       if (elRef.nativeElement) observer.observe(elRef.nativeElement);
     });

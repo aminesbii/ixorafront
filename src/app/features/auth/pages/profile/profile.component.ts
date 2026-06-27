@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../../../core/services/user.service';
 import { AddressService } from '../../../../core/services/address.service';
+import { OrderService } from '../../../../core/services/order.service';
 import { Address } from '../../../../core/models/address.model';
+import { Order } from '../../../../core/models/order.model';
 
 @Component({
   selector: 'app-profile',
@@ -36,7 +38,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private addressService: AddressService
+    private addressService: AddressService,
+    private orderService: OrderService
   ) {
     this.profileForm = this.fb.group({
       full_name: ['', Validators.required],
@@ -53,6 +56,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.loadProfile();
     this.loadAddresses();
+    this.loadOrders();
   }
 
   loadProfile(): void {
@@ -196,5 +200,62 @@ export class ProfileComponent implements OnInit {
 
   getFullAddressDisplay(a: Address): string {
     return [a.street, a.city, a.postal_code, a.country].filter(Boolean).join(', ');
+  }
+
+  // ─── Order History ────────────────────────────────────
+
+  orders: Order[] = [];
+  ordersLoading = false;
+  ordersTotal = 0;
+  ordersPage = 1;
+  ordersPages = 1;
+
+  loadOrders(): void {
+    this.ordersLoading = true;
+    this.orderService.myOrders({ page: this.ordersPage, limit: 10 }).subscribe({
+      next: (res) => {
+        this.orders = res.orders;
+        this.ordersTotal = res.total;
+        this.ordersPages = res.pages;
+        this.ordersLoading = false;
+      },
+      error: () => {
+        this.ordersLoading = false;
+      }
+    });
+  }
+
+  ordersPagePrev(): void {
+    if (this.ordersPage > 1) {
+      this.ordersPage--;
+      this.loadOrders();
+    }
+  }
+
+  ordersPageNext(): void {
+    if (this.ordersPage < this.ordersPages) {
+      this.ordersPage++;
+      this.loadOrders();
+    }
+  }
+
+  orderStatusColor(status: string): string {
+    const colors: Record<string, string> = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      confirmed: 'bg-blue-100 text-blue-800',
+      processing: 'bg-indigo-100 text-indigo-800',
+      shipped: 'bg-purple-100 text-purple-800',
+      delivered: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800',
+      refunded: 'bg-gray-100 text-gray-800'
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800';
+  }
+
+  formatDate(d?: string): string {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
   }
 }

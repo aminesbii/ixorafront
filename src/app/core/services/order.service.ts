@@ -68,6 +68,20 @@ export class OrderService {
     return this.http.get<Order>(`${this.API_URL}/${id}`);
   }
 
+  // Admin - List orders by user
+  listByUser(userId: string, queryParams?: { page?: number; limit?: number; status?: Order['status']; sort?: string }): Observable<PaginatedOrders> {
+    let params = new HttpParams().set('userId', userId);
+    if (queryParams) {
+      Object.keys(queryParams).forEach(key => {
+        const val = (queryParams as any)[key];
+        if (val !== undefined && val !== null) {
+          params = params.set(key, val.toString());
+        }
+      });
+    }
+    return this.http.get<PaginatedOrders>(this.API_URL, { params });
+  }
+
   // Admin - List All Orders
   listAll(queryParams?: { page?: number; limit?: number; status?: Order['status']; sort?: string }): Observable<PaginatedOrders> {
     let params = new HttpParams();

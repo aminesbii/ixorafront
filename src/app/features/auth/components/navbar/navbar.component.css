@@ -13,13 +13,18 @@ nav ul li a::after {
   bottom: -2px;
   left: 0;
   width: 0;
-  height: 1px;
+  height: 1.5px;
   background-color: var(--color-ixora-green);
   transition: width 0.25s ease;
 }
 
-nav ul li a:hover::after {
+nav ul li a:hover::after,
+nav ul li a.active-link::after {
   width: 100%;
+}
+
+nav ul li a.active-link {
+  color: var(--color-ixora-green);
 }
 
 .navbar-dark {
