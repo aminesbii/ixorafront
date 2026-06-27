@@ -23,8 +23,18 @@ nav ul li a.active-link::after {
   width: 100%;
 }
 
-nav ul li a.active-link {
-  color: var(--color-ixora-green);
+nav a.active-link {
+  position: relative;
+}
+
+nav a.active-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: var(--color-ixora-green);
 }
 
 .navbar-dark {

@@ -12,22 +12,23 @@
 
     <!-- Center links (desktop) -->
     <ul class="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.18em] font-semibold">
-      <li><a routerLink="/" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Home</a></li>
-      <li><a routerLink="/products" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Products</a></li>
-      <li><a routerLink="/about" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">About</a></li>
-      <li><a routerLink="/contact" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Contact</a></li>
+      <li><a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Home</a></li>
+      <li><a routerLink="/products" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Products</a></li>
+      <li><a routerLink="/about" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">About</a></li>
+      <li><a routerLink="/contact" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Contact</a></li>
+      <li><a routerLink="/track-order" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200 flex items-center gap-1.5"><i class="fa-solid fa-package text-xs"></i>Track Order</a></li>
     </ul>
 
     <!-- Right actions (desktop) -->
     <div class="hidden lg:flex items-center gap-6">
-      <button class="nav-icon hover:text-[var(--color-ixora-green)] transition-colors">
+      <button class="nav-icon hover:text-[var(--color-ixora-green)] transition-colors" aria-label="Search">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </button>
 
-      <a routerLink="/cart" class="relative nav-icon hover:text-[var(--color-ixora-green)] transition-colors">
+      <a routerLink="/cart" routerLinkActive="active-link" class="relative nav-icon hover:text-[var(--color-ixora-green)] transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
         </svg>
@@ -38,18 +39,23 @@
 
       <ng-container *ngIf="isLoggedIn">
         <div class="relative profile-dropdown-wrapper">
-          <button (click)="toggleProfileDropdown()" class="w-9 h-9 rounded-full bg-[var(--color-ixora-black)] text-white flex items-center justify-center text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer">
+          <button (click)="toggleProfileDropdown()" class="w-9 h-9 rounded-full bg-[var(--color-ixora-black)] text-white flex items-center justify-center text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer" aria-label="Profile menu" aria-haspopup="true" [attr.aria-expanded]="isProfileDropdownOpen">
             {{ userName ? userName.charAt(0).toUpperCase() : 'U' }}
           </button>
 
           <div *ngIf="isProfileDropdownOpen"
             class="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 shadow-lg rounded-lg py-2 z-50">
-            <a routerLink="/profile" (click)="closeProfileDropdown()"
+            <a routerLink="/profile" routerLinkActive="active-link" (click)="closeProfileDropdown()"
               class="flex items-center gap-3 px-4 py-2.5 text-[11px] uppercase tracking-widest font-semibold text-gray-700 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 transition-colors">
               <i class="fa-solid fa-user w-4 text-center text-xs"></i>
               Profile
             </a>
-            <a *ngIf="isAdmin" routerLink="/dashboard" (click)="closeProfileDropdown()"
+             <a routerLink="/track-order" routerLinkActive="text-[var(--color-ixora-green)]" (click)="closeProfileDropdown()"
+              class="flex items-center gap-3 px-4 py-2.5 text-[11px] uppercase tracking-widest font-semibold text-gray-700 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 transition-colors">
+              <i class="fa-solid fa-package w-4 text-center text-xs"></i>
+              Track Order
+            </a>
+            <a *ngIf="isAdmin" routerLink="/dashboard" routerLinkActive="active-link" (click)="closeProfileDropdown()"
               class="flex items-center gap-3 px-4 py-2.5 text-[11px] uppercase tracking-widest font-semibold text-gray-700 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 transition-colors">
               <i class="fa-solid fa-chart-bar w-4 text-center text-xs"></i>
               Dashboard
@@ -75,7 +81,7 @@
 
     <!-- Mobile hamburger -->
     <div class="lg:hidden relative" [style.z-index]="isMobileMenuOpen ? 61 : 60">
-      <button class="hamburger-btn p-1.5" [class.hamburger-btn--open]="isMobileMenuOpen" (click)="toggleMobileMenu()">
+      <button class="hamburger-btn p-1.5" [class.hamburger-btn--open]="isMobileMenuOpen" (click)="toggleMobileMenu()" aria-label="Toggle menu" [attr.aria-expanded]="isMobileMenuOpen">
         <span class="hamburger-bar"></span>
         <span class="hamburger-bar"></span>
         <span class="hamburger-bar"></span>
@@ -89,18 +95,20 @@
     class="mobile-menu fixed inset-0 flex flex-col items-center justify-center lg:hidden"
     [class.mobile-menu--open]="isMobileMenuOpen">
     <ul class="flex flex-col items-center gap-8 text-2xl uppercase tracking-[0.15em] font-semibold mobile-menu__links">
-      <li><a routerLink="/" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+      <li><a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="closeMobileMenu()">Home</a></li>
-      <li><a routerLink="/products" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+      <li><a routerLink="/products" routerLinkActive="active-link" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="closeMobileMenu()">Products</a></li>
-      <li><a routerLink="/about" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+      <li><a routerLink="/about" routerLinkActive="active-link" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="closeMobileMenu()">About</a></li>
-      <li><a routerLink="/contact" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
+      <li><a routerLink="/contact" routerLinkActive="active-link" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="closeMobileMenu()">Contact</a></li>
+      <li><a routerLink="/track-order" routerLinkActive="active-link" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors flex items-center gap-2"
+          (click)="closeMobileMenu()"><i class="fa-solid fa-package"></i>Track Order</a></li>
     </ul>
 
     <div class="mt-12 flex flex-col items-center gap-4 mobile-menu__links">
-      <a routerLink="/cart" (click)="closeMobileMenu()"
+      <a routerLink="/cart" routerLinkActive="active-link" (click)="closeMobileMenu()"
         class="relative flex items-center gap-2 text-sm uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
@@ -118,12 +126,12 @@
         </button>
       </ng-container>
       <ng-container *ngIf="isLoggedIn">
-        <a routerLink="/profile" (click)="closeMobileMenu()"
+        <a routerLink="/profile" routerLinkActive="active-link" (click)="closeMobileMenu()"
           class="flex items-center gap-2 text-sm uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors">
           <i class="fa-solid fa-user w-4 text-center"></i>
           Profile
         </a>
-        <a *ngIf="isAdmin" routerLink="/dashboard" (click)="closeMobileMenu()"
+        <a *ngIf="isAdmin" routerLink="/dashboard" routerLinkActive="active-link" (click)="closeMobileMenu()"
           class="flex items-center gap-2 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-blue)] text-white hover:bg-blue-600 transition-colors duration-300 px-8 py-3">
           <i class="fa-solid fa-chart-bar w-4 text-center"></i>
           Dashboard

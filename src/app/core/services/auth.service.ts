@@ -46,6 +46,14 @@ export class AuthService {
     );
   }
 
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>('/api/auth/forgot-password', { email });
+  }
+
+  resetPassword(token: string, password: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`/api/auth/reset-password/${token}`, { password });
+  }
+
   // ── Token / session helpers ──────────────────────────────────────────────────
 
   private persist(res: AuthResponse): void {
