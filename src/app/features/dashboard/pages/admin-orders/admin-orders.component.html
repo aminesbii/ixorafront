@@ -123,16 +123,18 @@
             <td class="px-6 py-4 text-right">
               <div class="flex items-center justify-end gap-2">
                 <button (click)="viewOrder(order)"
-                  class="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors rounded-sm cursor-pointer">
+                  class="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors rounded-sm cursor-pointer"
+                  aria-label="View order {{ order.order_number }}">
                   View
                 </button>
                 <button *ngIf="order.user_id" (click)="viewUserOrders(order)"
                   class="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors rounded-sm cursor-pointer"
-                  title="Show all orders from this customer">
+                  title="Show all orders from this customer" aria-label="Show orders from user {{ order.customer_name }}">
                   User
                 </button>
                 <button (click)="confirmDelete(order)"
-                  class="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors rounded-sm cursor-pointer">
+                  class="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors rounded-sm cursor-pointer"
+                  aria-label="Delete order {{ order.order_number }}">
                   Delete
                 </button>
               </div>

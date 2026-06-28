@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { OrderService } from '../../../../core/services/order.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Order } from '../../../../core/models/order.model';
 
 @Component({
   selector: 'app-order-tracker',
@@ -7,13 +10,89 @@ import { OrderService } from '../../../../core/services/order.service';
   styleUrls: ['./order-tracker.component.css'],
   standalone: false
 })
-export class OrderTrackerComponent {
+export class OrderTrackerComponent implements OnInit {
+  // Single order track (guest)
   orderNumber = '';
   loading = false;
   error = '';
   order: any = null;
 
-  constructor(private orderService: OrderService) {}
+  // All orders (authenticated)
+  orders: Order[] = [];
+  filteredOrders: Order[] = [];
+  allOrdersLoaded = false;
+  loadingOrders = false;
+  ordersError = '';
+
+  // Filters & sort
+  searchCode = '';
+  statusFilter = 'all';
+  sortBy = '-createdAt';
+
+  // Expand
+  expandedOrderId: string | null = null;
+
+  constructor(
+    private orderService: OrderService,
+    private authService: AuthService,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const orderParam = params['order'];
+      if (orderParam) {
+        this.orderNumber = orderParam;
+        this.trackOrder();
+      }
+    });
+
+    if (this.authService.isLoggedIn()) {
+      this.loadOrders();
+    }
+  }
+
+  loadOrders(): void {
+    this.loadingOrders = true;
+    this.ordersError = '';
+    this.orderService.myOrders({ limit: 50 }).subscribe({
+      next: (res) => {
+        this.orders = res.orders;
+        this.applyFilters();
+        this.loadingOrders = false;
+        this.allOrdersLoaded = true;
+      },
+      error: () => {
+        this.loadingOrders = false;
+        this.ordersError = 'Failed to load orders.';
+      }
+    });
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.orders];
+
+    if (this.searchCode.trim()) {
+      const q = this.searchCode.trim().toLowerCase();
+      filtered = filtered.filter(o => o.order_number.toLowerCase().includes(q));
+    }
+
+    if (this.statusFilter !== 'all') {
+      filtered = filtered.filter(o => o.status === this.statusFilter);
+    }
+
+    if (this.sortBy === '-createdAt') {
+      filtered.sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+    } else {
+      filtered.sort((a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime());
+    }
+
+    this.filteredOrders = filtered;
+  }
+
+  toggleExpand(orderId: string): void {
+    this.expandedOrderId = this.expandedOrderId === orderId ? null : orderId;
+  }
 
   trackOrder(): void {
     const num = this.orderNumber.trim();
@@ -66,5 +145,22 @@ export class OrderTrackerComponent {
     return new Date(d).toLocaleDateString('en-US', {
       year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
     });
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      PENDING: 'Pending',
+      CONFIRMED: 'Confirmed',
+      PROCESSING: 'Processing',
+      SHIPPED: 'Shipped',
+      DELIVERED: 'Delivered',
+      CANCELLED: 'Cancelled',
+      REFUNDED: 'Refunded'
+    };
+    return labels[status] || status;
+  }
+
+  getItemImage(item: any): string {
+    return item.product_image || 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=300&auto=format&fit=crop';
   }
 }

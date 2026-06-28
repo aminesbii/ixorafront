@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -17,6 +17,7 @@ import { Product } from '../../../../core/models/product.model';
   styleUrl: './cart.component.css'
 })
 export class CartComponent implements OnInit {
+  @ViewChild('orderSuccessModal') orderSuccessModal!: ElementRef<HTMLDialogElement>;
   cart: Cart | null = null;
   loading = true;
   private productsMap = new Map<string, Product>();
@@ -28,10 +29,12 @@ export class CartComponent implements OnInit {
   showOrderSuccess = false;
   placedOrderNumber = '';
   placedOrderCurrency = '';
+  copied = false;
 
   customerName = '';
   customerEmail = '';
   customerPhone = '';
+  emailError = '';
 
   addressStreet = '';
   addressCity = '';
@@ -126,6 +129,16 @@ export class CartComponent implements OnInit {
     return product?.name || 'Product';
   }
 
+  updateQuantity(item: CartItem, qty: number): void {
+    if (qty <= 0) {
+      this.removeItem(item._id || item.id);
+      return;
+    }
+    const itemId = item._id || item.id;
+    if (!itemId) return;
+    this.cartService.updateItem(itemId, qty).subscribe();
+  }
+
   removeItem(itemId: string | undefined): void {
     if (!itemId) return;
     this.cartService.removeItem(itemId).subscribe();
@@ -172,17 +185,26 @@ export class CartComponent implements OnInit {
     this.orderError = '';
   }
 
+
   closeOrderSuccess(): void {
+    this.orderSuccessModal?.nativeElement.close();
     this.showOrderSuccess = false;
     this.placedOrderNumber = '';
-    this.router.navigate(['/']);
+    this.placedOrderCurrency = '';
+    this.copied = false;
   }
 
   placeOrder(): void {
     this.orderError = '';
+    this.emailError = '';
 
     if (!this.customerName || !this.customerEmail) {
       this.orderError = 'Name and email are required.';
+      return;
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(this.customerEmail)) {
+      this.emailError = 'Please enter a valid email address.';
       return;
     }
     if (!this.addressStreet || !this.addressCity || !this.addressCountry) {
@@ -222,7 +244,7 @@ export class CartComponent implements OnInit {
         this.showOrderForm = false;
         this.placedOrderNumber = (res as any).order?.order_number || '';
         this.placedOrderCurrency = (res as any).order?.currency || 'TND';
-        this.showOrderSuccess = true;
+        this.orderSuccessModal?.nativeElement.showModal();
         this.cartService.getCart().subscribe();
       },
       error: (err) => {

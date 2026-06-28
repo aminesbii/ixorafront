@@ -25,6 +25,8 @@ import { RegisterComponent } from './pages/register/register.component';
 import { OrderTrackerComponent } from './pages/order-tracker/order-tracker.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 
 @NgModule({
@@ -47,7 +49,9 @@ import { ContactComponent } from './pages/contact/contact.component';
     RegisterComponent,
     OrderTrackerComponent,
     AboutComponent,
-    ContactComponent
+    ContactComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     CommonModule,

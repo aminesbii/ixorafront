@@ -12,6 +12,8 @@ import { OrderTrackerComponent } from './pages/order-tracker/order-tracker.compo
 import { AuthGuard } from '../../core/guards/auth.guard';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 const routes: Routes = [
   {
@@ -29,6 +31,14 @@ const routes: Routes = [
       {
         path: 'register',
         component: RegisterComponent
+      },
+      {
+        path: 'forgot-password',
+        component: ForgotPasswordComponent
+      },
+      {
+        path: 'reset-password/:token',
+        component: ResetPasswordComponent
       },
       {
         path: 'products',

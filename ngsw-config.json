@@ -31,10 +31,10 @@
     {
       "name": "api-performance",
       "urls": [
-        "/api/brands",
         "/api/categories",
-        "/api/models",
-        "/api/agencies"
+        "/api/categories/tree",
+        "/api/products",
+        "/api/products/slug/*"
       ],
       "cacheConfig": {
         "strategy": "performance",
@@ -45,14 +45,14 @@
     {
       "name": "api-freshness",
       "urls": [
-        "/api/rentcars/**",
-        "/api/sellcars/**",
-        "/api/rentcarimages/**",
-        "/api/sellcarimages/**"
+        "/api/cart/**",
+        "/api/orders/**",
+        "/api/addresses/**",
+        "/api/analytics/**"
       ],
       "cacheConfig": {
         "strategy": "freshness",
-        "maxSize": 500,
+        "maxSize": 200,
         "maxAge": "6h",
         "timeout": "10s"
       }

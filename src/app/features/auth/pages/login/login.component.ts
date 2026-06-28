@@ -14,6 +14,8 @@ export class LoginComponent {
   password = '';
   isLoading = false;
   errorMessage = '';
+  emailError = '';
+  passwordError = '';
 
   constructor(
     private router: Router,
@@ -21,10 +23,30 @@ export class LoginComponent {
     private cartService: CartService
   ) { }
 
+  private validate(): boolean {
+    this.emailError = '';
+    this.passwordError = '';
+    let valid = true;
+    if (!this.email) {
+      this.emailError = 'Email is required.';
+      valid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) {
+      this.emailError = 'Please enter a valid email address.';
+      valid = false;
+    }
+    if (!this.password) {
+      this.passwordError = 'Password is required.';
+      valid = false;
+    }
+    return valid;
+  }
+
   onLogin() {
     if (this.isLoading) return;
 
     this.errorMessage = '';
+    if (!this.validate()) return;
+
     this.isLoading = true;
 
     this.authService.login(this.email, this.password).subscribe({
