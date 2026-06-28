@@ -30,8 +30,8 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
         this.isLoading = false;
-        if (res.role === 'ADMIN') {
-          this.router.navigate(['/dashboard/products']);
+        if (res.role === 'ADMIN' || res.role === 'MANAGER') {
+          this.router.navigate(['/dashboard/home']);
         } else {
           this.cartService.merge().subscribe({
             next: () => {

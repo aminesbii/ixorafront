@@ -3,8 +3,9 @@ export interface User {
   full_name: string;
   email: string;
   phone?: string | null;
-  role: 'ADMIN' | 'CUSTOMER';
+  role: 'ADMIN' | 'CUSTOMER' | 'MANAGER';
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  permissions?: string[];
   createdAt?: string;
   updatedAt?: string;
 }

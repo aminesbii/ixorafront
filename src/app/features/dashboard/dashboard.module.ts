@@ -8,13 +8,15 @@ import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
 import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
 import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
+import { SettingsComponent } from './pages/settings/settings.component';
 
 @NgModule({
   declarations: [
     UserHomeComponent,
     AdminProductsComponent,
     AdminAnalyticsComponent,
-    AdminOrdersComponent
+    AdminOrdersComponent,
+    SettingsComponent
   ],
   imports: [
     CommonModule,

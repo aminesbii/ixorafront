@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { CanActivate, Router, UrlTree, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
@@ -9,13 +8,32 @@ import { AuthService } from '../services/auth.service';
 export class AdminGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) { }
 
-  canActivate(): boolean | UrlTree {
-    if (this.authService.isLoggedIn() && this.authService.isAdmin()) {
-      return true;
+  canActivate(route: ActivatedRouteSnapshot): boolean | UrlTree {
+    if (!this.authService.isLoggedIn()) {
+      return this.router.parseUrl('/auth/login');
     }
-    if (this.authService.isLoggedIn()) {
+
+    if (!this.authService.isAdminOrManager()) {
       return this.router.parseUrl('/');
     }
-    return this.router.parseUrl('/auth/login');
+
+    const user = this.authService.getCurrentUser();
+    if (user?.role === 'ADMIN') {
+      return true;
+    }
+
+    const requiredPerm = route.data?.['permission'] as string | undefined;
+    if (requiredPerm) {
+      const perms = user?.permissions || [];
+      if (!perms.includes(requiredPerm)) {
+        if (perms.length > 0) {
+          return this.router.parseUrl(`/dashboard/${perms[0]}`);
+        } else {
+          return this.router.parseUrl('/');
+        }
+      }
+    }
+
+    return true;
   }
 }
