@@ -7,9 +7,19 @@
   --color-ixora-white: #ffffff;
   --color-ixora-green: #10b981;
   --color-ixora-blue: #3b82f6;
+  --color-sidebar-bg: #0a0a0a;
+  --color-sidebar-text: #ffffff80;
+  --color-sidebar-hover: #10b981;
 
   --font-sans: "Poppins", system-ui, sans-serif;
   --font-serif: "Poppins", serif;
+}
+
+:root {
+  --color-sidebar-bg: #0a0a0a;
+  --color-sidebar-text: #f9fafb;
+  --color-sidebar-text-secondary: #6b7280;
+  --color-sidebar-hover: #10b981;
 }
 
 * {

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AdminPrefsService } from '../../core/services/admin-prefs.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -7,4 +8,5 @@ import { Component } from '@angular/core';
   standalone: false
 })
 export class AdminLayoutComponent {
+  constructor(public prefs: AdminPrefsService) {}
 }

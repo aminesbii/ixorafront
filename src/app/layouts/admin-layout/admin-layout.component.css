@@ -1,1 +1,36 @@
-/* Styles applied completely via Tailwind in HTML */
+:host {
+  display: block;
+}
+
+.compact {
+  --compact-spacing: 0.75;
+}
+
+.compact h1 {
+  font-size: 1.5rem !important;
+}
+
+.compact h2 {
+  font-size: 1.25rem !important;
+}
+
+.compact h3 {
+  font-size: 1rem !important;
+}
+
+.compact .text-sm {
+  font-size: 0.75rem !important;
+}
+
+.compact .p-6 {
+  padding: 0.75rem !important;
+}
+
+.compact .gap-6 {
+  gap: 0.75rem !important;
+}
+
+.compact .py-3 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}

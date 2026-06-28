@@ -1,7 +1,13 @@
-<div class="flex min-h-screen bg-[var(--color-ixora-white)]">
+<div class="flex min-h-screen bg-[var(--color-ixora-white)]"
+  [class.compact]="prefs.compactMode">
   <app-admin-sidebar></app-admin-sidebar>
-  <main class="flex-1 min-w-0 flex flex-col ml-[60px] md:ml-[240px]">
-    <div class="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">
+  <main class="flex-1 min-w-0 flex flex-col"
+    [class.ml-[60px]]="true"
+    [class.md:ml-[240px]]="!prefs.sidebarCollapsed"
+    [class.md:ml-[60px]]="prefs.sidebarCollapsed">
+    <div class="flex-1 p-4 max-w-7xl w-full mx-auto"
+      [class.md:p-8]="!prefs.compactMode"
+      [class.md:p-4]="prefs.compactMode">
       <router-outlet></router-outlet>
     </div>
   </main>

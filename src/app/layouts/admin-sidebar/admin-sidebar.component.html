@@ -1,22 +1,35 @@
 <aside
-  class="w-[60px] md:w-[240px] bg-[var(--color-ixora-black)] flex flex-col fixed top-0 left-0 h-screen transition-all duration-300 z-10">
-  <div class="flex items-center justify-center md:justify-start gap-3 py-6 px-0 md:px-6 border-b border-white/10">
+  class="flex flex-col fixed top-0 left-0 h-screen transition-all duration-300 z-10"
+  [style.background-color]="'var(--color-sidebar-bg)'"
+  [class.w-[60px]]="prefs.sidebarCollapsed"
+  [class.w-[240px]]="!prefs.sidebarCollapsed">
+  <div class="flex items-center justify-center gap-3 py-6 px-0 border-b border-white/10"
+    [class.md:px-6]="!prefs.sidebarCollapsed">
     <img src="/icons/IXORLogo.png" alt="IXORA" class="h-7 w-auto invert" />
-     </div>
-  <nav class="flex-1 flex flex-col gap-1 p-2 md:p-3 overflow-y-auto">
+  </div>
+  <button (click)="toggleSidebar()"
+    class="absolute -right-3 top-20 w-6 h-6 border border-white/10 text-white/50 text-[10px] flex items-center justify-center hover:text-white transition-colors cursor-pointer z-20 rounded-full"
+    [style.background-color]="'var(--color-sidebar-bg)'">
+    <i class="fa-solid" [class.fa-chevron-right]="prefs.sidebarCollapsed" [class.fa-chevron-left]="!prefs.sidebarCollapsed"></i>
+  </button>
+  <nav class="flex-1 flex flex-col gap-1 p-2 overflow-y-auto">
     <a *ngFor="let item of menuItems" [routerLink]="item.route"
       routerLinkActive="bg-white/10 border-l-[3px] border-[var(--color-ixora-green)] text-white"
       [routerLinkActiveOptions]="{ exact: item.route === '/dashboard/home' }"
-      class="flex items-center justify-center md:justify-start gap-3 px-0 md:px-4 py-3 text-white/50 text-[0.65rem] font-bold uppercase tracking-widest transition-all duration-200 hover:text-[var(--color-ixora-green)] border-l-[3px] border-transparent outline-none">
-      <i class="w-5 text-center text-lg md:text-base shrink-0" [ngClass]="item.icon"></i>
-      <span class="hidden md:inline whitespace-nowrap">{{ item.label }}</span>
+      class="flex items-center justify-center gap-3 px-0 py-3 text-[var(--color-sidebar-text)] text-[0.65rem] font-bold uppercase tracking-widest transition-all duration-200 hover:text-[var(--color-sidebar-hover)] border-l-[3px] border-transparent outline-none"
+      [class.md:px-4]="!prefs.sidebarCollapsed"
+      [class.md:justify-start]="!prefs.sidebarCollapsed">
+      <i class="w-5 text-center text-lg md:text-base shrink-0" [ngClass]="item.icon" [style.color]="'var(--color-sidebar-text-secondary)'"></i>
+      <span class="hidden whitespace-nowrap" [class.md:inline]="!prefs.sidebarCollapsed">{{ item.label }}</span>
     </a>
   </nav>
-  <div class="p-2 md:p-3 border-t border-white/10">
+  <div class="p-2 border-t border-white/10">
     <button (click)="logout()"
-      class="w-full flex items-center justify-center md:justify-start gap-3 px-0 md:px-4 py-3 text-white/50 text-[0.65rem] font-bold uppercase tracking-widest transition-all duration-200 hover:text-red-500 border-l-[3px] border-transparent outline-none cursor-pointer">
+      class="w-full flex items-center justify-center gap-3 px-0 py-3 text-[var(--color-sidebar-text)] text-[0.65rem] font-bold uppercase tracking-widest transition-all duration-200 hover:text-red-500 border-l-[3px] border-transparent outline-none cursor-pointer"
+      [class.md:px-4]="!prefs.sidebarCollapsed"
+      [class.md:justify-start]="!prefs.sidebarCollapsed">
       <i class="w-5 text-center text-lg md:text-base shrink-0 fa-solid fa-right-from-bracket"></i>
-      <span class="hidden md:inline whitespace-nowrap">Logout</span>
+      <span class="hidden whitespace-nowrap" [class.md:inline]="!prefs.sidebarCollapsed">Logout</span>
     </button>
   </div>
 </aside>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService, StoredUser } from '../../../../core/services/auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { AdminPrefsService, ThemePreset } from '../../../../core/services/admin-prefs.service';
 
 interface Manager {
   id: string;
@@ -20,10 +21,11 @@ interface Manager {
   standalone: false
 })
 export class SettingsComponent implements OnInit {
+  activeTab: 'managers' | 'appearance' | 'dashboard' = 'managers';
+
   managers: Manager[] = [];
   availablePages = ['home', 'products', 'orders', 'analytics'];
   loading = false;
-
   showForm = false;
   editingManager: Manager | null = null;
   formData = {
@@ -33,25 +35,46 @@ export class SettingsComponent implements OnInit {
     phone: '',
     permissions: ['home'] as string[],
   };
-
   deletingManagerId: string | null = null;
+
+  allStatCards = ['Total Projects', 'Active Nodes', 'Monthly Queries', 'Resource Usage'];
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    public prefs: AdminPrefsService
   ) {}
 
   ngOnInit(): void {
     this.loadManagers();
   }
 
+  setTab(tab: 'managers' | 'appearance' | 'dashboard'): void {
+    this.activeTab = tab;
+  }
+
+  setTheme(preset: string): void {
+    this.prefs.setTheme(preset as ThemePreset);
+  }
+
+  toggleStatCard(title: string): void {
+    this.prefs.toggleStatCard(title);
+  }
+
+  statCardVisible(title: string): boolean {
+    return this.prefs.statCardVisible(title);
+  }
+
+  setRowsPerPage(n: number): void {
+    this.prefs.setDefaultRowsPerPage(n);
+  }
+
+  // ── Managers ──
+
   loadManagers(): void {
     this.loading = true;
     this.http.get<{ users: Manager[] }>('/api/settings/managers').subscribe({
-      next: (res) => {
-        this.managers = res.users;
-        this.loading = false;
-      },
+      next: (res) => { this.managers = res.users; this.loading = false; },
       error: () => { this.loading = false; },
     });
   }
@@ -105,10 +128,7 @@ export class SettingsComponent implements OnInit {
       if (this.formData.password) body.password = this.formData.password;
 
       this.http.put<Manager>(`/api/settings/managers/${this.editingManager.id}`, body).subscribe({
-        next: () => {
-          this.loadManagers();
-          this.cancelForm();
-        },
+        next: () => { this.loadManagers(); this.cancelForm(); },
         error: (err) => alert(err.error?.message || 'Failed to update manager.'),
       });
     } else {
@@ -119,10 +139,7 @@ export class SettingsComponent implements OnInit {
         phone: this.formData.phone || null,
         permissions: this.formData.permissions,
       }).subscribe({
-        next: () => {
-          this.loadManagers();
-          this.cancelForm();
-        },
+        next: () => { this.loadManagers(); this.cancelForm(); },
         error: (err) => alert(err.error?.message || 'Failed to create manager.'),
       });
     }
@@ -139,10 +156,7 @@ export class SettingsComponent implements OnInit {
   executeDelete(): void {
     if (!this.deletingManagerId) return;
     this.http.delete(`/api/settings/managers/${this.deletingManagerId}`).subscribe({
-      next: () => {
-        this.loadManagers();
-        this.deletingManagerId = null;
-      },
+      next: () => { this.loadManagers(); this.deletingManagerId = null; },
       error: (err) => alert(err.error?.message || 'Failed to delete manager.'),
     });
   }

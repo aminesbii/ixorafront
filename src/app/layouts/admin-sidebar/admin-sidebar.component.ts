@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { AdminPrefsService } from '../../core/services/admin-prefs.service';
 
 @Component({
   selector: 'app-admin-sidebar',
@@ -19,7 +20,8 @@ export class AdminSidebarComponent {
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    public prefs: AdminPrefsService
   ) {}
 
   get menuItems() {
@@ -39,6 +41,10 @@ export class AdminSidebarComponent {
     }
 
     return [];
+  }
+
+  toggleSidebar(): void {
+    this.prefs.setSidebarCollapsed(!this.prefs.sidebarCollapsed);
   }
 
   logout(): void {
