@@ -99,7 +99,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
         if (res && res.products && res.products.length > 0) {
           this.featuredProducts = res.products.map(prod => {
             const mainImg = prod.images?.find(img => img.featured1) || prod.images?.find(img => img.is_main) || prod.images?.[0];
-            const imageUrl = mainImg?.image_url || '';
+            const imageUrl = mainImg?.thumbnail_url || mainImg?.image_url || '';
             const firstVar = prod.variants?.[0];
             const price = firstVar?.price ?? prod.base_price;
             const currency = firstVar?.currency ?? prod.currency ?? 'TND';

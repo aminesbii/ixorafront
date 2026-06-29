@@ -49,7 +49,7 @@ export class SalesProductsComponent implements OnInit, AfterViewInit {
 
   getMainImage(product: Product): string | null {
     const img = product.images?.find(i => i.featured1) || product.images?.find(i => i.is_main) || product.images?.[0];
-    return img?.image_url || null;
+    return img?.thumbnail_url || img?.image_url || null;
   }
 
   normalizeUrl(url: string | undefined | null): string {

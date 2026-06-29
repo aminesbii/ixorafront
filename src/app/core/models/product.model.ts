@@ -1,8 +1,9 @@
 export interface ProductImage {
   id?: string;
   _id?: string;
-  product_id: string;
+  product_id?: string;
   image_url: string;
+  thumbnail_url?: string | null;
   alt_text?: string | null;
   sort_order: number;
   is_main: boolean;

@@ -154,7 +154,7 @@
            class="overflow-hidden group cursor-pointer opacity-0 translate-y-8 aspect-square">
         <img *ngIf="showImage(img)" [src]="normalizeUrl(img.image_url)" [alt]="img.alt_text || product.name"
              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-             [parallaxSpeed]="25"
+             loading="lazy" [parallaxSpeed]="25"
              (error)="imageError(img)" />
         <div *ngIf="!showImage(img)"
              class="w-full h-full flex items-center justify-center bg-gray-100">

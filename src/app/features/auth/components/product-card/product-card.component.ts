@@ -26,7 +26,7 @@ export class ProductCardComponent {
   get mainImage(): string {
     if (this.imgError) return '';
     const img = this.product.images?.find(i => i.featured1) || this.product.images?.find(i => i.is_main) || this.product.images?.[0];
-    return this.normalizeUrl(img?.image_url);
+    return this.normalizeUrl(img?.thumbnail_url || img?.image_url);
   }
 
   private normalizeUrl(url: string | undefined | null): string {
