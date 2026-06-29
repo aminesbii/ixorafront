@@ -38,12 +38,16 @@ export class ProductsPageComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
+  onSaleFilter = false;
+
   ngOnInit(): void {
-    const categoryId = this.route.snapshot.queryParamMap.get('category');
-    if (categoryId) {
-      this.currentFilters.category_id = categoryId;
-    }
-    this.loadProducts();
+    this.route.queryParams.subscribe(params => {
+      this.currentPage = 1;
+      const categoryId = params['category'];
+      this.currentFilters.category_id = categoryId || null;
+      this.onSaleFilter = params['on_sale'] === 'true';
+      this.loadProducts();
+    });
   }
 
   loadProducts(): void {
@@ -62,6 +66,15 @@ export class ProductsPageComponent implements OnInit {
     }
     if (this.searchQuery) {
       params.search = this.searchQuery;
+    }
+    if (this.onSaleFilter) {
+      params.on_sale = true;
+    }
+    if (this.currentFilters.priceRange[0] !== null) {
+      params.priceMin = this.currentFilters.priceRange[0];
+    }
+    if (this.currentFilters.priceRange[1] !== null) {
+      params.priceMax = this.currentFilters.priceRange[1];
     }
 
     this.productService.list(params).subscribe({

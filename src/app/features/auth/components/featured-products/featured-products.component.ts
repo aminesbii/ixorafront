@@ -11,6 +11,9 @@ interface FeaturedProductUI {
   variantId: string | null;
   name: string;
   price: string;
+  originalPrice?: string;
+  onSale?: boolean;
+  salePercentage?: number;
   image: string;
   tag: string;
   description?: string;
@@ -98,17 +101,26 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
             const mainImg = prod.images?.find(img => img.featured1) || prod.images?.find(img => img.is_main) || prod.images?.[0];
             const imageUrl = mainImg?.image_url || '';
             const firstVar = prod.variants?.[0];
-            const priceStr = firstVar ? `${firstVar.price} ${firstVar.currency}` : 'N/A';
+            const price = firstVar?.price ?? prod.base_price;
+            const currency = firstVar?.currency ?? prod.currency ?? 'TND';
+            const priceStr = price != null ? `${price} ${currency}` : '';
             const variantId = firstVar?._id || null;
+            const isOnSale = !!(prod.on_sale && prod.sale_percentage && prod.sale_percentage > 0);
+            const salePrice = isOnSale && price != null
+              ? `${Math.round(price * (1 - prod.sale_percentage! / 100) * 100) / 100} ${currency}`
+              : priceStr;
 
             return {
               id: prod._id,
               slug: prod.slug,
               variantId,
               name: prod.name,
-              price: priceStr,
+              price: salePrice,
+              originalPrice: isOnSale ? priceStr : undefined,
+              onSale: isOnSale,
+              salePercentage: isOnSale ? prod.sale_percentage! : undefined,
               image: imageUrl,
-              tag: ''
+              tag: isOnSale ? `-${prod.sale_percentage}%` : ''
             };
           });
 

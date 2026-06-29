@@ -16,11 +16,14 @@ export class ProductService {
     category_id?: string;
     status?: 'draft' | 'active' | 'archived';
     is_featured?: boolean;
+    on_sale?: boolean;
     search?: string;
     limit?: number;
     skip?: number;
     page?: number;
     sort?: string;
+    priceMin?: number;
+    priceMax?: number;
   }): Observable<{ products: Product[]; pagination: any }> {
     let params = new HttpParams();
     if (queryParams) {

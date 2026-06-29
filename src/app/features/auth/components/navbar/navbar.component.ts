@@ -4,6 +4,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CartService } from '../../../../core/services/cart.service';
+import { CategoryService } from '../../../../core/services/category.service';
+import { CategoryTree } from '../../../../core/models/category.model';
 
 @Component({
   selector: 'app-navbar',
@@ -21,11 +23,13 @@ export class NavbarComponent implements OnInit {
   userName = '';
   cartTotalItems = 0;
   isProfileDropdownOpen = false;
+  categories: CategoryTree[] = [];
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private cartService: CartService,
+    private categoryService: CategoryService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -49,6 +53,11 @@ export class NavbarComponent implements OnInit {
         this.cartTotalItems = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
       });
       this.cartService.getCart().subscribe();
+
+      this.categoryService.tree().subscribe({
+        next: (cats) => { this.categories = cats; },
+        error: () => { this.categories = []; }
+      });
 
       this.isOnHomePage = this.router.url === '/';
       this.updateHeroState();

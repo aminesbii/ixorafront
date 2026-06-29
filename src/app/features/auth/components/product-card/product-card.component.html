@@ -15,6 +15,10 @@
         <p class="text-[10px] uppercase tracking-[0.2em] text-gray-300">No image</p>
       </div>
     </div>
+    <div *ngIf="hasSale"
+      class="absolute top-4 left-4 bg-red-600 text-white text-[10px] uppercase font-bold px-3 py-1.5 tracking-wider shadow-md z-10">
+      -{{ product.sale_percentage }}%
+    </div>
     <div
       class="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
       <button
@@ -28,6 +32,9 @@
   <div class="card-body px-0 py-5">
     <h3 class="font-sans text-sm md:text-base font-medium text-gray-800 tracking-wide">{{ product.name }}</h3>
     <p class="text-[13px] text-gray-500 mt-1.5 line-clamp-2 leading-relaxed">{{ product.short_description || product.description }}</p>
-    <p class="text-sm font-semibold text-[var(--color-ixora-black)] mt-3">{{ firstPrice }}</p>
+    <p *ngIf="hasPrice" class="text-sm font-semibold mt-3" [class.text-red-600]="hasSale" [class.text-[var(--color-ixora-black)]]="!hasSale">
+      <span *ngIf="hasSale" class="line-through text-gray-400 mr-2">{{ firstPrice }}</span>
+      {{ hasSale ? salePriceStr : firstPrice }}
+    </p>
   </div>
 </div>

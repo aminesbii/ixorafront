@@ -34,6 +34,10 @@ export class SidebarFilterComponent implements OnInit {
     priceRange: [null, null]
   };
 
+  priceMin = 0;
+  priceMax = 1000;
+  maxPrice = 1000;
+
   sortOptions = [
     { value: '-createdAt', label: 'Newest First' },
     { value: 'createdAt', label: 'Oldest First' },
@@ -43,14 +47,13 @@ export class SidebarFilterComponent implements OnInit {
     return this.sortOptions.find(o => o.value === this.filters.sort)?.label || 'Sort By';
   }
 
-  priceRanges = [
-    { label: 'Under 20 TND', min: null, max: 20 },
-    { label: '20 - 50 TND', min: 20, max: 50 },
-    { label: '50 - 100 TND', min: 50, max: 100 },
-    { label: '100+ TND', min: 100, max: null },
-  ];
+  get rangeBarLeft(): number {
+    return (this.priceMin / this.maxPrice) * 100;
+  }
 
-  selectedPriceLabel = '';
+  get rangeBarWidth(): number {
+    return ((this.priceMax - this.priceMin) / this.maxPrice) * 100;
+  }
 
   constructor(private categoryService: CategoryService) {}
 
@@ -59,6 +62,26 @@ export class SidebarFilterComponent implements OnInit {
       next: (cats) => { this.categories = cats; },
       error: () => { this.categories = []; }
     });
+  }
+
+  onSliderChange(): void {
+    this.priceMin = Math.min(this.priceMin, this.priceMax);
+    this.priceMax = Math.max(this.priceMax, this.priceMin);
+    this.applyPriceFilter();
+  }
+
+  onInputChange(): void {
+    if (this.priceMin > this.priceMax) {
+      this.priceMax = this.priceMin;
+    }
+    this.applyPriceFilter();
+  }
+
+  private applyPriceFilter(): void {
+    const min = this.priceMin > 0 ? this.priceMin : null;
+    const max = this.priceMax < this.maxPrice ? this.priceMax : null;
+    this.filters.priceRange = [min, max];
+    this.emitChange();
   }
 
   setCategory(id: string | null): void {
@@ -80,20 +103,10 @@ export class SidebarFilterComponent implements OnInit {
     this.sortOpen = false;
   }
 
-  setPriceRange(min: number | null, max: number | null, label: string): void {
-    if (this.filters.priceRange[0] === min && this.filters.priceRange[1] === max) {
-      this.filters.priceRange = [null, null];
-      this.selectedPriceLabel = '';
-    } else {
-      this.filters.priceRange = [min, max];
-      this.selectedPriceLabel = label;
-    }
-    this.emitChange();
-  }
-
   clearAll(): void {
     this.filters = { category_id: null, sort: '-createdAt', priceRange: [null, null] };
-    this.selectedPriceLabel = '';
+    this.priceMin = 0;
+    this.priceMax = this.maxPrice;
     this.emitChange();
   }
 

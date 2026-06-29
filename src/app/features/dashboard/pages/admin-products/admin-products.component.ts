@@ -63,6 +63,10 @@ export class AdminProductsComponent implements OnInit {
       description: [''],
       status: ['draft', Validators.required],
       is_featured: [false],
+      base_price: [null],
+      currency: ['TND'],
+      on_sale: [false],
+      sale_percentage: [{ value: null, disabled: true }],
       details: this.fb.group({
         usage: [''],
         composition: ['']
@@ -76,6 +80,10 @@ export class AdminProductsComponent implements OnInit {
       description: [''],
       status: ['draft', Validators.required],
       is_featured: [false],
+      base_price: [null],
+      currency: ['TND'],
+      on_sale: [false],
+      sale_percentage: [{ value: null, disabled: true }],
       details: this.fb.group({
         usage: [''],
         composition: ['']
@@ -128,7 +136,8 @@ export class AdminProductsComponent implements OnInit {
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
     if (!this.showAddForm) {
-      this.productForm.reset({ status: 'draft', is_featured: false, details: { usage: '', composition: '' } });
+      this.productForm.reset({ status: 'draft', is_featured: false, base_price: null, currency: 'TND', on_sale: false, sale_percentage: null, details: { usage: '', composition: '' } });
+      this.productForm.get('sale_percentage')?.disable();
       this.resetCreateImages();
     }
   }
@@ -240,7 +249,7 @@ export class AdminProductsComponent implements OnInit {
   }
 
   private prepareFormValue(form: FormGroup): any {
-    const raw = form.value;
+    const raw = form.getRawValue();
     if (raw.details) {
       raw.details = {
         ...raw.details,
@@ -248,6 +257,9 @@ export class AdminProductsComponent implements OnInit {
           ? raw.details.composition.split(',').map((s: string) => s.trim()).filter(Boolean)
           : []
       };
+    }
+    if (!raw.on_sale) {
+      raw.sale_percentage = null;
     }
     return raw;
   }
@@ -286,11 +298,40 @@ export class AdminProductsComponent implements OnInit {
       description: product.description ?? '',
       status: product.status,
       is_featured: product.is_featured,
+      base_price: product.base_price ?? null,
+      currency: product.currency ?? 'TND',
+      on_sale: product.on_sale ?? false,
+      sale_percentage: product.sale_percentage ?? null,
       details: {
         usage: product.details?.usage ?? '',
         composition: product.details?.composition?.join(', ') ?? ''
       }
     });
+    this.toggleSalePercentage(product.on_sale ?? false);
+  }
+
+  private toggleSalePercentage(enabled: boolean): void {
+    if (enabled) {
+      this.editForm.get('sale_percentage')?.enable();
+    } else {
+      this.editForm.get('sale_percentage')?.disable();
+      this.editForm.get('sale_percentage')?.setValue(null);
+    }
+  }
+
+  onSaleChanged(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.toggleSalePercentage(checked);
+  }
+
+  onCreateSaleChanged(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked) {
+      this.productForm.get('sale_percentage')?.enable();
+    } else {
+      this.productForm.get('sale_percentage')?.disable();
+      this.productForm.get('sale_percentage')?.setValue(null);
+    }
   }
 
   closeEditModal(): void {

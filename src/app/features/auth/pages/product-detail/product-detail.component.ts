@@ -33,6 +33,8 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       description: 'Experience the ultimate hydration with our Rose Radiance Cream. Formulated with the finest Damascus rose extract, this luxurious moisturizer delivers intense nourishment while restoring your skin\'s natural glow. The lightweight, non-greasy formula absorbs quickly, leaving your skin feeling silky smooth and rejuvenated.',
       status: 'active',
       is_featured: true,
+      on_sale: false,
+      sale_percentage: null,
       details: {
         indication: 'Suitable for all skin types, especially dry and mature skin. Ideal for daily use both morning and night.',
         composition: ['Damascus Rose Extract', 'Shea Butter', 'Squalane', 'Vitamin E', 'Hyaluronic Acid', 'Glycerin', 'Niacinamide', 'Panthenol'],
@@ -61,6 +63,8 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       description: 'A lightweight, fast-absorbing serum powered by concentrated green tea polyphenols. Designed to calm irritation, reduce redness, and provide powerful antioxidant protection against environmental stressors.',
       status: 'active',
       is_featured: true,
+      on_sale: false,
+      sale_percentage: null,
       details: {
         indication: 'Ideal for sensitive, acne-prone, or combination skin. Use daily for best results.',
         composition: ['Green Tea Extract (EGCG)', 'Niacinamide', 'Zinc PCA', 'Aloe Vera', 'Hyaluronic Acid', 'Centella Asiatica'],
@@ -84,6 +88,8 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       description: 'Dive into 48-hour moisture with our advanced hyaluronic acid and marine botanical complex. This deeply hydrating formula plumps fine lines, restores the skin barrier, and delivers a luminous, dewy finish.',
       status: 'active',
       is_featured: true,
+      on_sale: false,
+      sale_percentage: null,
       details: {
         indication: 'Perfect for dehydrated, dull, or aging skin. Excellent for use in dry or cold climates.',
         composition: ['Multi-Molecular Hyaluronic Acid', 'Seaweed Extract', 'Marine Collagen', 'Glycerin', 'Ceramides', 'Vitamin B5'],
@@ -106,6 +112,8 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       description: 'Unlock your skin\'s natural radiance with our stabilized Vitamin C serum. Formulated with 15% L-Ascorbic Acid and Ferulic Acid, this potent antioxidant blend brightens dark spots, evens skin tone, and protects against free radical damage.',
       status: 'active',
       is_featured: true,
+      on_sale: false,
+      sale_percentage: null,
       details: {
         indication: 'Excellent for hyperpigmentation, sun damage, and uneven skin tone. Use in your morning routine.',
         composition: ['15% L-Ascorbic Acid (Vitamin C)', 'Ferulic Acid', 'Vitamin E', 'Hyaluronic Acid', 'Witch Hazel', 'Aloe Vera'],
@@ -239,13 +247,44 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     return this.product?.details?.usage || '';
   }
 
-  get price(): string {
+  private get priceData(): { price: number; currency: string } | null {
     const v = this.selectedVariant || this.product?.variants?.[0];
-    return v ? `${v.price} ${v.currency}` : '';
+    if (v) return { price: v.price, currency: v.currency };
+    if (this.product?.base_price != null) return { price: this.product.base_price, currency: this.product.currency ?? 'TND' };
+    return null;
+  }
+
+  get hasSale(): boolean {
+    return !!this.product?.on_sale && !!this.product?.sale_percentage && this.product.sale_percentage > 0;
+  }
+
+  get salePrice(): number | null {
+    const pd = this.priceData;
+    if (!pd || !this.hasSale) return null;
+    return Math.round(pd.price * (1 - this.product!.sale_percentage! / 100) * 100) / 100;
+  }
+
+  get price(): string {
+    const pd = this.priceData;
+    if (!pd) return '';
+    if (this.hasSale && this.salePrice !== null) {
+      return `${this.salePrice} ${pd.currency}`;
+    }
+    return `${pd.price} ${pd.currency}`;
+  }
+
+  get originalPrice(): string {
+    const pd = this.priceData;
+    return pd && this.hasSale ? `${pd.price} ${pd.currency}` : '';
   }
 
   get comparePrice(): number | null {
     return this.selectedVariant?.compare_at_price || this.product?.variants?.[0]?.compare_at_price || null;
+  }
+
+  variantSalePrice(v: ProductVariant): number | null {
+    if (!this.hasSale) return null;
+    return Math.round(v.price * (1 - this.product!.sale_percentage! / 100) * 100) / 100;
   }
 
   selectImage(img: ProductImage) {

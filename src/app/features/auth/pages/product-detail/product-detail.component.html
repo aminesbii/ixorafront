@@ -14,8 +14,12 @@
     <!-- Left: Images -->
     <div class="relative bg-gray-50 flex flex-col">
       <div class="flex-1 grid grid-cols-2">
-        <div class="overflow-hidden relative group cursor-pointer">
-          <img *ngIf="mainImageUrl" [src]="mainImageUrl"
+          <div class="overflow-hidden relative group cursor-pointer">
+            <div *ngIf="hasSale"
+              class="absolute top-6 left-6 z-10 bg-red-600 text-white text-xs uppercase font-bold px-4 py-2 tracking-wider shadow-lg">
+              -{{ product!.sale_percentage }}%
+            </div>
+            <img *ngIf="mainImageUrl" [src]="mainImageUrl"
                [alt]="product.name"
                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                [parallaxSpeed]="35"
@@ -51,8 +55,11 @@
         <h1 class="text-5xl lg:text-7xl font-serif leading-[1.1] mb-6">{{ product.name }}</h1>
 
         <div class="flex items-baseline gap-4 mb-8">
-          <span class="text-3xl lg:text-4xl font-semibold text-[var(--color-ixora-black)]">{{ price }}</span>
+          <span class="text-3xl lg:text-4xl font-semibold" [class.text-red-600]="hasSale" [class.text-[var(--color-ixora-black)]]="!hasSale">{{ price }}</span>
+          <span *ngIf="originalPrice" class="text-xl text-gray-300 line-through">{{ originalPrice }}</span>
           <span *ngIf="comparePrice" class="text-xl text-gray-300 line-through">{{ comparePrice }} {{ product.variants![0].currency }}</span>
+          <span *ngIf="hasSale"
+            class="text-sm font-bold text-white bg-red-600 px-3 py-1 rounded uppercase tracking-wider">-{{ product.sale_percentage }}%</span>
         </div>
 
         <p class="text-base lg:text-lg text-gray-500 leading-relaxed mb-10">{{ product.short_description || product.description }}</p>
@@ -81,7 +88,10 @@
               [class.border-gray-200 bg-white text-gray-700 hover:border-gray-400]="!(selectedVariant?._id === v._id || selectedVariant?.id === v.id)"
               [class.opacity-50 cursor-not-allowed]="!v.is_active">
               <span class="block text-xs uppercase tracking-wider">{{ v.variant_name || v.sku }}</span>
-              <span class="block text-[10px] mt-0.5 opacity-70">{{ v.price }} {{ v.currency }}</span>
+              <span class="block text-[10px] mt-0.5 opacity-70">
+                <span *ngIf="hasSale" class="line-through mr-1">{{ v.price }} {{ v.currency }}</span>
+                <span [class.text-red-300]="hasSale">{{ hasSale ? variantSalePrice(v) + ' ' + v.currency : v.price + ' ' + v.currency }}</span>
+              </span>
             </button>
           </div>
         </div>

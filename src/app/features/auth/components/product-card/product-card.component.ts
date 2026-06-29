@@ -45,9 +45,36 @@ export class ProductCardComponent {
     this.imgError = true;
   }
 
-  get firstPrice(): string {
+  private get priceSource(): { price: number; currency: string } | null {
     const v = this.product.variants?.[0];
-    return v ? `${v.price} ${v.currency}` : '';
+    if (v) return { price: v.price, currency: v.currency };
+    if (this.product.base_price != null) return { price: this.product.base_price, currency: this.product.currency ?? 'TND' };
+    return null;
+  }
+
+  get hasPrice(): boolean {
+    return this.priceSource !== null;
+  }
+
+  get firstPrice(): string {
+    const ps = this.priceSource;
+    return ps ? `${ps.price} ${ps.currency}` : '';
+  }
+
+  get hasSale(): boolean {
+    return !!this.product.on_sale && !!this.product.sale_percentage && this.product.sale_percentage > 0;
+  }
+
+  get salePrice(): number | null {
+    const ps = this.priceSource;
+    if (!ps || !this.hasSale) return null;
+    return Math.round(ps.price * (1 - this.product.sale_percentage! / 100) * 100) / 100;
+  }
+
+  get salePriceStr(): string {
+    const ps = this.priceSource;
+    if (!this.salePrice || !ps) return '';
+    return `${this.salePrice} ${ps.currency}`;
   }
 
   get firstVariantId(): string {

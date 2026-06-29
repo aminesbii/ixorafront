@@ -16,6 +16,7 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
 import { ProductsPageComponent } from './pages/products-page/products-page.component';
 import { HeroComponent } from './components/hero/hero.component';
 import { FeaturedProductsComponent } from './components/featured-products/featured-products.component';
+import { SalesProductsComponent } from './components/sales-products/sales-products.component';
 import { ShopByCategoryComponent } from './components/shop-by-category/shop-by-category.component';
 import { PromoSplitComponent } from './components/promo-split/promo-split.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -37,6 +38,7 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
     NavbarComponent,
     HeroComponent,
     FeaturedProductsComponent,
+    SalesProductsComponent,
     ShopByCategoryComponent,
     PromoSplitComponent,
     FooterComponent,

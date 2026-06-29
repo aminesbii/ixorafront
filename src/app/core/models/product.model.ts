@@ -45,6 +45,10 @@ export interface Product {
   details?: ProductDetails;
   status: 'draft' | 'active' | 'archived';
   is_featured: boolean;
+  on_sale?: boolean;
+  sale_percentage?: number | null;
+  base_price?: number | null;
+  currency?: string;
   createdAt?: string;
   updatedAt?: string;
 
