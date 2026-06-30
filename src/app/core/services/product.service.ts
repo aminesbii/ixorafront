@@ -9,7 +9,7 @@ import { Product, ProductImage, ProductVariant } from '../models/product.model';
 export class ProductService {
   private readonly API_URL = '/api/products';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // ─── Products (Public & Admin) ──────────────────────────────────────────────
   list(queryParams?: {
@@ -116,5 +116,11 @@ export class ProductService {
     return this.http.patch<ProductVariant>(`${this.API_URL}/${productId}/variants/${variantId}/stock`, {
       delta: quantityAdjustment
     });
+  }
+
+  uploadVariantImage(productId: string, variantId: string, imageFile: File): Observable<ProductVariant> {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    return this.http.post<ProductVariant>(`${this.API_URL}/${productId}/variants/${variantId}/image`, formData);
   }
 }

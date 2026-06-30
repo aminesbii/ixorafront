@@ -3,7 +3,9 @@
 <!-- Loading State -->
 <section *ngIf="loading" class="min-h-screen flex items-center justify-center bg-white pt-[64px]">
   <div class="text-center">
-    <div class="w-12 h-12 border-2 border-[var(--color-ixora-black)] border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+    <div
+      class="w-12 h-12 border-2 border-[var(--color-ixora-black)] border-t-transparent rounded-full animate-spin mx-auto mb-6">
+    </div>
     <p class="text-sm uppercase tracking-[0.3em] text-gray-400">Loading...</p>
   </div>
 </section>
@@ -14,34 +16,32 @@
     <!-- Left: Images -->
     <div class="relative bg-gray-50 flex flex-col">
       <div class="flex-1 grid grid-cols-2">
-          <div class="overflow-hidden relative group cursor-pointer">
-            <div *ngIf="hasSale"
-              class="absolute top-6 left-6 z-10 bg-red-600 text-white text-xs uppercase font-bold px-4 py-2 tracking-wider shadow-lg">
-              -{{ product!.sale_percentage }}%
-            </div>
-            <img *ngIf="mainImageUrl" [src]="mainImageUrl"
-               [alt]="product.name"
-               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-               [parallaxSpeed]="35"
-               (error)="mainImage && imageError(mainImage)" />
-          <div *ngIf="!mainImageUrl"
-               class="w-full h-full flex items-center justify-center bg-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        <div class="overflow-hidden relative group cursor-pointer">
+          <div *ngIf="hasSale"
+            class="absolute top-6 left-6 z-10 bg-red-600 text-white text-xs uppercase font-bold px-4 py-2 tracking-wider shadow-lg">
+            -{{ product!.sale_percentage }}%
+          </div>
+          <img *ngIf="mainImageUrl" [src]="mainImageUrl" [alt]="product.name"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            [parallaxSpeed]="35" (error)="mainImage && imageError(mainImage)" />
+          <div *ngIf="!mainImageUrl" class="w-full h-full flex items-center justify-center bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
         </div>
         <div class="overflow-hidden relative group cursor-pointer">
-          <img *ngIf="secondImageUrl" [src]="secondImageUrl"
-               [alt]="product.name"
-               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-               [parallaxSpeed]="35"
-               (error)="secondImage && imageError(secondImage)" />
-          <div *ngIf="!secondImageUrl"
-               class="w-full h-full flex items-center justify-center bg-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <img *ngIf="secondImageUrl" [src]="secondImageUrl" [alt]="product.name"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            [parallaxSpeed]="35" (error)="secondImage && imageError(secondImage)" />
+          <div *ngIf="!secondImageUrl" class="w-full h-full flex items-center justify-center bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
@@ -55,42 +55,51 @@
         <h1 class="text-5xl lg:text-7xl font-serif leading-[1.1] mb-6">{{ product.name }}</h1>
 
         <div class="flex items-baseline gap-4 mb-8">
-          <span class="text-3xl lg:text-4xl font-semibold" [class.text-red-600]="hasSale" [class.text-[var(--color-ixora-black)]]="!hasSale">{{ price }}</span>
+          <span class="text-3xl lg:text-4xl font-semibold" [class.text-red-600]="hasSale"
+            [class.text-[var(--color-ixora-black)]]="!hasSale">{{ price }}</span>
           <span *ngIf="originalPrice" class="text-xl text-gray-300 line-through">{{ originalPrice }}</span>
-          <span *ngIf="comparePrice" class="text-xl text-gray-300 line-through">{{ comparePrice }} {{ product.variants![0].currency }}</span>
+          <span *ngIf="comparePrice" class="text-xl text-gray-300 line-through">{{ comparePrice }} {{
+            product.variants![0].currency }}</span>
           <span *ngIf="hasSale"
-            class="text-sm font-bold text-white bg-red-600 px-3 py-1 rounded uppercase tracking-wider">-{{ product.sale_percentage }}%</span>
+            class="text-sm font-bold text-white bg-red-600 px-3 py-1 rounded uppercase tracking-wider">-{{
+            product.sale_percentage }}%</span>
         </div>
 
-        <p class="text-base lg:text-lg text-gray-500 leading-relaxed mb-10">{{ product.short_description || product.description }}</p>
+        <p class="text-base lg:text-lg text-gray-500 leading-relaxed mb-10">{{ product.short_description ||
+          product.description }}</p>
 
         <!-- Quantity + Add to Cart -->
         <div class="flex items-center gap-4 mb-6">
           <div class="flex items-center border border-gray-200">
             <button (click)="decreaseQty()" class="px-5 py-3 text-lg hover:bg-gray-100 transition-colors">−</button>
-            <span class="px-6 py-3 text-lg font-medium border-x border-gray-200 min-w-[60px] text-center">{{ quantity }}</span>
+            <span class="px-6 py-3 text-lg font-medium border-x border-gray-200 min-w-[60px] text-center">{{ quantity
+              }}</span>
             <button (click)="increaseQty()" class="px-5 py-3 text-lg hover:bg-gray-100 transition-colors">+</button>
           </div>
-          <button (click)="addToCart()"
-            class="flex-1 bg-[var(--color-ixora-black)] text-white py-4 px-10 text-sm uppercase tracking-[0.2em] hover:bg-[var(--color-ixora-green)] transition-all duration-500">
-            Add to Cart
+          <button (click)="addToCart()" [disabled]="outOfStock"
+            class="flex-1 text-white py-4 px-10 text-sm uppercase tracking-[0.2em] transition-all duration-500"
+            [ngClass]="outOfStock ? 'bg-gray-400 cursor-not-allowed' : 'bg-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-green)]'">
+            {{ outOfStock ? 'Out of Stock' : 'Add to Cart' }}
           </button>
         </div>
 
         <!-- Variant Cards Carousel -->
-        <div *ngIf="product.variants && product.variants.length > 0" class="border-t border-gray-100 pt-6 mt-6">
+        <div *ngIf="displayVariants.length > 0" class="border-t border-gray-100 pt-6 mt-6">
           <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-3">Size / Variant</p>
-          <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent" style="scrollbar-width: thin;">
-            <button *ngFor="let v of product.variants"
-              (click)="selectVariant(v)"
+          <div
+            class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+            style="scrollbar-width: thin;">
+            <button *ngFor="let v of displayVariants" (click)="selectVariant(v)"
               class="flex-shrink-0 px-5 py-3 border-2 text-sm font-semibold transition-all duration-200 cursor-pointer"
-              [class.border-[var(--color-ixora-black)] bg-[var(--color-ixora-black)] text-white]="selectedVariant?._id === v._id || selectedVariant?.id === v.id"
-              [class.border-gray-200 bg-white text-gray-700 hover:border-gray-400]="!(selectedVariant?._id === v._id || selectedVariant?.id === v.id)"
-              [class.opacity-50 cursor-not-allowed]="!v.is_active">
+              [ngClass]="{
+                'border-[var(--color-ixora-black)] bg-[var(--color-ixora-black)] text-white': isVariantSelected(v),
+                'border-gray-200 bg-white text-gray-700 hover:border-gray-400': !isVariantSelected(v)
+              }" [class.opacity-50]="!v.is_active" [class.cursor-not-allowed]="!v.is_active">
               <span class="block text-xs uppercase tracking-wider">{{ v.variant_name || v.sku }}</span>
               <span class="block text-[10px] mt-0.5 opacity-70">
                 <span *ngIf="hasSale" class="line-through mr-1">{{ v.price }} {{ v.currency }}</span>
-                <span [class.text-red-300]="hasSale">{{ hasSale ? variantSalePrice(v) + ' ' + v.currency : v.price + ' ' + v.currency }}</span>
+                <span [class.text-red-300]="hasSale">{{ hasSale ? variantSalePrice(v) + ' ' + v.currency : v.price + ' '
+                  + v.currency }}</span>
               </span>
             </button>
           </div>
@@ -109,10 +118,12 @@
 </section>
 
 <!-- Utilisation & Composition Section -->
-<section *ngIf="product && !loading && (usage || compositionList.length > 0)" class="bg-[var(--color-ixora-black)] text-white">
+<section *ngIf="product && !loading && (usage || compositionList.length > 0)"
+  class="bg-[var(--color-ixora-black)] text-white">
   <div class="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
     <!-- Utilisation -->
-    <div *ngIf="usage" class="relative p-12 lg:p-20 xl:p-24 flex items-center border-b lg:border-b-0 lg:border-r border-gray-800">
+    <div *ngIf="usage"
+      class="relative p-12 lg:p-20 xl:p-24 flex items-center border-b lg:border-b-0 lg:border-r border-gray-800">
       <div class="absolute top-0 left-0 w-48 h-48 bg-white/[0.02] rounded-br-full pointer-events-none"></div>
       <div #revealEl class="relative z-10 opacity-0 translate-y-8">
         <p class="text-xs uppercase tracking-[0.4em] text-gray-500 mb-10">How to Use</p>
@@ -151,15 +162,15 @@
 
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 max-w-7xl mx-auto">
       <div *ngFor="let img of galleryImages; let i = index" #revealEl [attr.data-delay]="i * 0.1"
-           class="overflow-hidden group cursor-pointer opacity-0 translate-y-8 aspect-square">
+        class="overflow-hidden group cursor-pointer opacity-0 translate-y-8 aspect-square">
         <img *ngIf="showImage(img)" [src]="normalizeUrl(img.image_url)" [alt]="img.alt_text || product.name"
-             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-             loading="lazy" [parallaxSpeed]="25"
-             (error)="imageError(img)" />
-        <div *ngIf="!showImage(img)"
-             class="w-full h-full flex items-center justify-center bg-gray-100">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy"
+          [parallaxSpeed]="25" (error)="imageError(img)" />
+        <div *ngIf="!showImage(img)" class="w-full h-full flex items-center justify-center bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
       </div>
@@ -169,7 +180,7 @@
 
 <!-- Cart Feedback -->
 <div *ngIf="cartFeedback"
-     class="fixed bottom-8 right-8 z-50 bg-[var(--color-ixora-black)] text-white px-6 py-4 shadow-xl border border-gray-800 transition-all duration-300">
+  class="fixed bottom-8 right-8 z-50 bg-[var(--color-ixora-black)] text-white px-6 py-4 shadow-xl border border-gray-800 transition-all duration-300">
   <span class="text-sm font-sans tracking-wide uppercase">{{ cartFeedback }}</span>
 </div>
 

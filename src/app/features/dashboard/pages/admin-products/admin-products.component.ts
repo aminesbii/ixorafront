@@ -5,6 +5,16 @@ import { ProductService } from '../../../../core/services/product.service';
 import { Product, ProductImage, ProductVariant } from '../../../../core/models/product.model';
 import { firstValueFrom, of, switchMap } from 'rxjs';
 
+export interface VariantCreationItem {
+  variant_name: string;
+  sku: string;
+  price: number;
+  compare_at_price: number | null;
+  stock_qty: number;
+  imageFile?: File | null;
+  imagePreview?: SafeUrl | null;
+}
+
 @Component({
   selector: 'app-admin-products',
   templateUrl: './admin-products.component.html',
@@ -31,6 +41,7 @@ export class AdminProductsComponent implements OnInit {
   selectedImages: File[] = [];
   imagePreviews: SafeUrl[] = [];
   isSubmitting = false;
+  newVariants: VariantCreationItem[] = [];
 
   // Edit modal
   editProduct: Product | null = null;
@@ -139,6 +150,7 @@ export class AdminProductsComponent implements OnInit {
       this.productForm.reset({ status: 'draft', is_featured: false, base_price: null, currency: 'TND', on_sale: false, sale_percentage: null, details: { usage: '', composition: '' } });
       this.productForm.get('sale_percentage')?.disable();
       this.resetCreateImages();
+      this.newVariants = [];
     }
   }
 
@@ -160,6 +172,41 @@ export class AdminProductsComponent implements OnInit {
     };
     reader.readAsDataURL(file);
     return preview!;
+  }
+
+  // ─── Inline Variants for Create ─────────────────────────────────────────────
+  addNewVariant(): void {
+    const slug = this.productForm.get('slug')?.value || 'product';
+    this.newVariants.push({
+      variant_name: '',
+      sku: `${slug.toUpperCase()}-V${this.newVariants.length + 1}`,
+      price: this.productForm.get('base_price')?.value || 0,
+      compare_at_price: null,
+      stock_qty: 0,
+    });
+  }
+
+  removeNewVariant(index: number): void {
+    this.newVariants.splice(index, 1);
+  }
+
+  onVariantImageSelected(index: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const file = input.files[0];
+    this.newVariants[index].imageFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.newVariants[index].imagePreview = this.sanitizer.bypassSecurityTrustUrl(reader.result as string);
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  removeVariantImage(index: number): void {
+    this.newVariants[index].imageFile = null;
+    this.newVariants[index].imagePreview = null;
   }
 
   // ─── Featured 1 Upload ─────────────────────────────────────────────────────
@@ -270,8 +317,36 @@ export class AdminProductsComponent implements OnInit {
     this.productService.create(this.prepareFormValue(this.productForm)).pipe(
       switchMap((product: Product) => {
         const id = product.id ?? (product as any)._id;
-        if (!id || (!this.featured1File && !this.featured2File && !this.selectedImages.length)) return of(product);
-        return this.uploadAllImages(id).then(() => product);
+
+        const uploadTask = async () => {
+          if (id && (this.featured1File || this.featured2File || this.selectedImages.length)) {
+            await this.uploadAllImages(id);
+          }
+          if (id && this.newVariants.length) {
+            for (const v of this.newVariants) {
+              try {
+                const created = await firstValueFrom(this.productService.addVariant(id, {
+                  sku: v.sku || `${product.slug.toUpperCase()}-V`,
+                  variant_name: v.variant_name,
+                  price: v.price,
+                  compare_at_price: v.compare_at_price,
+                  currency: product.currency || 'TND',
+                  stock_qty: v.stock_qty,
+                  is_active: true
+                }));
+                const variantId = created.id ?? (created as any)._id;
+                if (v.imageFile && variantId) {
+                  await firstValueFrom(this.productService.uploadVariantImage(id, variantId, v.imageFile));
+                }
+              } catch (err) {
+                console.error('Failed to create variant:', err);
+              }
+            }
+          }
+          return product;
+        };
+
+        return uploadTask();
       })
     ).subscribe({
       next: () => {
@@ -279,6 +354,7 @@ export class AdminProductsComponent implements OnInit {
         this.showAddForm = false;
         this.productForm.reset({ status: 'draft', is_featured: false, details: { usage: '', composition: '' } });
         this.resetCreateImages();
+        this.newVariants = [];
         this.isSubmitting = false;
       },
       error: () => { this.isSubmitting = false; }
@@ -453,6 +529,72 @@ export class AdminProductsComponent implements OnInit {
       },
       error: () => { this.isEditSubmitting = false; }
     });
+  }
+
+  // ─── Variants in Edit Modal ────────────────────────────────────────────────
+
+  saveEditVariant(variant: ProductVariant): void {
+    if (!this.editProduct || !variant.id) return;
+    this.productService.updateVariant(this.productId(this.editProduct), variant.id, {
+      variant_name: variant.variant_name,
+      sku: variant.sku,
+      price: variant.price,
+      compare_at_price: variant.compare_at_price,
+      stock_qty: variant.stock_qty,
+      is_active: variant.is_active
+    }).subscribe({
+      next: () => {
+        this.loadProducts();
+      }
+    });
+  }
+
+  deleteEditVariant(variant: ProductVariant): void {
+    if (!this.editProduct || !variant.id) return;
+    if (confirm(`Are you sure you want to delete the variant ${variant.variant_name || variant.sku}?`)) {
+      this.productService.deleteVariant(this.productId(this.editProduct), variant.id).subscribe({
+        next: () => {
+          if (this.editProduct) {
+            this.editProduct.variants = this.editProduct.variants?.filter(v => v.id !== variant.id);
+          }
+          this.loadProducts();
+        }
+      });
+    }
+  }
+
+  addEditVariant(): void {
+    if (!this.editProduct) return;
+    const count = this.editProduct.variants?.length || 0;
+    this.productService.addVariant(this.productId(this.editProduct), {
+      sku: `${this.editProduct.slug.toUpperCase()}-V${count + 1}`,
+      variant_name: '',
+      price: this.editProduct.base_price || 0,
+      stock_qty: 0,
+      currency: this.editProduct.currency || 'TND',
+      is_active: true
+    }).subscribe({
+      next: (created) => {
+        if (!this.editProduct) return;
+        if (!this.editProduct.variants) this.editProduct.variants = [];
+        this.editProduct.variants.push(created);
+        this.loadProducts();
+      }
+    });
+  }
+
+  onEditVariantImageSelected(variant: ProductVariant, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length || !this.editProduct || (!variant.id && !variant._id)) return;
+    const file = input.files[0];
+    const variantId = variant.id ?? variant._id!;
+    this.productService.uploadVariantImage(this.productId(this.editProduct), variantId, file).subscribe({
+      next: (updated) => {
+        variant.image_url = updated.image_url;
+        this.loadProducts();
+      }
+    });
+    input.value = '';
   }
 
   // ─── Stock ───────────────────────────────────────────────────────────────────

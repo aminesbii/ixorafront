@@ -19,7 +19,7 @@ export class ProductCardComponent {
   @Output() addToCart = new EventEmitter<ProductCardEvent>();
   @Output() viewProduct = new EventEmitter<string>();
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService) { }
 
   imgError = false;
 
@@ -46,9 +46,9 @@ export class ProductCardComponent {
   }
 
   private get priceSource(): { price: number; currency: string } | null {
+    if (this.product.base_price != null) return { price: this.product.base_price, currency: this.product.currency ?? 'TND' };
     const v = this.product.variants?.[0];
     if (v) return { price: v.price, currency: v.currency };
-    if (this.product.base_price != null) return { price: this.product.base_price, currency: this.product.currency ?? 'TND' };
     return null;
   }
 
@@ -77,16 +77,10 @@ export class ProductCardComponent {
     return `${this.salePrice} ${ps.currency}`;
   }
 
-  get firstVariantId(): string {
-    const v = this.product.variants?.[0];
-    return v ? (v._id || v.id || '') : '';
-  }
-
   onAddToCart(event: MouseEvent): void {
     event.stopPropagation();
-    const vid = this.firstVariantId;
-    if (!vid) return;
-    this.addToCart.emit({ product: this.product, variantId: vid });
+    // Default to the base product without forcing a variant! 
+    this.addToCart.emit({ product: this.product, variantId: null as any });
   }
 
   onClick(): void {

@@ -24,6 +24,7 @@ export interface ProductVariant {
   currency: string;
   stock_qty: number;
   is_active: boolean;
+  image_url?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }

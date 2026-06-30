@@ -138,7 +138,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     private cartService: CartService,
     private dashboardService: DashboardService,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const slug = this.route.snapshot.paramMap.get('slug');
@@ -158,7 +158,8 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       next: (res: any) => {
         this.product = res.product || res;
         this.selectedImage = this.mainImage?.image_url || null;
-        this.selectedVariant = this.product?.variants?.[0] || null;
+        // Don't auto-select a variant so the main image shows by default until they click a box
+        this.selectedVariant = null;
         this.loading = false;
         this.trackProductView();
         if (isPlatformBrowser(this.platformId)) {
@@ -171,7 +172,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
         if (fallback) {
           this.product = fallback;
           this.selectedImage = this.mainImage?.image_url || null;
-          this.selectedVariant = this.product?.variants?.[0] || null;
+          this.selectedVariant = null;
         }
         this.loading = false;
         if (isPlatformBrowser(this.platformId)) {
@@ -217,6 +218,9 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   }
 
   get mainImageUrl(): string {
+    if (this.selectedVariant?.image_url) {
+      return this.normalizeUrl(this.selectedVariant.image_url);
+    }
     return this.mainImage ? this.normalizeUrl(this.mainImage.image_url) : '';
   }
 
@@ -239,6 +243,27 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     return this.product?.images?.filter(i => !featuredIds.has(i._id || i.id || '')) || [];
   }
 
+  get displayVariants(): ProductVariant[] {
+    if (!this.product) return [];
+    if (!this.product.variants || this.product.variants.length === 0) return [];
+
+    // Create a fallback variant representing the base product!
+    const baseVariant: ProductVariant = {
+      id: 'base',
+      _id: 'base',
+      product_id: this.product.id || this.product._id,
+      sku: this.product.slug,
+      variant_name: 'Original',
+      price: this.product.base_price || 0,
+      currency: this.product.currency || 'TND',
+      stock_qty: 99,
+      is_active: true,
+      image_url: this.mainImage?.image_url
+    };
+
+    return [baseVariant, ...this.product.variants];
+  }
+
   get compositionList(): string[] {
     return this.product?.details?.composition || [];
   }
@@ -248,8 +273,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   }
 
   private get priceData(): { price: number; currency: string } | null {
-    const v = this.selectedVariant || this.product?.variants?.[0];
-    if (v) return { price: v.price, currency: v.currency };
+    if (this.selectedVariant) return { price: this.selectedVariant.price, currency: this.selectedVariant.currency };
     if (this.product?.base_price != null) return { price: this.product.base_price, currency: this.product.currency ?? 'TND' };
     return null;
   }
@@ -292,8 +316,30 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   }
 
   increaseQty() {
-    const stock = this.selectedVariant?.stock_qty || this.product?.variants?.[0]?.stock_qty || 99;
+    let stock = (this.product as any)?.stock_qty ?? 99;
+    if (this.selectedVariant && this.selectedVariant.id !== 'base' && this.selectedVariant._id !== 'base') {
+      stock = this.selectedVariant.stock_qty;
+    }
     if (this.quantity < stock) this.quantity++;
+  }
+
+  get outOfStock(): boolean {
+    let stock = (this.product as any)?.stock_qty ?? 99;
+    if (this.selectedVariant && this.selectedVariant.id !== 'base' && this.selectedVariant._id !== 'base') {
+      stock = this.selectedVariant.stock_qty;
+    }
+    return stock <= 0;
+  }
+
+  isVariantSelected(v: ProductVariant): boolean {
+    if (!this.selectedVariant && v.id === 'base') return true;
+    if (this.selectedVariant) {
+      if (v._id && this.selectedVariant._id === v._id) return true;
+      if (v.id && this.selectedVariant.id === v.id) return true;
+      if (v.id && this.selectedVariant._id === v.id) return true;
+      if (v._id && this.selectedVariant.id === v._id) return true;
+    }
+    return false;
   }
 
   decreaseQty() {
@@ -307,11 +353,13 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
 
   addToCart() {
     if (!this.product) return;
-    const variant = this.selectedVariant || this.product.variants?.[0];
-    if (!variant) {
-      this.showFeedback('No variant available');
-      return;
+
+    // Determine the ID. If selectedVariant is 'base', treat it as no variant.
+    let variantId = null;
+    if (this.selectedVariant && this.selectedVariant.id !== 'base' && this.selectedVariant._id !== 'base') {
+      variantId = this.selectedVariant._id || this.selectedVariant.id || null;
     }
+
     const prodId = this.product._id || this.product.id;
     if (!prodId) return;
 
@@ -319,10 +367,10 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       this.showFeedback('Please log in to add items to your cart');
       return;
     }
-    const variantId = variant._id || variant.id || null;
+
     this.cartService.addItem(prodId, variantId, this.quantity).subscribe({
       next: () => this.showFeedback(`${this.product!.name} added to cart!`),
-      error: () => this.showFeedback('Failed to add to cart')
+      error: (err) => this.showFeedback(err.error?.message || 'Failed to add to cart')
     });
   }
 
