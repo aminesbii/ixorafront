@@ -65,14 +65,13 @@ nav a.active-link::after {
   gap: 5px;
   cursor: pointer;
   color: currentColor;
-  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(4px);
   border-radius: 999px;
   transition: background 0.3s ease;
 }
 
 .hamburger-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: transparent;
 }
 
 .hamburger-btn--open {
@@ -124,6 +123,11 @@ nav a.active-link::after {
               visibility 0s linear 0s;
   pointer-events: auto;
   visibility: visible;
+}
+
+.mobile-menu,
+.mobile-menu a{
+  color: var(--color-ixora-black);
 }
 
 .mobile-menu .mobile-menu__links li,
