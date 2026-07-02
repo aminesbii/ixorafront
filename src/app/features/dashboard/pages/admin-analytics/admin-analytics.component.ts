@@ -35,8 +35,10 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
   loadingSummary = true;
   loadingChart = true;
   loadingStatusChart = true;
+  loadingHourlyChart = true;
   chart: any;
   statusChart: any;
+  hourlyChart: any;
   private subscription = new Subscription();
 
   constructor(private http: HttpClient, private dashboardService: DashboardService) { }
@@ -46,6 +48,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
     this.fetchMostClicked();
     this.fetchEarningsChart();
     this.fetchStatusChart();
+    this.fetchHourlyVisits();
   }
 
   fetchMostClicked(): void {
@@ -82,6 +85,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
     this.fetchMostClicked();
     this.fetchEarningsChart();
     this.fetchStatusChart();
+    this.fetchHourlyVisits();
   }
 
   fetchEarningsChart(): void {
@@ -205,6 +209,81 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
     });
   }
 
+  fetchHourlyVisits(): void {
+    this.loadingHourlyChart = true;
+    const sub = this.dashboardService.getHourlyVisits(this.daysAgo).subscribe({
+      next: (data) => {
+        this.renderHourlyChart(data);
+        this.loadingHourlyChart = false;
+      },
+      error: () => { this.loadingHourlyChart = false; }
+    });
+    this.subscription.add(sub);
+  }
+
+  renderHourlyChart(data: { hour: number; visits: number }[]): void {
+    if (this.hourlyChart) {
+      this.hourlyChart.destroy();
+    }
+    const canvas = document.getElementById('hourlyChart') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d')!;
+    const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.7)');
+    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)');
+
+    const labels = data.map(d => {
+      const h = d.hour;
+      const suffix = h >= 12 ? 'pm' : 'am';
+      const display = h % 12 === 0 ? 12 : h % 12;
+      return `${display}${suffix}`;
+    });
+    const visits = data.map(d => d.visits);
+    const maxVisits = Math.max(...visits);
+    const barColors = visits.map(v =>
+      v === maxVisits && maxVisits > 0 ? '#f59e0b' : 'rgba(59, 130, 246, 0.75)'
+    );
+
+    this.hourlyChart = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Visits',
+          data: visits,
+          backgroundColor: barColors,
+          borderRadius: 4,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (items) => `Hour: ${labels[items[0].dataIndex]}`,
+              label: (item) => ` ${item.raw} visit${(item.raw as number) !== 1 ? 's' : ''}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 11 } }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 11 } },
+            title: { display: true, text: 'Visits' }
+          }
+        }
+      }
+    });
+  }
+
   getConversionColor(rate: number): string {
     if (rate >= 5) return 'text-green-600';
     if (rate >= 2) return 'text-yellow-600';
@@ -215,5 +294,6 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
     if (this.chart) this.chart.destroy();
     if (this.statusChart) this.statusChart.destroy();
+    if (this.hourlyChart) this.hourlyChart.destroy();
   }
 }

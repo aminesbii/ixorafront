@@ -48,7 +48,7 @@ export class CartComponent implements OnInit {
     private addressService: AddressService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cartService.cart$.subscribe(cart => {
@@ -116,12 +116,25 @@ export class CartComponent implements OnInit {
   }
 
   getProductImage(item: CartItem): string {
+    // 1. Use the variant's image if the populated variant object has one
+    const variant = (item as any).variant;
+    if (variant?.image_url) {
+      return this.normalizeUrl(variant.image_url);
+    }
+    // 2. Fall back to the product's main image
     const product = this.getProduct(item);
     if (product?.images && product.images.length > 0) {
       const mainImg = product.images.find(img => img.is_main);
-      return mainImg?.image_url || product.images[0].image_url;
+      return this.normalizeUrl(mainImg?.image_url || product.images[0].image_url);
     }
     return 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=300&auto=format&fit=crop';
+  }
+
+  private normalizeUrl(url: string | undefined | null): string {
+    if (!url) return '';
+    if (url.startsWith('/uploads/')) return '/api' + url;
+    if (url.startsWith('uploads/')) return '/api/' + url;
+    return url;
   }
 
   getProductName(item: CartItem): string {

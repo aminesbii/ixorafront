@@ -78,6 +78,23 @@
     </div>
   </div>
 
+  <!-- Hourly Visits Heatmap -->
+  <div class="bg-white rounded-lg border border-gray-200 p-5 mb-8">
+    <div class="flex items-center justify-between mb-4 border-b border-gray-100 pb-4">
+      <div>
+        <h2 class="text-lg font-serif text-[var(--color-ixora-black)]">Visits by Hour of Day</h2>
+        <p class="text-xs text-gray-400 mt-0.5">Peak hour highlighted in amber · based on last {{ daysAgo }} days</p>
+      </div>
+      <div *ngIf="loadingHourlyChart" class="flex items-center space-x-2 text-sm text-gray-500">
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
+        <span>Loading...</span>
+      </div>
+    </div>
+    <div class="relative w-full" style="height: 260px;">
+      <canvas id="hourlyChart"></canvas>
+    </div>
+  </div>
+
   <!-- Most Clicked Products (ProductPerformanceDaily) -->
   <div class="bg-white rounded-lg border border-gray-200">
     <div

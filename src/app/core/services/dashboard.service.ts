@@ -57,4 +57,11 @@ export class DashboardService {
     if (days) params = params.set('days', days.toString());
     return this.http.get<{ status: string, count: number }[]>('/api/orders/status-stats', { params });
   }
+
+  // Admin: Get hourly visit distribution
+  getHourlyVisits(days?: number): Observable<{ hour: number, visits: number }[]> {
+    let params = new HttpParams();
+    if (days) params = params.set('days', days.toString());
+    return this.http.get<{ hour: number, visits: number }[]>(`${this.API_URL}/performance/hourly-visits`, { params });
+  }
 }
