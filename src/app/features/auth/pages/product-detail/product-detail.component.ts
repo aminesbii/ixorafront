@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import gsap from 'gsap';
 import { ProductService } from '../../../../core/services/product.service';
 import { CartService } from '../../../../core/services/cart.service';
@@ -137,6 +138,8 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     private productService: ProductService,
     private cartService: CartService,
     private dashboardService: DashboardService,
+    private title: Title,
+    private meta: Meta,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -158,9 +161,9 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
       next: (res: any) => {
         this.product = res.product || res;
         this.selectedImage = this.mainImage?.image_url || null;
-        // Don't auto-select a variant so the main image shows by default until they click a box
         this.selectedVariant = null;
         this.loading = false;
+        this.setSEOTags(this.product);
         this.trackProductView();
         if (isPlatformBrowser(this.platformId)) {
           setTimeout(() => this.initScrollAnimations(), 200);
@@ -173,6 +176,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
           this.product = fallback;
           this.selectedImage = this.mainImage?.image_url || null;
           this.selectedVariant = null;
+          this.setSEOTags(this.product);
         }
         this.loading = false;
         if (isPlatformBrowser(this.platformId)) {
@@ -180,6 +184,34 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
         }
       }
     });
+  }
+
+  private setSEOTags(product: Product | null): void {
+    if (!product) return;
+    const name = product.name;
+    const description = product.short_description || product.description || '';
+    const image = this.mainImage ? this.normalizeUrl(this.mainImage.image_url) : '';
+    const url = `https://ixora.tn/products/${product.slug}`;
+
+    this.title.setTitle(`${name} | IXORA`);
+
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ name: 'keywords', content: `${name}, ixora, dermocosmetics, skincare` });
+    this.meta.updateTag({ property: 'og:title', content: name });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:image', content: image });
+    this.meta.updateTag({ property: 'og:url', content: url });
+    this.meta.updateTag({ property: 'og:type', content: 'product' });
+    this.meta.updateTag({ property: 'og:site_name', content: 'IXORA' });
+    this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+    this.meta.updateTag({ name: 'twitter:title', content: name });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+    this.meta.updateTag({ name: 'twitter:image', content: image });
+
+    if (product.base_price != null) {
+      this.meta.updateTag({ property: 'product:price:amount', content: String(product.base_price) });
+      this.meta.updateTag({ property: 'product:price:currency', content: product.currency || 'TND' });
+    }
   }
 
   trackProductView() {
