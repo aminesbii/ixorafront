@@ -61,6 +61,12 @@ export class AdminProductsComponent implements OnInit {
   // Delete confirm
   confirmDelete: Product | null = null;
 
+  // Inline expand variants
+  expandedProductId: string | null = null;
+  expandedVariants: { [key: string]: ProductVariant[] } = {};
+  expandedLoading: { [key: string]: boolean } = {};
+  expandedNewVariants: { [key: string]: VariantCreationItem[] } = {};
+
   constructor(
     private productService: ProductService,
     private fb: FormBuilder,
@@ -614,6 +620,96 @@ export class AdminProductsComponent implements OnInit {
     });
   }
 
+  // ─── Inline Expand Variants ─────────────────────────────────────────────────
+
+  toggleExpand(product: Product): void {
+    const id = this.productId(product);
+    if (this.expandedProductId === id) {
+      this.expandedProductId = null;
+      return;
+    }
+    this.expandedProductId = id;
+    if (!this.expandedVariants[id]) {
+      this.loadVariantsForProduct(id);
+    }
+  }
+
+  loadVariantsForProduct(productId: string): void {
+    this.expandedLoading[productId] = true;
+    this.productService.listVariants(productId).subscribe({
+      next: (variants) => {
+        this.expandedVariants[productId] = variants;
+        this.expandedLoading[productId] = false;
+      },
+      error: () => {
+        this.expandedVariants[productId] = [];
+        this.expandedLoading[productId] = false;
+      }
+    });
+  }
+
+  addNewExpandedVariant(product: Product): void {
+    const id = this.productId(product);
+    if (!this.expandedNewVariants[id]) this.expandedNewVariants[id] = [];
+    const slug = product.slug;
+    const existingCount = (this.expandedVariants[id]?.length || 0) + this.expandedNewVariants[id].length;
+    this.expandedNewVariants[id].push({
+      variant_name: '',
+      sku: `${slug.toUpperCase()}-V${existingCount + 1}`,
+      price: product.base_price || 0,
+      compare_at_price: null,
+      stock_qty: 0,
+    });
+  }
+
+  saveNewExpandedVariant(product: Product, index: number): void {
+    const id = this.productId(product);
+    const pending = this.expandedNewVariants[id]?.[index];
+    if (!pending) return;
+    this.productService.addVariant(id, {
+      sku: pending.sku,
+      variant_name: pending.variant_name,
+      price: pending.price,
+      compare_at_price: pending.compare_at_price,
+      stock_qty: pending.stock_qty,
+      currency: product.currency || 'TND',
+      is_active: true
+    }).subscribe({
+      next: (created) => {
+        if (!this.expandedVariants[id]) this.expandedVariants[id] = [];
+        this.expandedVariants[id].push(created);
+        this.expandedNewVariants[id].splice(index, 1);
+      }
+    });
+  }
+
+  cancelNewExpandedVariant(productId: string, index: number): void {
+    this.expandedNewVariants[productId]?.splice(index, 1);
+  }
+
+  saveVariantExpanded(productId: string, variant: ProductVariant): void {
+    const variantId = this.variantId(variant);
+    if (!variantId) return;
+    this.productService.updateVariant(productId, variantId, {
+      variant_name: variant.variant_name,
+      sku: variant.sku,
+      price: variant.price,
+      stock_qty: variant.stock_qty,
+      is_active: variant.is_active
+    }).subscribe({});
+  }
+
+  deleteVariantExpanded(productId: string, variant: ProductVariant): void {
+    const variantId = this.variantId(variant);
+    if (confirm(`Are you sure you want to delete the variant ${variant.variant_name || variant.sku}?`)) {
+      this.productService.deleteVariant(productId, variantId).subscribe({
+        next: () => {
+          this.expandedVariants[productId] = this.expandedVariants[productId]?.filter(v => this.variantId(v) !== variantId) || [];
+        }
+      });
+    }
+  }
+
   // ─── Delete ──────────────────────────────────────────────────────────────────
 
   confirmDeleteProduct(product: Product): void { this.confirmDelete = product; }
@@ -676,5 +772,18 @@ export class AdminProductsComponent implements OnInit {
 
   totalStock(variants: ProductVariant[]): number {
     return variants.reduce((sum, v) => sum + v.stock_qty, 0);
+  }
+
+  getProductPrice(product: Product): string {
+    if (product.base_price != null) return `${product.base_price} ${product.currency || 'TND'}`;
+    const v = product.variants;
+    if (v?.length) {
+      const prices = v.map(x => x.price);
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      if (min === max) return `${min} ${product.currency || 'TND'}`;
+      return `${min} - ${max} ${product.currency || 'TND'}`;
+    }
+    return '-';
   }
 }
