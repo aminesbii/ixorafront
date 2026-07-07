@@ -46,6 +46,7 @@ export class ProductsPageComponent implements OnInit {
       const categoryId = params['category'];
       this.currentFilters.category_id = categoryId || null;
       this.onSaleFilter = params['on_sale'] === 'true';
+      this.searchQuery = params['search'] || '';
       this.loadProducts();
     });
   }

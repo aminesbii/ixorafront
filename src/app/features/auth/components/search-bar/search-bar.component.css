@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+input::placeholder {
+  font-size: 0.8125rem;
+}
