@@ -3,6 +3,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product, ProductImage, ProductVariant } from '../models/product.model';
 
+export interface Suggestion {
+  id: string;
+  name: string;
+  slug: string;
+  base_price: number | null;
+  images: { image_url: string }[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,6 +43,12 @@ export class ProductService {
       });
     }
     return this.http.get<{ products: Product[]; pagination: any }>(this.API_URL, { params });
+  }
+
+  suggestions(q: string, limit = 5): Observable<Suggestion[]> {
+    return this.http.get<Suggestion[]>(`${this.API_URL}/suggestions`, {
+      params: { q, limit: limit.toString() }
+    });
   }
 
   getBySlug(slug: string): Observable<Product> {

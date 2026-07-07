@@ -10,6 +10,9 @@
       type="text"
       [(ngModel)]="query"
       (ngModelChange)="onInput($event)"
+      (keydown)="onKeydown($event)"
+      (focus)="suggestions.length > 0 && (showDropdown = true)"
+      (blur)="onBlur()"
       placeholder="Search products..."
       class="w-full pl-12 pr-10 py-3 border border-gray-200 rounded-none bg-white text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-colors"
     />
@@ -19,6 +22,21 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
+    </button>
+  </div>
+  <div *ngIf="showDropdown"
+       class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 shadow-lg z-50 max-h-80 overflow-y-auto">
+    <button *ngFor="let s of suggestions"
+            (mousedown)="selectSuggestion(s)"
+            class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+      <img *ngIf="s.images?.[0]?.image_url"
+           [src]="s.images?.[0]?.image_url"
+           class="w-10 h-10 object-cover bg-gray-100 flex-shrink-0"
+           alt="" />
+      <div class="flex-1 min-w-0">
+        <p class="text-sm text-gray-800 truncate">{{ s.name }}</p>
+        <p *ngIf="s.base_price != null" class="text-xs text-gray-500 mt-0.5">{{ s.base_price | currency:'TND ' }}</p>
+      </div>
     </button>
   </div>
 </div>

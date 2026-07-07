@@ -44,6 +44,7 @@ export interface Product {
   slug: string;
   short_description?: string | null;
   description?: string | null;
+  ingredients?: string | null;
   details?: ProductDetails;
   status: 'draft' | 'active' | 'archived';
   is_featured: boolean;
