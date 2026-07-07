@@ -876,4 +876,12 @@
       </div>
     </div>
   </div>
+
+  <!-- Toast Notification -->
+  <div *ngIf="toastVisible"
+    class="fixed bottom-6 right-6 z-[9999] px-5 py-3 bg-[var(--color-ixora-black)] text-white text-sm font-semibold rounded-md shadow-lg transition-all duration-300"
+    [class.opacity-0]="!toastVisible"
+    [class.opacity-100]="toastVisible">
+    {{ toastMessage }}
+  </div>
 </div>

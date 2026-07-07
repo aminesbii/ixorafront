@@ -58,6 +58,11 @@ export class AdminProductsComponent implements OnInit {
   adjustVariant: { productId: string; variant: ProductVariant } | null = null;
   stockAdjustments: { [key: string]: number } = {};
 
+  // Toast
+  toastMessage = '';
+  toastVisible = false;
+  private toastTimer: any = null;
+
   // Delete confirm
   confirmDelete: Product | null = null;
 
@@ -110,6 +115,10 @@ export class AdminProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProducts();
+  }
+
+  ngOnDestroy(): void {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
   }
 
   loadProducts(): void {
@@ -277,26 +286,36 @@ export class AdminProductsComponent implements OnInit {
     this.imagePreviews.splice(index, 1);
   }
 
+  private showToast(msg: string): void {
+    this.toastMessage = msg;
+    this.toastVisible = true;
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => {
+      this.toastVisible = false;
+      this.toastMessage = '';
+    }, 4000);
+  }
+
   private async uploadAllImages(productId: string): Promise<void> {
     if (this.featured1File) {
       try {
         await firstValueFrom(this.productService.uploadFeatured1(productId, this.featured1File));
-      } catch (err) {
-        console.error('Failed to upload featured1:', err);
+      } catch (err: any) {
+        this.showToast(err.error?.message || err.message || 'Failed to upload featured image 1');
       }
     }
     if (this.featured2File) {
       try {
         await firstValueFrom(this.productService.uploadFeatured2(productId, this.featured2File));
-      } catch (err) {
-        console.error('Failed to upload featured2:', err);
+      } catch (err: any) {
+        this.showToast(err.error?.message || err.message || 'Failed to upload featured image 2');
       }
     }
     for (let i = 0; i < this.selectedImages.length; i++) {
       try {
         await firstValueFrom(this.productService.addImage(productId, this.selectedImages[i], undefined, 10 + i));
-      } catch (err) {
-        console.error(`Failed to upload image ${i}:`, err);
+      } catch (err: any) {
+        this.showToast(err.error?.message || err.message || `Failed to upload image ${i + 1}`);
       }
     }
   }
@@ -344,8 +363,8 @@ export class AdminProductsComponent implements OnInit {
                 if (v.imageFile && variantId) {
                   await firstValueFrom(this.productService.uploadVariantImage(id, variantId, v.imageFile));
                 }
-              } catch (err) {
-                console.error('Failed to create variant:', err);
+              } catch (err: any) {
+                this.showToast(err.error?.message || err.message || 'Failed to create variant');
               }
             }
           }
@@ -505,8 +524,8 @@ export class AdminProductsComponent implements OnInit {
           );
         }
       },
-      error: (err) => {
-        console.error('Failed to delete image:', err);
+      error: (err: any) => {
+        this.showToast(err.error?.message || err.message || 'Failed to delete image');
       }
     });
   }
@@ -519,13 +538,25 @@ export class AdminProductsComponent implements OnInit {
     this.productService.update(id, this.prepareFormValue(this.editForm)).pipe(
       switchMap(async () => {
         if (this.editFeatured1File) {
-          await firstValueFrom(this.productService.uploadFeatured1(id, this.editFeatured1File));
+          try {
+            await firstValueFrom(this.productService.uploadFeatured1(id, this.editFeatured1File));
+          } catch (err: any) {
+            this.showToast(err.error?.message || err.message || 'Failed to upload featured image 1');
+          }
         }
         if (this.editFeatured2File) {
-          await firstValueFrom(this.productService.uploadFeatured2(id, this.editFeatured2File));
+          try {
+            await firstValueFrom(this.productService.uploadFeatured2(id, this.editFeatured2File));
+          } catch (err: any) {
+            this.showToast(err.error?.message || err.message || 'Failed to upload featured image 2');
+          }
         }
         for (let i = 0; i < this.editSelectedImages.length; i++) {
-          await firstValueFrom(this.productService.addImage(id, this.editSelectedImages[i], undefined, 10 + i));
+          try {
+            await firstValueFrom(this.productService.addImage(id, this.editSelectedImages[i], undefined, 10 + i));
+          } catch (err: any) {
+            this.showToast(err.error?.message || err.message || `Failed to upload image ${i + 1}`);
+          }
         }
       })
     ).subscribe({
@@ -598,6 +629,9 @@ export class AdminProductsComponent implements OnInit {
       next: (updated) => {
         variant.image_url = updated.image_url;
         this.loadProducts();
+      },
+      error: (err: any) => {
+        this.showToast(err.error?.message || err.message || 'Failed to upload variant image');
       }
     });
     input.value = '';
