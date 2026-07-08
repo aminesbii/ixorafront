@@ -76,10 +76,20 @@ export class SalesProductsComponent implements OnInit, AfterViewInit {
     return ps ? `${ps.price} ${ps.currency}` : '';
   }
 
+  private isSaleActive(product: Product): boolean {
+    if (!product.on_sale || !product.sale_percentage) return false;
+    if (product.sale_end_date) {
+      const now = new Date();
+      const end = new Date(product.sale_end_date);
+      if (!isNaN(end.getTime()) && end.getTime() - now.getTime() < 0) return false;
+    }
+    return true;
+  }
+
   salePrice(product: Product): string | null {
     const ps = this.priceSource(product);
-    if (!ps || !product.on_sale || !product.sale_percentage) return null;
-    const sp = Math.round(ps.price * (1 - product.sale_percentage / 100) * 100) / 100;
+    if (!ps || !this.isSaleActive(product)) return null;
+    const sp = Math.round(ps.price * (1 - product.sale_percentage! / 100) * 100) / 100;
     return `${sp} ${ps.currency}`;
   }
 

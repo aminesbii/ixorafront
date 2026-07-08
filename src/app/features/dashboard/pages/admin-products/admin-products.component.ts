@@ -89,7 +89,9 @@ export class AdminProductsComponent implements OnInit {
       currency: ['TND'],
       on_sale: [false],
       sale_percentage: [{ value: null, disabled: true }],
+      sale_end_date: [{ value: null, disabled: true }],
       details: this.fb.group({
+        indication: [''],
         usage: [''],
         composition: ['']
       })
@@ -106,7 +108,9 @@ export class AdminProductsComponent implements OnInit {
       currency: ['TND'],
       on_sale: [false],
       sale_percentage: [{ value: null, disabled: true }],
+      sale_end_date: [{ value: null, disabled: true }],
       details: this.fb.group({
+        indication: [''],
         usage: [''],
         composition: ['']
       })
@@ -162,8 +166,9 @@ export class AdminProductsComponent implements OnInit {
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
     if (!this.showAddForm) {
-      this.productForm.reset({ status: 'draft', is_featured: false, base_price: null, currency: 'TND', on_sale: false, sale_percentage: null, details: { usage: '', composition: '' } });
+      this.productForm.reset({ status: 'draft', is_featured: false, base_price: null, currency: 'TND', on_sale: false, sale_percentage: null, sale_end_date: null, details: { indication: '', usage: '', composition: '' } });
       this.productForm.get('sale_percentage')?.disable();
+      this.productForm.get('sale_end_date')?.disable();
       this.resetCreateImages();
       this.newVariants = [];
     }
@@ -332,6 +337,10 @@ export class AdminProductsComponent implements OnInit {
     }
     if (!raw.on_sale) {
       raw.sale_percentage = null;
+      raw.sale_end_date = null;
+    }
+    if (raw.sale_end_date) {
+      raw.sale_end_date = new Date(raw.sale_end_date).toISOString();
     }
     return raw;
   }
@@ -377,7 +386,7 @@ export class AdminProductsComponent implements OnInit {
       next: () => {
         this.loadProducts();
         this.showAddForm = false;
-        this.productForm.reset({ status: 'draft', is_featured: false, details: { usage: '', composition: '' } });
+        this.productForm.reset({ status: 'draft', is_featured: false, details: { indication: '', usage: '', composition: '' } });
         this.resetCreateImages();
         this.newVariants = [];
         this.isSubmitting = false;
@@ -403,7 +412,9 @@ export class AdminProductsComponent implements OnInit {
       currency: product.currency ?? 'TND',
       on_sale: product.on_sale ?? false,
       sale_percentage: product.sale_percentage ?? null,
+      sale_end_date: product.sale_end_date ? new Date(product.sale_end_date) : null,
       details: {
+        indication: product.details?.indication ?? '',
         usage: product.details?.usage ?? '',
         composition: product.details?.composition?.join(', ') ?? ''
       }
@@ -414,9 +425,12 @@ export class AdminProductsComponent implements OnInit {
   private toggleSalePercentage(enabled: boolean): void {
     if (enabled) {
       this.editForm.get('sale_percentage')?.enable();
+      this.editForm.get('sale_end_date')?.enable();
     } else {
       this.editForm.get('sale_percentage')?.disable();
       this.editForm.get('sale_percentage')?.setValue(null);
+      this.editForm.get('sale_end_date')?.disable();
+      this.editForm.get('sale_end_date')?.setValue(null);
     }
   }
 
@@ -429,9 +443,12 @@ export class AdminProductsComponent implements OnInit {
     const checked = (event.target as HTMLInputElement).checked;
     if (checked) {
       this.productForm.get('sale_percentage')?.enable();
+      this.productForm.get('sale_end_date')?.enable();
     } else {
       this.productForm.get('sale_percentage')?.disable();
       this.productForm.get('sale_percentage')?.setValue(null);
+      this.productForm.get('sale_end_date')?.disable();
+      this.productForm.get('sale_end_date')?.setValue(null);
     }
   }
 

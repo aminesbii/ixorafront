@@ -311,7 +311,20 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   }
 
   get hasSale(): boolean {
-    return !!this.product?.on_sale && !!this.product?.sale_percentage && this.product.sale_percentage > 0;
+    if (!this.product?.on_sale || !this.product?.sale_percentage || this.product.sale_percentage <= 0) return false;
+    if (this.product.sale_end_date) {
+      return this.saleDaysLeft !== null;
+    }
+    return true;
+  }
+
+  get saleDaysLeft(): number | null {
+    if (!this.product?.sale_end_date) return null;
+    const now = new Date();
+    const end = new Date(this.product.sale_end_date);
+    if (isNaN(end.getTime())) return null;
+    const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return diff >= 0 ? diff : null;
   }
 
   get salePrice(): number | null {

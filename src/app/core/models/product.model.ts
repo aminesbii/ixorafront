@@ -50,6 +50,7 @@ export interface Product {
   is_featured: boolean;
   on_sale?: boolean;
   sale_percentage?: number | null;
+  sale_end_date?: string | null;
   base_price?: number | null;
   currency?: string;
   createdAt?: string;

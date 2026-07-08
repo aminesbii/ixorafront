@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { LayoutsModule } from '../../layouts/layouts.module';
@@ -22,6 +25,9 @@ import { SettingsComponent } from './pages/settings/settings.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
     DashboardRoutingModule,
     LayoutsModule
   ]

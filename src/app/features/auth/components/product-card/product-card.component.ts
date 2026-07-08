@@ -62,7 +62,13 @@ export class ProductCardComponent {
   }
 
   get hasSale(): boolean {
-    return !!this.product.on_sale && !!this.product.sale_percentage && this.product.sale_percentage > 0;
+    if (!this.product.on_sale || !this.product.sale_percentage || this.product.sale_percentage <= 0) return false;
+    if (this.product.sale_end_date) {
+      const now = new Date();
+      const end = new Date(this.product.sale_end_date);
+      if (!isNaN(end.getTime()) && end.getTime() - now.getTime() < 0) return false;
+    }
+    return true;
   }
 
   get salePrice(): number | null {
