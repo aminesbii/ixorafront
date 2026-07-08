@@ -26,17 +26,18 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
   selectedOrder: (Order & { items?: OrderItem[] }) | null = null;
   loadingDetail = false;
 
-  isEditing = false;
   isSaving = false;
+  statusDropdownOpen = false;
   editName = '';
   editEmail = '';
   editPhone = '';
   editStatus = '';
+  editTryCount = 0;
   editShippingFee = 0;
   editDiscountTotal = 0;
   editTaxTotal = 0;
 
-  allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'];
+  allStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded', 'tried'];
 
   statusColors: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-800',
@@ -45,11 +46,18 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     shipped: 'bg-purple-100 text-purple-800',
     delivered: 'bg-green-100 text-green-800',
     cancelled: 'bg-red-100 text-red-800',
-    refunded: 'bg-gray-100 text-gray-800'
+    refunded: 'bg-gray-100 text-gray-800',
+    tried: 'bg-orange-100 text-orange-800'
   };
+
+  statusColorClass(status: string): string {
+    return this.statusColors[status.toLowerCase()] || 'bg-gray-100 text-gray-800';
+  }
 
   editingStatusId: string | null = null;
   editingStatusValue = '';
+
+
 
   toastMessage = '';
   toastVisible = false;
@@ -123,6 +131,20 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     this.editingStatusId = null;
   }
 
+  updateTryCount(order: Order, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const val = Math.max(0, Math.floor(Number(input.value) || 0));
+    input.value = String(val);
+    if (val === (order.try_count ?? 0)) return;
+    this.orderService.update(order._id, { try_count: val } as any).subscribe({
+      next: () => {
+        order.try_count = val;
+        this.showToast(`Try count updated to ${val}`);
+      },
+      error: () => {}
+    });
+  }
+
   commitInlineEdit(order: Order, status: string): void {
     this.editingStatusId = null;
     if (status === order.status) return;
@@ -191,7 +213,6 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
   viewOrder(order: Order): void {
     this.loadingDetail = true;
     this.selectedOrder = null;
-    this.isEditing = false;
     this.cancelDelete();
     this.cancelInlineEdit();
     this.orderService.getById(order._id).subscribe({
@@ -206,7 +227,6 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
 
   closeDetail(): void {
     this.selectedOrder = null;
-    this.isEditing = false;
     this.cancelInlineEdit();
   }
 
@@ -216,14 +236,10 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     this.editEmail = this.selectedOrder.customer_email || '';
     this.editPhone = this.selectedOrder.customer_phone || '';
     this.editStatus = this.selectedOrder.status || '';
+    this.editTryCount = this.selectedOrder.try_count ?? 0;
     this.editShippingFee = this.selectedOrder.shipping_fee || 0;
     this.editDiscountTotal = this.selectedOrder.discount_total || 0;
     this.editTaxTotal = this.selectedOrder.tax_total || 0;
-  }
-
-  toggleEdit(): void {
-    this.isEditing = !this.isEditing;
-    if (this.isEditing) this.syncEditFields();
   }
 
   saveOrder(): void {
@@ -235,6 +251,7 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
       customer_email: this.editEmail,
       customer_phone: this.editPhone || null,
       status: this.editStatus,
+      try_count: this.editTryCount,
       shipping_fee: this.editShippingFee,
       discount_total: this.editDiscountTotal,
       tax_total: this.editTaxTotal
@@ -243,10 +260,9 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     this.orderService.update(this.selectedOrder._id, data).subscribe({
       next: () => {
         this.isSaving = false;
-        this.isEditing = false;
         this.showToast('Order updated');
         this.loadOrders();
-        this.viewOrder(this.selectedOrder!);
+        this.closeDetail();
       },
       error: () => (this.isSaving = false)
     });

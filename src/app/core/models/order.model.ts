@@ -18,7 +18,8 @@ export interface Order {
   customer_name: string;
   customer_email: string;
   customer_phone?: string | null;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+  status: 'pending' |'tried'| 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded' ;
+  try_count?: number;
   subtotal: number;
   discount_total: number;
   shipping_fee: number;
