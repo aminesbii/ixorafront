@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Cart, CartItem } from '../models/cart.model';
@@ -38,15 +38,10 @@ export class CartService {
     }
   }
 
-  // Headers helper for guest calls (fallback if interceptor is bypassed)
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders().set('x-session-token', this.getSessionToken());
-  }
-
   // ─── Actions ───────────────────────────────────────────────────────────────
 
   getCart(): Observable<Cart> {
-    return this.http.get<Cart>(this.API_URL, { headers: this.getHeaders() }).pipe(
+    return this.http.get<Cart>(this.API_URL).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
   }
@@ -56,7 +51,7 @@ export class CartService {
       product_id: productId,
       variant_id: variantId,
       quantity
-    }, { headers: this.getHeaders() }).pipe(
+    }).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
   }
@@ -64,23 +59,19 @@ export class CartService {
   updateItem(itemId: string, quantity: number): Observable<Cart> {
     return this.http.put<Cart>(`${this.API_URL}/items/${itemId}`, {
       quantity
-    }, { headers: this.getHeaders() }).pipe(
+    }).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
   }
 
   removeItem(itemId: string): Observable<Cart> {
-    return this.http.delete<Cart>(`${this.API_URL}/items/${itemId}`, {
-      headers: this.getHeaders()
-    }).pipe(
+    return this.http.delete<Cart>(`${this.API_URL}/items/${itemId}`).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
   }
 
   clear(): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(this.API_URL, {
-      headers: this.getHeaders()
-    }).pipe(
+    return this.http.delete<{ message: string }>(this.API_URL).pipe(
       tap(() => this.cartSubject.next(null))
     );
   }
