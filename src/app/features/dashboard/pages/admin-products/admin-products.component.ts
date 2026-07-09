@@ -66,6 +66,41 @@ export class AdminProductsComponent implements OnInit {
   // Delete confirm
   confirmDelete: Product | null = null;
 
+  // Multi-select
+  selectedIds: Set<string> = new Set();
+
+  get allSelected(): boolean {
+    return this.products.length > 0 && this.products.every(p => this.selectedIds.has(this.productId(p)));
+  }
+
+  toggleSelect(product: Product): void {
+    const id = this.productId(product);
+    if (this.selectedIds.has(id)) {
+      this.selectedIds.delete(id);
+    } else {
+      this.selectedIds.add(id);
+    }
+  }
+
+  toggleSelectAll(): void {
+    if (this.allSelected) {
+      this.selectedIds.clear();
+    } else {
+      this.products.forEach(p => this.selectedIds.add(this.productId(p)));
+    }
+  }
+
+  bulkSoftDelete(): void {
+    const ids = Array.from(this.selectedIds);
+    if (!ids.length) return;
+    this.productService.softDeleteMultiple(ids).subscribe({
+      next: () => {
+        this.selectedIds.clear();
+        this.loadProducts();
+      }
+    });
+  }
+
   // Inline expand variants
   expandedProductId: string | null = null;
   expandedVariants: { [key: string]: ProductVariant[] } = {};

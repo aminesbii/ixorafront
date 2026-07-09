@@ -23,6 +23,7 @@ export class ProductService {
   list(queryParams?: {
     category_id?: string;
     status?: 'draft' | 'active' | 'archived';
+    is_deleted?: boolean;
     is_featured?: boolean;
     on_sale?: boolean;
     search?: string;
@@ -69,6 +70,30 @@ export class ProductService {
 
   remove(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.API_URL}/${id}`);
+  }
+
+  restore(id: string): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`${this.API_URL}/${id}/restore`, {});
+  }
+
+  hardDelete(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.API_URL}/${id}/hard`);
+  }
+
+  restoreMultiple(ids: string[]): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/restore-multiple`, { ids });
+  }
+
+  softDeleteMultiple(ids: string[]): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/soft-delete-multiple`, { ids });
+  }
+
+  hardDeleteMultiple(ids: string[]): Observable<{ message: string; deleted: string[]; failed: { id: string; message: string }[] }> {
+    return this.http.post<{ message: string; deleted: string[]; failed: { id: string; message: string }[] }>(`${this.API_URL}/hard-delete-multiple`, { ids });
+  }
+
+  emptyBin(): Observable<{ message: string; deleted: string[]; failed: { id: string; message: string }[] }> {
+    return this.http.post<{ message: string; deleted: string[]; failed: { id: string; message: string }[] }>(`${this.API_URL}/empty-bin`, {});
   }
 
   // ─── Product Images (Nested) ────────────────────────────────────────────────

@@ -12,6 +12,7 @@ import { AdminProductsComponent } from './pages/admin-products/admin-products.co
 import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
 import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
 import { SettingsComponent } from './pages/settings/settings.component';
+import { RecycleBinComponent } from './pages/recycle-bin/recycle-bin.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { SettingsComponent } from './pages/settings/settings.component';
     AdminProductsComponent,
     AdminAnalyticsComponent,
     AdminOrdersComponent,
-    SettingsComponent
+    SettingsComponent,
+    RecycleBinComponent
   ],
   imports: [
     CommonModule,

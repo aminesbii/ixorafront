@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminLayoutComponent } from '../../layouts/admin-layout/admin-layout.component';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
+import { RecycleBinComponent } from './pages/recycle-bin/recycle-bin.component';
 import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
 import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
 import { SettingsComponent } from './pages/settings/settings.component';
@@ -30,6 +31,12 @@ const routes: Routes = [
       {
         path: 'products',
         component: AdminProductsComponent,
+        canActivate: [AuthGuard, AdminGuard],
+        data: { permission: 'products' }
+      },
+      {
+        path: 'recycle-bin',
+        component: RecycleBinComponent,
         canActivate: [AuthGuard, AdminGuard],
         data: { permission: 'products' }
       },

@@ -13,6 +13,7 @@ export class AdminSidebarComponent {
   allMenuItems = [
     { label: 'Home', icon: 'fa-solid fa-house', route: '/dashboard/home', key: 'home' },
     { label: 'Products', icon: 'fa-solid fa-cubes', route: '/dashboard/products', key: 'products' },
+    { label: 'Recycle Bin', icon: 'fa-solid fa-trash-can', route: '/dashboard/recycle-bin', key: 'products' },
     { label: 'Orders', icon: 'fa-solid fa-truck', route: '/dashboard/orders', key: 'orders' },
     { label: 'Analytics', icon: 'fa-solid fa-chart-bar', route: '/dashboard/analytics', key: 'analytics' },
     { label: 'Settings', icon: 'fa-solid fa-gear', route: '/dashboard/settings', key: 'settings' }
