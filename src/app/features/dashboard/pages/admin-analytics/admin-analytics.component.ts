@@ -118,7 +118,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
         labels: labels,
         datasets: [
           {
-            label: 'Earnings (MAD)',
+            label: 'Earnings (TND)',
             data: earnings,
             type: 'line',
             borderColor: '#8b5cf6', // Purple
@@ -146,7 +146,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
             type: 'linear',
             display: true,
             position: 'left',
-            title: { display: true, text: 'Earnings (MAD)' }
+            title: { display: true, text: 'Earnings (TND)' }
           },
           y1: {
             type: 'linear',

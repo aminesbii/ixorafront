@@ -118,10 +118,6 @@ export class ProductsPageComponent implements OnInit {
     const prodId = event.product._id || event.product.id;
     if (!prodId) return;
 
-    if (prodId.startsWith('demo-')) {
-      this.showCartFeedback('Please log in to add items to your cart');
-      return;
-    }
     this.cartService.addItem(prodId, event.variantId, 1).subscribe({
       next: () => this.showCartFeedback(`${event.product.name} added to cart!`),
       error: () => this.showCartFeedback('Failed to add to cart')

@@ -33,48 +33,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
   cartFeedbackMessage = '';
   canScrollLeft = false;
   canScrollRight = false;
-  private fallbackProducts: FeaturedProductUI[] = [
-    {
-      id: 'fallback-1',
-      slug: 'pure-green-tea-serum',
-      variantId: 'fallback-var-1',
-      name: 'Pure Green Tea Serum',
-      price: '49.00 TND',
-      image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop',
-      tag: 'New',
-      description: 'Calming green tea extract serum for balanced skin'
-    },
-    {
-      id: 'fallback-2',
-      slug: 'deep-blue-hydration',
-      variantId: 'fallback-var-2',
-      name: 'Deep Blue Hydration',
-      price: '59.00 TND',
-      image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?q=80&w=600&auto=format&fit=crop',
-      tag: 'Bestseller',
-      description: '48-hour moisture with hyaluronic acid & marine botanicals'
-    },
-    {
-      id: 'fallback-3',
-      slug: 'rose-radiance-cream',
-      variantId: 'fallback-var-3',
-      name: 'Rose Radiance Cream',
-      price: '54.00 TND',
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop',
-      tag: 'Popular',
-      description: 'Luxurious rose-infused moisturizer for glowing skin'
-    },
-    {
-      id: 'fallback-4',
-      slug: 'vitamin-c-brightening',
-      variantId: 'fallback-var-4',
-      name: 'Vitamin C Brightening',
-      price: '45.00 TND',
-      image: 'https://images.unsplash.com/photo-1570194065650-d99fb4b38b11?q=80&w=600&auto=format&fit=crop',
-      tag: 'New',
-      description: 'Brightening serum with stabilized vitamin C'
-    }
-  ];
+
 
   constructor(
     private productService: ProductService,
@@ -130,33 +89,15 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
               this.updateScrollState();
             }, 100);
           }
-        } else {
-          this.useFallbackProducts();
         }
       },
       error: (err) => {
         console.error('Failed to load featured products:', err);
-        this.useFallbackProducts();
       }
     });
   }
 
-  private useFallbackProducts() {
-    this.featuredProducts = this.fallbackProducts;
-    if (isPlatformBrowser(this.platformId)) {
-      setTimeout(() => {
-        this.initScrollAnimations();
-        this.updateScrollState();
-      }, 100);
-    }
-  }
-
   addToCart(product: FeaturedProductUI) {
-    if (!product.variantId || product.variantId.startsWith('fallback-')) {
-      this.showFeedback('This is a demo product. Connect to backend to purchase.');
-      return;
-    }
-
     this.cartService.addItem(product.id, product.variantId, 1).subscribe({
       next: () => {
         this.showFeedback(`${product.name} added to cart!`);
@@ -169,7 +110,7 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
   }
 
   trackProductClick(product: FeaturedProductUI) {
-    if (!product.id || product.id.startsWith('fallback-')) {
+    if (!product.id) {
       return;
     }
 
