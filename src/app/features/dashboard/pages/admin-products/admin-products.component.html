@@ -124,7 +124,9 @@
           <div class="mt-3">
             <label class="block text-xs font-semibold text-gray-600 mb-2">Sale End Date</label>
             <mat-form-field appearance="outline" class="block w-full md:w-56">
-              <input matInput [matDatepicker]="createSalePicker" formControlName="sale_end_date" placeholder="Pick a date" class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <input matInput [matDatepicker]="createSalePicker" formControlName="sale_end_date"
+                placeholder="Pick a date"
+                class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               <mat-datepicker-toggle matSuffix [for]="createSalePicker"></mat-datepicker-toggle>
               <mat-datepicker #createSalePicker></mat-datepicker>
             </mat-form-field>
@@ -154,15 +156,16 @@
 
         <!-- Variants -->
         <div class="md:col-span-2 pt-4 border-t border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <label class="block text-xs font-semibold text-gray-600">Variants (Optional)</label>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-xs font-semibold text-gray-600">Variants Options (Optional)</label>
             <button type="button" (click)="addNewVariant()"
               class="text-xs font-bold text-[var(--color-ixora-black)] hover:underline flex items-center gap-1">
               <i class="fa-solid fa-plus"></i> ADD VARIANT
             </button>
           </div>
-          <p class="text-xs text-gray-500 mb-4 font-medium">Add variants if this product has different sizes or options
-            (e.g. 50ml, 100ml).</p>
+          <p class="text-[11px] text-gray-500 mb-4 font-medium">Add variants if this product has different sizes or
+            options. <strong>The Variant Image uploaded here will overwrite the Default Product Image below when a user
+              selects this option!</strong></p>
 
           <div class="space-y-4">
             <div *ngFor="let v of newVariants; let idx = index"
@@ -218,10 +221,10 @@
           </div>
         </div>
 
-        <!-- Featured Image 1 -->
+        <!-- Default Product Image -->
         <div class="md:col-span-2 mt-4">
-          <label class="block text-xs font-semibold text-gray-600 mb-2">Featured Image 1 (shown on product card &amp;
-            detail)</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Default Product Image (Main physical product
+            item)</label>
           <div class="flex items-center gap-4">
             <div *ngIf="featured1Preview"
               class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
@@ -237,17 +240,17 @@
             <label *ngIf="!featured1Preview"
               class="w-24 h-24 border-2 border-dashed border-[var(--color-ixora-blue)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-blue-400 hover:text-blue-600 flex-shrink-0">
               <i class="fa-solid fa-star text-xl mb-1"></i>
-              <span class="text-[0.6rem] uppercase font-bold tracking-wider">Featured 1</span>
+              <span class="text-[0.6rem] uppercase font-bold tracking-wider">Product</span>
               <input type="file" accept="image/*" class="hidden" (change)="onFeatured1Selected($event)"
                 [disabled]="isSubmitting">
             </label>
           </div>
         </div>
 
-        <!-- Featured Image 2 -->
+        <!-- Story Image -->
         <div class="md:col-span-2 mt-3">
-          <label class="block text-xs font-semibold text-gray-600 mb-2">Featured Image 2 (shown as second image in
-            detail)</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Story/Mood Image (Maintains constant background
+            story in product details)</label>
           <div class="flex items-center gap-4">
             <div *ngIf="featured2Preview"
               class="relative group w-24 h-24 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
@@ -263,7 +266,7 @@
             <label *ngIf="!featured2Preview"
               class="w-24 h-24 border-2 border-dashed border-[var(--color-ixora-green)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-green-400 hover:bg-green-50 transition-colors text-green-400 hover:text-green-600 flex-shrink-0">
               <i class="fa-solid fa-star text-xl mb-1"></i>
-              <span class="text-[0.6rem] uppercase font-bold tracking-wider">Featured 2</span>
+              <span class="text-[0.6rem] uppercase font-bold tracking-wider">Story</span>
               <input type="file" accept="image/*" class="hidden" (change)="onFeatured2Selected($event)"
                 [disabled]="isSubmitting">
             </label>
@@ -317,9 +320,11 @@
   <!-- Products Table -->
   <div *ngIf="!loading && !showAddForm" class="bg-white rounded-md border border-gray-200 mb-8 overflow-hidden">
     <!-- Bulk Action Bar -->
-    <div *ngIf="selectedIds.size > 0" class="flex items-center justify-between px-6 py-3 bg-gray-50 border-b border-gray-200">
+    <div *ngIf="selectedIds.size > 0"
+      class="flex items-center justify-between px-6 py-3 bg-gray-50 border-b border-gray-200">
       <span class="text-sm font-semibold text-gray-700">{{ selectedIds.size }} product(s) selected</span>
-      <button (click)="bulkSoftDelete()" class="px-4 py-1.5 text-xs font-bold bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center gap-1">
+      <button (click)="bulkSoftDelete()"
+        class="px-4 py-1.5 text-xs font-bold bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center gap-1">
         <i class="fa-solid fa-trash"></i> MOVE TO BIN
       </button>
     </div>
@@ -384,8 +389,8 @@
                 <button (click)="toggleExpand(product)"
                   class="flex items-center gap-2 text-sm text-gray-800 font-medium hover:text-black transition-colors group">
                   <svg class="w-4 h-4 transition-transform duration-200"
-                    [class.rotate-90]="expandedProductId === productId(product)"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    [class.rotate-90]="expandedProductId === productId(product)" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                   {{ product.variants?.length || 0 }} variant(s)
@@ -424,36 +429,68 @@
                   </button>
                 </div>
                 <div *ngIf="expandedLoading[productId(product)]" class="flex items-center gap-2 py-4">
-                  <div class="w-4 h-4 border-2 border-[var(--color-ixora-black)] border-t-transparent rounded-full animate-spin"></div>
+                  <div
+                    class="w-4 h-4 border-2 border-[var(--color-ixora-black)] border-t-transparent rounded-full animate-spin">
+                  </div>
                   <span class="text-sm text-gray-500">Loading variants...</span>
                 </div>
-                <div *ngIf="!expandedLoading[productId(product)] && !expandedVariants[productId(product)]?.length && !expandedNewVariants[productId(product)]?.length" class="text-sm text-gray-500 italic py-4">
+                <div
+                  *ngIf="!expandedLoading[productId(product)] && !expandedVariants[productId(product)]?.length && !expandedNewVariants[productId(product)]?.length"
+                  class="text-sm text-gray-500 italic py-4">
                   No variants yet.
                 </div>
                 <div class="space-y-3" *ngIf="!expandedLoading[productId(product)]">
                   <!-- Saved variants -->
                   <div *ngFor="let v of expandedVariants[productId(product)]"
                     class="flex flex-col p-3 bg-white border border-gray-200 rounded-md">
-                    <div class="grid grid-cols-4 gap-3 mb-1">
-                      <div>
-                        <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Name / Size</label>
-                        <input type="text" [(ngModel)]="v.variant_name" [ngModelOptions]="{standalone: true}"
-                          placeholder="e.g. 50ml" class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                    <div class="flex gap-4">
+                      <!-- Variant Image -->
+                      <div class="flex-shrink-0">
+                        <div *ngIf="v.image_url"
+                          class="relative w-12 h-12 rounded-md overflow-hidden border border-gray-200">
+                          <img [src]="getImageUrl($any({image_url: v.image_url}))" class="w-full h-full object-cover">
+                          <label
+                            class="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center text-white cursor-pointer"
+                            title="Change Image">
+                            <i class="fa-solid fa-camera text-xs"></i>
+                            <input type="file" accept="image/*" class="hidden"
+                              (change)="onExpandedVariantImageSelected(productId(product), v, $event)">
+                          </label>
+                        </div>
+                        <label *ngIf="!v.image_url"
+                          class="w-12 h-12 border border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 bg-white transition-colors text-gray-400">
+                          <i class="fa-solid fa-image text-xs"></i>
+                          <input type="file" accept="image/*" class="hidden"
+                            (change)="onExpandedVariantImageSelected(productId(product), v, $event)">
+                        </label>
                       </div>
-                      <div>
-                        <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">SKU</label>
-                        <input type="text" [(ngModel)]="v.sku" [ngModelOptions]="{standalone: true}"
-                          placeholder="SKU" class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
-                      </div>
-                      <div>
-                        <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Price</label>
-                        <input type="number" [(ngModel)]="v.price" [ngModelOptions]="{standalone: true}" min="0" step="0.01"
-                          placeholder="0.00" class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
-                      </div>
-                      <div>
-                        <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Stock</label>
-                        <input type="number" [(ngModel)]="v.stock_qty" [ngModelOptions]="{standalone: true}" min="0"
-                          placeholder="0" class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+
+                      <!-- Inputs -->
+                      <div class="flex-1 grid grid-cols-4 gap-3 mb-1">
+                        <div>
+                          <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Name /
+                            Size</label>
+                          <input type="text" [(ngModel)]="v.variant_name" [ngModelOptions]="{standalone: true}"
+                            placeholder="e.g. 50ml"
+                            class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                        </div>
+                        <div>
+                          <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">SKU</label>
+                          <input type="text" [(ngModel)]="v.sku" [ngModelOptions]="{standalone: true}" placeholder="SKU"
+                            class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                        </div>
+                        <div>
+                          <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Price</label>
+                          <input type="number" [(ngModel)]="v.price" [ngModelOptions]="{standalone: true}" min="0"
+                            step="0.01" placeholder="0.00"
+                            class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                        </div>
+                        <div>
+                          <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Stock</label>
+                          <input type="number" [(ngModel)]="v.stock_qty" [ngModelOptions]="{standalone: true}" min="0"
+                            placeholder="0"
+                            class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                        </div>
                       </div>
                     </div>
                     <div class="flex justify-end gap-2 mt-2">
@@ -470,26 +507,51 @@
                   <!-- Pending new variants -->
                   <div *ngFor="let v of expandedNewVariants[productId(product)]; let idx = index"
                     class="flex flex-col p-3 bg-blue-50 border border-blue-200 rounded-md">
-                    <div class="grid grid-cols-4 gap-3 mb-1">
-                      <div>
-                        <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Name / Size</label>
-                        <input type="text" [(ngModel)]="v.variant_name" [ngModelOptions]="{standalone: true}"
-                          placeholder="e.g. 50ml" class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                    <div class="flex gap-4">
+                      <!-- Image Upload -->
+                      <div class="flex-shrink-0">
+                        <div *ngIf="v.imagePreview"
+                          class="relative w-12 h-12 rounded-md overflow-hidden border border-gray-200">
+                          <img [src]="v.imagePreview" class="w-full h-full object-cover">
+                          <button type="button" (click)="removeExpandedNewVariantImage(productId(product), idx)"
+                            class="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                          </button>
+                        </div>
+                        <label *ngIf="!v.imagePreview"
+                          class="w-12 h-12 border border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 bg-white transition-colors text-gray-400">
+                          <i class="fa-solid fa-image text-xs"></i>
+                          <input type="file" accept="image/*" class="hidden"
+                            (change)="onExpandedNewVariantImageSelected(productId(product), idx, $event)">
+                        </label>
                       </div>
-                      <div>
-                        <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">SKU</label>
-                        <input type="text" [(ngModel)]="v.sku" [ngModelOptions]="{standalone: true}"
-                          placeholder="SKU" class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
-                      </div>
-                      <div>
-                        <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Price</label>
-                        <input type="number" [(ngModel)]="v.price" [ngModelOptions]="{standalone: true}" min="0" step="0.01"
-                          placeholder="0.00" class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
-                      </div>
-                      <div>
-                        <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Stock</label>
-                        <input type="number" [(ngModel)]="v.stock_qty" [ngModelOptions]="{standalone: true}" min="0"
-                          placeholder="0" class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+
+                      <!-- Inputs -->
+                      <div class="flex-1 grid grid-cols-4 gap-3 mb-1">
+                        <div>
+                          <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Name /
+                            Size</label>
+                          <input type="text" [(ngModel)]="v.variant_name" [ngModelOptions]="{standalone: true}"
+                            placeholder="e.g. 50ml"
+                            class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                        </div>
+                        <div>
+                          <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">SKU</label>
+                          <input type="text" [(ngModel)]="v.sku" [ngModelOptions]="{standalone: true}" placeholder="SKU"
+                            class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                        </div>
+                        <div>
+                          <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Price</label>
+                          <input type="number" [(ngModel)]="v.price" [ngModelOptions]="{standalone: true}" min="0"
+                            step="0.01" placeholder="0.00"
+                            class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                        </div>
+                        <div>
+                          <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Stock</label>
+                          <input type="number" [(ngModel)]="v.stock_qty" [ngModelOptions]="{standalone: true}" min="0"
+                            placeholder="0"
+                            class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
+                        </div>
                       </div>
                     </div>
                     <div class="flex justify-end gap-2 mt-2">
@@ -530,7 +592,8 @@
   <!-- Edit Product Sidebar -->
   <div *ngIf="editProduct" class="fixed inset-0 z-50 flex justify-end" (click)="closeEditModal()">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" (click)="closeEditModal()"></div>
-    <div class="relative w-full max-w-xl bg-white shadow-2xl flex flex-col h-full translate-x-0 transition-transform duration-300"
+    <div
+      class="relative w-full max-w-xl bg-white shadow-2xl flex flex-col h-full translate-x-0 transition-transform duration-300"
       (click)="$event.stopPropagation()">
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
@@ -538,7 +601,8 @@
           <h2 class="text-xl font-serif font-bold text-[var(--color-ixora-black)]">Edit Product</h2>
           <p class="text-xs text-gray-500 mt-0.5">{{ editProduct.name }}</p>
         </div>
-        <button (click)="closeEditModal()" class="p-1.5 text-gray-400 hover:text-black transition-colors rounded-md hover:bg-gray-100">
+        <button (click)="closeEditModal()"
+          class="p-1.5 text-gray-400 hover:text-black transition-colors rounded-md hover:bg-gray-100">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -597,7 +661,8 @@
                 <input type="number" formControlName="base_price" min="0" step="0.01" placeholder="e.g. 49.00"
                   class="flex-1 px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
                 <input type="hidden" formControlName="currency" value="TND" />
-                <span class="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-sm font-semibold text-gray-600">TND</span>
+                <span
+                  class="inline-flex items-center px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-sm font-semibold text-gray-600">TND</span>
               </div>
               <p class="text-xs text-gray-400 mt-1">Used when product has no variants</p>
             </div>
@@ -618,7 +683,9 @@
                 <div>
                   <label class="block text-xs font-semibold text-gray-600 mb-2">Sale End Date</label>
                   <mat-form-field appearance="outline" class="block w-full">
-                    <input matInput [matDatepicker]="editSalePicker" formControlName="sale_end_date" placeholder="Pick a date" class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                    <input matInput [matDatepicker]="editSalePicker" formControlName="sale_end_date"
+                      placeholder="Pick a date"
+                      class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                     <mat-datepicker-toggle matSuffix [for]="editSalePicker"></mat-datepicker-toggle>
                     <mat-datepicker #editSalePicker></mat-datepicker>
                   </mat-form-field>
@@ -648,36 +715,44 @@
 
             <!-- Existing Variants Management -->
             <div>
-              <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center justify-between mb-2">
                 <label class="block text-xs font-semibold text-gray-600">Variants Management</label>
                 <button type="button" (click)="addEditVariant()"
                   class="text-xs font-bold text-[var(--color-ixora-black)] hover:underline flex items-center gap-1">
                   <i class="fa-solid fa-plus"></i> ADD VARIANT
                 </button>
               </div>
+              <p class="text-[11px] text-gray-500 mb-4 font-medium">Variant images uploaded here will <strong>replace
+                  the Default Product Image</strong> on the store when selected.</p>
               <div class="space-y-4">
                 <div *ngFor="let v of editProduct.variants"
                   class="p-4 border border-gray-200 bg-gray-50 rounded-md relative flex gap-4 items-start">
                   <!-- Variant Image -->
                   <div class="flex-shrink-0">
-                    <div *ngIf="v.image_url" class="relative w-16 h-16 rounded-md overflow-hidden border border-gray-200">
+                    <div *ngIf="v.image_url"
+                      class="relative w-16 h-16 rounded-md overflow-hidden border border-gray-200">
                       <img [src]="getImageUrl($any({image_url: v.image_url}))" class="w-full h-full object-cover">
-                      <label class="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center text-white cursor-pointer" title="Change Image">
+                      <label
+                        class="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center text-white cursor-pointer"
+                        title="Change Image">
                         <i class="fa-solid fa-camera text-xs"></i>
-                        <input type="file" accept="image/*" class="hidden" (change)="onEditVariantImageSelected(v, $event)">
+                        <input type="file" accept="image/*" class="hidden"
+                          (change)="onEditVariantImageSelected(v, $event)">
                       </label>
                     </div>
                     <label *ngIf="!v.image_url"
                       class="w-16 h-16 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 bg-white transition-colors text-gray-400">
                       <i class="fa-solid fa-image text-sm"></i>
-                      <input type="file" accept="image/*" class="hidden" (change)="onEditVariantImageSelected(v, $event)">
+                      <input type="file" accept="image/*" class="hidden"
+                        (change)="onEditVariantImageSelected(v, $event)">
                     </label>
                   </div>
                   <!-- Inputs -->
                   <div class="flex-1 grid grid-cols-2 gap-3">
                     <div class="col-span-2">
                       <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Name / Size</label>
-                      <input type="text" [(ngModel)]="v.variant_name" [ngModelOptions]="{standalone: true}" placeholder="e.g. 50ml"
+                      <input type="text" [(ngModel)]="v.variant_name" [ngModelOptions]="{standalone: true}"
+                        placeholder="e.g. 50ml"
                         class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
                     </div>
                     <div>
@@ -687,7 +762,8 @@
                     </div>
                     <div>
                       <label class="block text-[10px] uppercase tracking-wider text-gray-500 mb-1">Price</label>
-                      <input type="number" [(ngModel)]="v.price" [ngModelOptions]="{standalone: true}" min="0" step="0.01"
+                      <input type="number" [(ngModel)]="v.price" [ngModelOptions]="{standalone: true}" min="0"
+                        step="0.01"
                         class="w-full px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300" />
                     </div>
                     <div>
@@ -711,45 +787,56 @@
 
             <!-- Image Section -->
             <div class="space-y-5">
-              <!-- Replace Featured 1 -->
+              <!-- Replace Default Product Image -->
               <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-2">Replace Featured Image 1</label>
+                <label class="block text-xs font-semibold text-gray-600 mb-2">Replace Default Product Image (Main
+                  Item)</label>
                 <div class="flex items-center gap-4">
                   <div *ngIf="editFeatured1Preview"
                     class="relative group w-20 h-20 border border-blue-200 rounded-md overflow-hidden bg-blue-50 flex-shrink-0">
                     <img [src]="editFeatured1Preview" class="w-full h-full object-cover">
                     <button type="button" (click)="removeEditFeatured1()"
-                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><i class="fa-solid fa-trash"></i></button>
-                    <div class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-blue)] text-white text-[0.55rem] uppercase tracking-wider text-center py-0.5">New</div>
+                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><i
+                        class="fa-solid fa-trash"></i></button>
+                    <div
+                      class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-blue)] text-white text-[0.55rem] uppercase tracking-wider text-center py-0.5">
+                      New</div>
                   </div>
                   <label *ngIf="!editFeatured1Preview"
                     class="w-20 h-20 border-2 border-dashed border-[var(--color-ixora-blue)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-blue-400 flex-shrink-0">
                     <i class="fa-solid fa-star text-lg mb-1"></i>
-                    <span class="text-[0.55rem] uppercase font-bold tracking-wider">Feat 1</span>
-                    <input type="file" accept="image/*" class="hidden" (change)="onEditFeatured1Selected($event)" [disabled]="isEditSubmitting">
+                    <span class="text-[0.55rem] uppercase font-bold tracking-wider">Product</span>
+                    <input type="file" accept="image/*" class="hidden" (change)="onEditFeatured1Selected($event)"
+                      [disabled]="isEditSubmitting">
                   </label>
-                  <span *ngIf="!editFeatured1Preview && editHasFeatured1" class="text-xs text-gray-400">Current exists</span>
+                  <span *ngIf="!editFeatured1Preview && editHasFeatured1" class="text-xs text-gray-400">Current
+                    exists</span>
                 </div>
               </div>
 
-              <!-- Replace Featured 2 -->
+              <!-- Replace Story Image -->
               <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-2">Replace Featured Image 2</label>
+                <label class="block text-xs font-semibold text-gray-600 mb-2">Replace Story/Mood Image</label>
                 <div class="flex items-center gap-4">
                   <div *ngIf="editFeatured2Preview"
                     class="relative group w-20 h-20 border border-green-200 rounded-md overflow-hidden bg-green-50 flex-shrink-0">
                     <img [src]="editFeatured2Preview" class="w-full h-full object-cover">
                     <button type="button" (click)="removeEditFeatured2()"
-                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><i class="fa-solid fa-trash"></i></button>
-                    <div class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-green)] text-white text-[0.55rem] uppercase tracking-wider text-center py-0.5">New</div>
+                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><i
+                        class="fa-solid fa-trash"></i></button>
+                    <div
+                      class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-green)] text-white text-[0.55rem] uppercase tracking-wider text-center py-0.5">
+                      New</div>
                   </div>
                   <label *ngIf="!editFeatured2Preview"
                     class="w-20 h-20 border-2 border-dashed border-[var(--color-ixora-green)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-green-400 hover:bg-green-50 transition-colors text-green-400 flex-shrink-0">
                     <i class="fa-solid fa-star text-lg mb-1"></i>
-                    <span class="text-[0.55rem] uppercase font-bold tracking-wider">Feat 2</span>
-                    <input type="file" accept="image/*" class="hidden" (change)="onEditFeatured2Selected($event)" [disabled]="isEditSubmitting">
+                    <span class="text-[0.55rem] uppercase font-bold tracking-wider">Story</span>
+                    <input type="file" accept="image/*" class="hidden" (change)="onEditFeatured2Selected($event)"
+                      [disabled]="isEditSubmitting">
                   </label>
-                  <span *ngIf="!editFeatured2Preview && editHasFeatured2" class="text-xs text-gray-400">Current exists</span>
+                  <span *ngIf="!editFeatured2Preview && editHasFeatured2" class="text-xs text-gray-400">Current
+                    exists</span>
                 </div>
               </div>
 
@@ -760,11 +847,17 @@
                   <div *ngFor="let img of editProduct.images"
                     class="relative group w-20 h-20 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0">
                     <img [src]="getImageUrl(img)" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <button type="button" (click)="deleteExistingImage(productId(editProduct), img)" class="text-white hover:text-red-400 p-2"><i class="fa-solid fa-trash"></i></button>
+                    <div
+                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button type="button" (click)="deleteExistingImage(productId(editProduct), img)"
+                        class="text-white hover:text-red-400 p-2"><i class="fa-solid fa-trash"></i></button>
                     </div>
-                    <div *ngIf="img.featured1" class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-blue)] text-white text-[0.5rem] uppercase tracking-wider text-center py-0.5">Feat 1</div>
-                    <div *ngIf="img.featured2" class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-green)] text-white text-[0.5rem] uppercase tracking-wider text-center py-0.5">Feat 2</div>
+                    <div *ngIf="img.featured1"
+                      class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-blue)] text-white text-[0.5rem] uppercase tracking-wider text-center py-0.5">
+                      Feat 1</div>
+                    <div *ngIf="img.featured2"
+                      class="absolute bottom-0 inset-x-0 bg-[var(--color-ixora-green)] text-white text-[0.5rem] uppercase tracking-wider text-center py-0.5">
+                      Feat 2</div>
                   </div>
                 </div>
               </div>
@@ -777,14 +870,17 @@
                     class="relative group w-20 h-20 border border-green-200 rounded-md overflow-hidden bg-green-50 flex-shrink-0">
                     <img [src]="preview" class="w-full h-full object-cover">
                     <button type="button" (click)="removeEditNewImage(i)"
-                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><i class="fa-solid fa-trash"></i></button>
-                    <div class="absolute top-1 right-1"><span class="bg-green-500 text-white text-[0.45rem] px-1 rounded">NEW</span></div>
+                      class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"><i
+                        class="fa-solid fa-trash"></i></button>
+                    <div class="absolute top-1 right-1"><span
+                        class="bg-green-500 text-white text-[0.45rem] px-1 rounded">NEW</span></div>
                   </div>
                   <label *ngIf="editImagePreviews.length < 3"
                     class="w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors text-gray-400 flex-shrink-0">
                     <i class="fa-solid fa-plus text-lg mb-1"></i>
                     <span class="text-[0.6rem] uppercase font-bold tracking-wider">Upload</span>
-                    <input type="file" multiple accept="image/*" class="hidden" (change)="onEditImagesSelected($event)" [disabled]="isEditSubmitting">
+                    <input type="file" multiple accept="image/*" class="hidden" (change)="onEditImagesSelected($event)"
+                      [disabled]="isEditSubmitting">
                   </label>
                 </div>
               </div>
@@ -886,8 +982,7 @@
   <!-- Toast Notification -->
   <div *ngIf="toastVisible"
     class="fixed bottom-6 right-6 z-[9999] px-5 py-3 bg-[var(--color-ixora-black)] text-white text-sm font-semibold rounded-md shadow-lg transition-all duration-300"
-    [class.opacity-0]="!toastVisible"
-    [class.opacity-100]="toastVisible">
+    [class.opacity-0]="!toastVisible" [class.opacity-100]="toastVisible">
     {{ toastMessage }}
   </div>
 </div>

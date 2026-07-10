@@ -761,12 +761,40 @@ export class AdminProductsComponent implements OnInit {
       currency: product.currency || 'TND',
       is_active: true
     }).subscribe({
-      next: (created) => {
+      next: async (created) => {
+        if (pending.imageFile) {
+          try {
+            const variantId = created.id ?? (created as any)._id;
+            await firstValueFrom(this.productService.uploadVariantImage(id, variantId, pending.imageFile));
+          } catch (err) { }
+        }
         if (!this.expandedVariants[id]) this.expandedVariants[id] = [];
-        this.expandedVariants[id].push(created);
         this.expandedNewVariants[id].splice(index, 1);
+        this.loadVariantsForProduct(id);
+        this.loadProducts();
       }
     });
+  }
+
+  onExpandedNewVariantImageSelected(productId: string, index: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const file = input.files[0];
+    const pending = this.expandedNewVariants[productId][index];
+    pending.imageFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      pending.imagePreview = this.sanitizer.bypassSecurityTrustUrl(reader.result as string);
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  removeExpandedNewVariantImage(productId: string, index: number): void {
+    const pending = this.expandedNewVariants[productId][index];
+    pending.imageFile = null;
+    pending.imagePreview = null;
   }
 
   cancelNewExpandedVariant(productId: string, index: number): void {
@@ -782,7 +810,18 @@ export class AdminProductsComponent implements OnInit {
       price: variant.price,
       stock_qty: variant.stock_qty,
       is_active: variant.is_active
-    }).subscribe({});
+    }).subscribe({
+      next: () => {
+        // Force-refresh variants (bypasses Redis cached response)
+        delete this.expandedVariants[productId];
+        this.loadVariantsForProduct(productId);
+        this.loadProducts();
+        this.showToast('Variant saved successfully!');
+      },
+      error: (err: any) => {
+        this.showToast(err.error?.message || err.message || 'Failed to save variant');
+      }
+    });
   }
 
   deleteVariantExpanded(productId: string, variant: ProductVariant): void {
@@ -794,6 +833,23 @@ export class AdminProductsComponent implements OnInit {
         }
       });
     }
+  }
+
+  onExpandedVariantImageSelected(productId: string, variant: ProductVariant, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length || (!variant.id && !variant._id)) return;
+    const file = input.files[0];
+    const variantId = variant.id ?? variant._id!;
+    this.productService.uploadVariantImage(productId, variantId, file).subscribe({
+      next: (updated) => {
+        variant.image_url = updated.image_url;
+        this.loadProducts();
+      },
+      error: (err: any) => {
+        this.showToast(err.error?.message || err.message || 'Failed to upload variant image');
+      }
+    });
+    input.value = '';
   }
 
   // ─── Delete ──────────────────────────────────────────────────────────────────
@@ -873,3 +929,4 @@ export class AdminProductsComponent implements OnInit {
     return '-';
   }
 }
+// Trigger rebuild
