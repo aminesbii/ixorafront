@@ -67,7 +67,7 @@ export class SidebarFilterComponent implements OnInit {
   }
 
   closeSort(): void {
-    this.sortOpen = false;
+    setTimeout(() => { this.sortOpen = false; }, 150);
   }
 
   clearAll(): void {

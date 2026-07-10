@@ -30,7 +30,7 @@
          [class.lg:gap-10]="sidebarVisible">
       <!-- Sidebar (hidden on mobile — opened as overlay via drawer classes) -->
       <aside [class.sidebar-hidden]="!sidebarVisible"
-        class="hidden lg:block lg:w-[260px] xl:w-[280px] flex-shrink-0 lg:sticky lg:top-[90px] lg:self-start lg:max-h-[calc(100vh-110px)] lg:overflow-y-auto lg:pl-4 xl:pl-8">
+        class="lg:block max-lg:absolute max-lg:inset-0 lg:w-[260px] xl:w-[280px] flex-shrink-0 lg:sticky lg:top-[90px] lg:self-start lg:max-h-[calc(100vh-110px)] lg:overflow-y-auto lg:pl-4 xl:pl-8">
         <div class="hidden lg:block text-xs text-gray-400 mb-6">{{ totalProducts }} product{{ totalProducts !== 1 ? 's' : '' }}</div>
         <app-sidebar-filter
           [mobileOpen]="mobileFilterOpen"
