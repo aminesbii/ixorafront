@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import Chart from 'chart.js/auto';
 import { Subscription } from 'rxjs';
@@ -36,14 +37,20 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
   loadingChart = true;
   loadingStatusChart = true;
   loadingHourlyChart = true;
+  error = '';
   chart: any;
   statusChart: any;
   hourlyChart: any;
   private subscription = new Subscription();
 
-  constructor(private http: HttpClient, private dashboardService: DashboardService) { }
+  constructor(
+    private http: HttpClient,
+    private dashboardService: DashboardService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
+    this.error = '';
     this.fetchSummary();
     this.fetchMostClicked();
     this.fetchEarningsChart();
@@ -51,30 +58,36 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
     this.fetchHourlyVisits();
   }
 
+  private setError(msg: string): void {
+    if (!this.error) this.error = msg;
+  }
+
   fetchMostClicked(): void {
     this.loading = true;
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - this.daysAgo);
-    this.dashboardService.getDailyProductClicks(startDate.toISOString().split('T')[0]).subscribe({
+    const days = this.daysAgo;
+    this.dashboardService.getDailyProductClicks(days.toString()).subscribe({
       next: (data) => {
+        if (this.daysAgo !== days) return;
         this.mostClickedProducts = data;
         this.loading = false;
       },
-      error: () => { this.loading = false; }
+      error: () => { this.loading = false; this.setError('Failed to load clicked products.'); }
     });
   }
 
   fetchSummary(): void {
     this.loadingSummary = true;
-    const params = new HttpParams().set('days', this.daysAgo.toString());
+    const days = this.daysAgo;
+    const params = new HttpParams().set('days', days.toString());
     const sub = this.http.get<any>('/api/analytics/public-analytics', { params }).subscribe({
       next: (res) => {
+        if (this.daysAgo !== days) return;
         if (res && res.summary) {
           this.summary = res.summary;
         }
         this.loadingSummary = false;
       },
-      error: () => { this.loadingSummary = false; }
+      error: () => { this.loadingSummary = false; this.setError('Failed to load summary.'); }
     });
     this.subscription.add(sub);
   }
@@ -90,12 +103,14 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
 
   fetchEarningsChart(): void {
     this.loadingChart = true;
-    const sub = this.dashboardService.getEarningsStats(this.daysAgo).subscribe({
+    const days = this.daysAgo;
+    const sub = this.dashboardService.getEarningsStats(days).subscribe({
       next: (data) => {
-        this.renderChart(data);
+        if (this.daysAgo !== days) return;
+        if (isPlatformBrowser(this.platformId)) this.renderChart(data);
         this.loadingChart = false;
       },
-      error: () => { this.loadingChart = false; }
+      error: () => { this.loadingChart = false; this.setError('Failed to load earnings chart.'); }
     });
     this.subscription.add(sub);
   }
@@ -163,12 +178,14 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
 
   fetchStatusChart(): void {
     this.loadingStatusChart = true;
-    const sub = this.dashboardService.getOrderStatusStats(this.daysAgo).subscribe({
+    const days = this.daysAgo;
+    const sub = this.dashboardService.getOrderStatusStats(days).subscribe({
       next: (data) => {
-        this.renderStatusChart(data);
+        if (this.daysAgo !== days) return;
+        if (isPlatformBrowser(this.platformId)) this.renderStatusChart(data);
         this.loadingStatusChart = false;
       },
-      error: () => { this.loadingStatusChart = false; }
+      error: () => { this.loadingStatusChart = false; this.setError('Failed to load status chart.'); }
     });
     this.subscription.add(sub);
   }
@@ -211,12 +228,14 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
 
   fetchHourlyVisits(): void {
     this.loadingHourlyChart = true;
-    const sub = this.dashboardService.getHourlyVisits(this.daysAgo).subscribe({
+    const days = this.daysAgo;
+    const sub = this.dashboardService.getHourlyVisits(days).subscribe({
       next: (data) => {
-        this.renderHourlyChart(data);
+        if (this.daysAgo !== days) return;
+        if (isPlatformBrowser(this.platformId)) this.renderHourlyChart(data);
         this.loadingHourlyChart = false;
       },
-      error: () => { this.loadingHourlyChart = false; }
+      error: () => { this.loadingHourlyChart = false; this.setError('Failed to load hourly chart.'); }
     });
     this.subscription.add(sub);
   }

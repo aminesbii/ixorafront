@@ -25,21 +25,37 @@
     </button>
   </div>
 
-  <div class="max-w-7xl mx-auto px-4 md:px-8 py-8">
-    <div class="flex flex-col lg:flex-row gap-0 lg:gap-10">
+  <div class="max-w-7xl mx-auto py-8">
+    <div class="flex flex-col lg:flex-row gap-0"
+         [class.lg:gap-10]="sidebarVisible">
       <!-- Sidebar (hidden on mobile — opened as overlay via drawer classes) -->
-      <aside class="hidden lg:block lg:w-[260px] xl:w-[280px] flex-shrink-0 lg:sticky lg:top-[90px] lg:self-start lg:max-h-[calc(100vh-110px)] lg:overflow-y-auto">
+      <aside [class.sidebar-hidden]="!sidebarVisible"
+        class="hidden lg:block lg:w-[260px] xl:w-[280px] flex-shrink-0 lg:sticky lg:top-[90px] lg:self-start lg:max-h-[calc(100vh-110px)] lg:overflow-y-auto lg:pl-4 xl:pl-8">
         <div class="hidden lg:block text-xs text-gray-400 mb-6">{{ totalProducts }} product{{ totalProducts !== 1 ? 's' : '' }}</div>
         <app-sidebar-filter
           [mobileOpen]="mobileFilterOpen"
           [initialCategoryId]="currentFilters.category_id"
           (filterChange)="onFilterChange($event)"
-          (mobileClose)="toggleMobileFilter()">
+          (mobileClose)="toggleMobileFilter()"
+          (hideSidebar)="onHideSidebar()">
         </app-sidebar-filter>
       </aside>
 
+      <!-- Show sidebar button (desktop, when hidden) -->
+      <button (click)="onShowSidebar()"
+        class="px-4 py-3 self-start sticky top-[90px] text-[10px] uppercase tracking-[0.2em] font-semibold text-gray-500 hover:text-[var(--color-ixora-black)] transition-colors ml-4 xl:ml-8 animate-fadeIn"
+        [class.hidden]="sidebarVisible"
+        [class.lg:flex]="!sidebarVisible"
+        [class.lg:items-center]="!sidebarVisible"
+        [class.lg:gap-2]="!sidebarVisible">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+        </svg>
+        <span>Show Filters</span>
+      </button>
+
       <!-- Product Grid -->
-      <main class="flex-1 min-w-0">
+      <main class="flex-1 min-w-0 px-4 md:px-8">
 
         <!-- Loading -->
         <div *ngIf="loading" class="flex flex-col items-center justify-center py-20">
@@ -62,7 +78,8 @@
         </div>
 
         <div *ngIf="!loading && products.length > 0">
-          <div class="products-grid gap-5">
+          <div class="products-wrapper w-full" [class.fade-transition]="productsFade">
+          <div class="products-grid w-full gap-5" [class.products-grid-wide]="!sidebarVisible">
             <app-product-card
               *ngFor="let product of products"
               [product]="product"
@@ -100,6 +117,7 @@
                 Next
               </button>
             </div>
+          </div>
           </div>
         </div>
       </main>

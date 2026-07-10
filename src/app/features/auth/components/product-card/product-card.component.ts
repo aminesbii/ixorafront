@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Product } from '../../../../core/models/product.model';
 import { DashboardService } from '../../../../core/services/dashboard.service';
 
@@ -13,15 +14,20 @@ export interface ProductCardEvent {
   styleUrls: ['./product-card.component.css'],
   standalone: false
 })
-export class ProductCardComponent {
+export class ProductCardComponent implements AfterViewInit {
   @Input() product!: Product;
   @Input() loading = false;
   @Output() addToCart = new EventEmitter<ProductCardEvent>();
   @Output() viewProduct = new EventEmitter<string>();
 
-  constructor(private dashboardService: DashboardService) { }
+  constructor(
+    private dashboardService: DashboardService,
+    private elRef: ElementRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   imgError = false;
+  private viewTracked = false;
 
   get mainImage(): string {
     if (this.imgError) return '';
@@ -39,6 +45,29 @@ export class ProductCardComponent {
 
   get hasImage(): boolean {
     return !!this.mainImage;
+  }
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !this.viewTracked) {
+        this.viewTracked = true;
+        this.trackView();
+        observer.disconnect();
+      }
+    }, { threshold: 0.3 });
+    observer.observe(this.elRef.nativeElement);
+  }
+
+  private trackView(): void {
+    const id = this.product._id || this.product.id;
+    if (!id) return;
+    this.dashboardService.trackEvent({
+      product_id: id,
+      event_type: 'view'
+    }).subscribe({
+      error: (err) => console.error('Failed to track view:', err)
+    });
   }
 
   onImgError(): void {
@@ -85,8 +114,19 @@ export class ProductCardComponent {
 
   onAddToCart(event: MouseEvent): void {
     event.stopPropagation();
-    // Default to the base product without forcing a variant! 
+    this.trackAddToCart();
     this.addToCart.emit({ product: this.product, variantId: null as any });
+  }
+
+  private trackAddToCart(): void {
+    const id = this.product._id || this.product.id;
+    if (!id) return;
+    this.dashboardService.trackEvent({
+      product_id: id,
+      event_type: 'add_to_cart'
+    }).subscribe({
+      error: (err) => console.error('Failed to track add_to_cart:', err)
+    });
   }
 
   onClick(): void {

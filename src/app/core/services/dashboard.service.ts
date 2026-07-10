@@ -37,10 +37,9 @@ export class DashboardService {
   }
 
   // Admin: Get daily product clicks from ProductPerformanceDaily
-  getDailyProductClicks(startDate?: string, endDate?: string): Observable<any[]> {
+  getDailyProductClicks(days?: string): Observable<any[]> {
     let params = new HttpParams();
-    if (startDate) params = params.set('start_date', startDate);
-    if (endDate) params = params.set('end_date', endDate);
+    if (days) params = params.set('days', days);
     return this.http.get<any[]>(`${this.API_URL}/performance/daily-clicks`, { params });
   }
 

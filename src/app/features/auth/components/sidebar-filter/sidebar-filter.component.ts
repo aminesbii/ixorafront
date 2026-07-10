@@ -5,7 +5,6 @@ import { CategoryTree } from '../../../../core/models/category.model';
 export interface FilterState {
   category_id: string | null;
   sort: string;
-  priceRange: [number | null, number | null];
 }
 
 @Component({
@@ -18,6 +17,7 @@ export class SidebarFilterComponent implements OnInit {
   @Output() filterChange = new EventEmitter<FilterState>();
   @Input() mobileOpen = false;
   @Output() mobileClose = new EventEmitter<void>();
+  @Output() hideSidebar = new EventEmitter<void>();
   @Input() set initialCategoryId(value: string | null) {
     if (value && this.filters) {
       this.filters.category_id = value;
@@ -31,12 +31,7 @@ export class SidebarFilterComponent implements OnInit {
   filters: FilterState = {
     category_id: null,
     sort: '-createdAt',
-    priceRange: [null, null]
   };
-
-  priceMin = 0;
-  priceMax = 1000;
-  maxPrice = 1000;
 
   sortOptions = [
     { value: '-createdAt', label: 'Newest First' },
@@ -47,14 +42,6 @@ export class SidebarFilterComponent implements OnInit {
     return this.sortOptions.find(o => o.value === this.filters.sort)?.label || 'Sort By';
   }
 
-  get rangeBarLeft(): number {
-    return (this.priceMin / this.maxPrice) * 100;
-  }
-
-  get rangeBarWidth(): number {
-    return ((this.priceMax - this.priceMin) / this.maxPrice) * 100;
-  }
-
   constructor(private categoryService: CategoryService) {}
 
   ngOnInit(): void {
@@ -62,26 +49,6 @@ export class SidebarFilterComponent implements OnInit {
       next: (cats) => { this.categories = cats; },
       error: () => { this.categories = []; }
     });
-  }
-
-  onSliderChange(): void {
-    this.priceMin = Math.min(this.priceMin, this.priceMax);
-    this.priceMax = Math.max(this.priceMax, this.priceMin);
-    this.applyPriceFilter();
-  }
-
-  onInputChange(): void {
-    if (this.priceMin > this.priceMax) {
-      this.priceMax = this.priceMin;
-    }
-    this.applyPriceFilter();
-  }
-
-  private applyPriceFilter(): void {
-    const min = this.priceMin > 0 ? this.priceMin : null;
-    const max = this.priceMax < this.maxPrice ? this.priceMax : null;
-    this.filters.priceRange = [min, max];
-    this.emitChange();
   }
 
   setCategory(id: string | null): void {
@@ -104,14 +71,12 @@ export class SidebarFilterComponent implements OnInit {
   }
 
   clearAll(): void {
-    this.filters = { category_id: null, sort: '-createdAt', priceRange: [null, null] };
-    this.priceMin = 0;
-    this.priceMax = this.maxPrice;
+    this.filters = { category_id: null, sort: '-createdAt' };
     this.emitChange();
   }
 
   hasActiveFilters(): boolean {
-    return !!this.filters.category_id || this.filters.priceRange[0] !== null || this.filters.priceRange[1] !== null;
+    return !!this.filters.category_id;
   }
 
   private emitChange(): void {
