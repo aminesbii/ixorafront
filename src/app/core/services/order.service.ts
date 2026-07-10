@@ -110,4 +110,9 @@ export class OrderService {
   delete(id: string): Observable<any> {
     return this.http.delete(`${this.API_URL}/${id}`);
   }
+
+  // Admin - Bulk Delete Orders
+  deleteMultiple(ids: string[]): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/bulk-delete`, { ids });
+  }
 }

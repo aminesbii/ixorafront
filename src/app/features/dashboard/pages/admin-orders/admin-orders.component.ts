@@ -63,6 +63,53 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
   toastVisible = false;
   private toastTimer: any = null;
 
+  selectedIds: Set<string> = new Set();
+  confirmBulkDelete = false;
+
+  get allSelected(): boolean {
+    const filtered = this.filteredOrders();
+    return filtered.length > 0 && filtered.every(o => this.selectedIds.has(o._id));
+  }
+
+  toggleSelect(order: Order): void {
+    if (this.selectedIds.has(order._id)) {
+      this.selectedIds.delete(order._id);
+    } else {
+      this.selectedIds.add(order._id);
+    }
+  }
+
+  toggleSelectAll(): void {
+    if (this.allSelected) {
+      this.selectedIds.clear();
+    } else {
+      this.filteredOrders().forEach(o => this.selectedIds.add(o._id));
+    }
+  }
+
+  bulkDelete(): void {
+    if (this.selectedIds.size === 0) return;
+    this.confirmBulkDelete = true;
+  }
+
+  cancelBulkDelete(): void {
+    this.confirmBulkDelete = false;
+  }
+
+  executeBulkDelete(): void {
+    const ids = Array.from(this.selectedIds);
+    if (!ids.length) return;
+    this.orderService.deleteMultiple(ids).subscribe({
+      next: () => {
+        this.selectedIds.clear();
+        this.confirmBulkDelete = false;
+        this.showToast(`${ids.length} order(s) deleted`);
+        this.loadOrders();
+      },
+      error: () => {}
+    });
+  }
+
   confirmDeleteOrder: Order | null = null;
   deleteCountdown = 0;
   private deleteTimer: any = null;
@@ -102,12 +149,14 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
 
   applyFilters(): void {
     this.currentPage = 1;
+    this.selectedIds.clear();
     this.loadOrders();
   }
 
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
+    this.selectedIds.clear();
     this.loadOrders();
   }
 
@@ -288,6 +337,7 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     this.searchTerm = '';
     this.filterStatus = '';
     this.currentPage = 1;
+    this.selectedIds.clear();
     this.loadOrders();
   }
 
@@ -296,6 +346,7 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     this.userFilterName = '';
     this.userFilterEmail = '';
     this.currentPage = 1;
+    this.selectedIds.clear();
     this.loadOrders();
   }
 }

@@ -18,11 +18,13 @@ export class ProductsPageComponent implements OnInit {
   loading = true;
   error = '';
   mobileFilterOpen = false;
+  sidebarVisible = true;
+  productsFade = false;
+  private animTimeout: any;
 
   currentFilters: FilterState = {
     category_id: null,
     sort: '-createdAt',
-    priceRange: [null, null]
   };
   searchQuery = '';
   currentPage = 1;
@@ -71,13 +73,6 @@ export class ProductsPageComponent implements OnInit {
     if (this.onSaleFilter) {
       params.on_sale = true;
     }
-    if (this.currentFilters.priceRange[0] !== null) {
-      params.priceMin = this.currentFilters.priceRange[0];
-    }
-    if (this.currentFilters.priceRange[1] !== null) {
-      params.priceMax = this.currentFilters.priceRange[1];
-    }
-
     this.productService.list(params).subscribe({
       next: (res) => {
         this.products = res.products;
@@ -135,6 +130,22 @@ export class ProductsPageComponent implements OnInit {
 
   toggleMobileFilter(): void {
     this.mobileFilterOpen = !this.mobileFilterOpen;
+  }
+
+  onHideSidebar(): void {
+    this.sidebarVisible = false;
+    this.triggerFade();
+  }
+
+  onShowSidebar(): void {
+    this.sidebarVisible = true;
+    this.triggerFade();
+  }
+
+  private triggerFade(): void {
+    this.productsFade = true;
+    clearTimeout(this.animTimeout);
+    this.animTimeout = setTimeout(() => this.productsFade = false, 300);
   }
 
   get pageNumbers(): number[] {

@@ -285,14 +285,21 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   addToCart() {
     if (!this.product) return;
 
+    const prodId = this.product._id || this.product.id;
+    if (!prodId) return;
+
+    this.dashboardService.trackEvent({
+      product_id: prodId,
+      event_type: 'add_to_cart'
+    }).subscribe({
+      error: (err) => console.error('Failed to track add_to_cart:', err)
+    });
+
     // Determine the ID. If selectedVariant is 'base', treat it as no variant.
     let variantId = null;
     if (this.selectedVariant && this.selectedVariant.id !== 'base' && this.selectedVariant._id !== 'base') {
       variantId = this.selectedVariant._id || this.selectedVariant.id || null;
     }
-
-    const prodId = this.product._id || this.product.id;
-    if (!prodId) return;
 
     this.cartService.addItem(prodId, variantId, this.quantity).subscribe({
       next: () => this.showFeedback(`${this.product!.name} added to cart!`),

@@ -7,6 +7,7 @@ import { ProductService } from '../../../../core/services/product.service';
 import { OrderService, CheckoutPayload } from '../../../../core/services/order.service';
 import { AddressService } from '../../../../core/services/address.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { DashboardService } from '../../../../core/services/dashboard.service';
 import { Cart, CartItem } from '../../../../core/models/cart.model';
 import { Product } from '../../../../core/models/product.model';
 
@@ -47,6 +48,7 @@ export class CartComponent implements OnInit {
     private orderService: OrderService,
     private addressService: AddressService,
     private authService: AuthService,
+    private dashboardService: DashboardService,
     private router: Router
   ) { }
 
@@ -259,6 +261,12 @@ export class CartComponent implements OnInit {
         this.placedOrderCurrency = (res as any).order?.currency || 'TND';
         this.orderSuccessModal?.nativeElement.showModal();
         this.cartService.getCart().subscribe();
+        for (const item of this.items) {
+          const pid = typeof item.product_id === 'string' ? item.product_id : (item.product_id as any)?._id;
+          if (pid) {
+            this.dashboardService.trackEvent({ product_id: pid, event_type: 'purchase' }).subscribe();
+          }
+        }
       },
       error: (err) => {
         this.isPlacingOrder = false;
