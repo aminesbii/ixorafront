@@ -100,6 +100,13 @@ export class ProductCardComponent implements AfterViewInit {
     return true;
   }
 
+  get isOutOfStock(): boolean {
+    if (this.product.variants && this.product.variants.length > 0) {
+      return this.product.variants.every(v => v.stock_qty <= 0);
+    }
+    return false;
+  }
+
   get salePrice(): number | null {
     const ps = this.priceSource;
     if (!ps || !this.hasSale) return null;

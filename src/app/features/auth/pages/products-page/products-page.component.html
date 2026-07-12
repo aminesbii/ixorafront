@@ -10,6 +10,9 @@
           <div class="w-10 h-0.5 mt-3" [class.bg-red-500]="onSaleFilter" [class.bg-[var(--color-ixora-green)]]="!onSaleFilter"></div>
           <p *ngIf="onSaleFilter" class="text-xs text-red-500 font-semibold mt-2 uppercase tracking-wider">Discounted items</p>
         </div>
+        <div class="w-full md:w-80">
+          <app-search-bar (search)="onSearch($event)"></app-search-bar>
+        </div>
       </div>
     </div>
   </div>
@@ -34,7 +37,7 @@
         <div class="hidden lg:block text-xs text-gray-400 mb-6">{{ totalProducts }} product{{ totalProducts !== 1 ? 's' : '' }}</div>
         <app-sidebar-filter
           [mobileOpen]="mobileFilterOpen"
-          [initialCategoryId]="currentFilters.category_id"
+          [initialCategoryIds]="currentFilters.category_ids"
           (filterChange)="onFilterChange($event)"
           (mobileClose)="toggleMobileFilter()"
           (hideSidebar)="onHideSidebar()">

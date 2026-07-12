@@ -21,9 +21,10 @@ export class ProductsPageComponent implements OnInit {
   sidebarVisible = true;
   productsFade = false;
   private animTimeout: any;
+  private readonly SIDEBAR_KEY = 'ixora_sidebar_visible';
 
   currentFilters: FilterState = {
-    category_id: null,
+    category_ids: [],
     sort: '-createdAt',
   };
   searchQuery = '';
@@ -43,10 +44,16 @@ export class ProductsPageComponent implements OnInit {
   onSaleFilter = false;
 
   ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const saved = localStorage.getItem(this.SIDEBAR_KEY);
+      if (saved !== null) {
+        this.sidebarVisible = saved === 'true';
+      }
+    }
     this.route.queryParams.subscribe(params => {
       this.currentPage = 1;
       const categoryId = params['category'];
-      this.currentFilters.category_id = categoryId || null;
+      this.currentFilters.category_ids = categoryId ? categoryId.split(',') : [];
       this.onSaleFilter = params['on_sale'] === 'true';
       this.searchQuery = params['search'] || '';
       this.loadProducts();
@@ -64,8 +71,8 @@ export class ProductsPageComponent implements OnInit {
       sort: this.currentFilters.sort
     };
 
-    if (this.currentFilters.category_id) {
-      params.category_id = this.currentFilters.category_id;
+    if (this.currentFilters.category_ids.length > 0) {
+      params.category_ids = this.currentFilters.category_ids.join(',');
     }
     if (this.searchQuery) {
       params.search = this.searchQuery;
@@ -134,12 +141,20 @@ export class ProductsPageComponent implements OnInit {
 
   onHideSidebar(): void {
     this.sidebarVisible = false;
+    this.saveSidebarState();
     this.triggerFade();
   }
 
   onShowSidebar(): void {
     this.sidebarVisible = true;
+    this.saveSidebarState();
     this.triggerFade();
+  }
+
+  private saveSidebarState(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(this.SIDEBAR_KEY, String(this.sidebarVisible));
+    }
   }
 
   private triggerFade(): void {

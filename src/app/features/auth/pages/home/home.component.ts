@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 
@@ -8,8 +8,11 @@ import gsap from 'gsap';
   styleUrls: ['./home.component.css'],
   standalone: false
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('revealEl') revealElements!: QueryList<ElementRef>;
+
+  showPromoBanner = false;
+  private salesObserver: IntersectionObserver | null = null;
 
   testimonials = [
     { quote: "IXORA completely transformed my skincare routine. The hydration is unmatched.", author: "Amina F." },
@@ -24,7 +27,31 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       setTimeout(() => this.initScrollAnimations(), 500);
+      setTimeout(() => this.initPromoBanner(), 600);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.salesObserver?.disconnect();
+  }
+
+  scrollToSales(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      document.getElementById('sales-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  private initPromoBanner(): void {
+    const salesSection = document.getElementById('sales-section');
+    if (!salesSection) return;
+
+    this.salesObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        this.showPromoBanner = !entry.isIntersecting;
+      });
+    }, { threshold: 0.1 });
+
+    this.salesObserver.observe(salesSection);
   }
 
   initScrollAnimations() {

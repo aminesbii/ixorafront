@@ -4,6 +4,28 @@
       <p class="text-xs uppercase tracking-[0.4em] text-red-500 font-semibold mb-4">Limited Time</p>
       <h2 class="text-4xl font-serif">On Sale</h2>
       <div class="w-16 h-1 bg-[var(--color-ixora-green)] mx-auto mt-6"></div>
+      <!-- Countdown Timer -->
+      <div *ngIf="hasCountdown" class="mt-8 flex items-center justify-center gap-4">
+        <div class="text-center">
+          <span class="block text-3xl font-serif text-[var(--color-ixora-black)]">{{ countdown.days }}</span>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold">Days</span>
+        </div>
+        <span class="text-2xl text-gray-300 font-light">:</span>
+        <div class="text-center">
+          <span class="block text-3xl font-serif text-[var(--color-ixora-black)]">{{ countdown.hours | number:'2.0-0' }}</span>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold">Hours</span>
+        </div>
+        <span class="text-2xl text-gray-300 font-light">:</span>
+        <div class="text-center">
+          <span class="block text-3xl font-serif text-[var(--color-ixora-black)]">{{ countdown.minutes | number:'2.0-0' }}</span>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold">Min</span>
+        </div>
+        <span class="text-2xl text-gray-300 font-light">:</span>
+        <div class="text-center">
+          <span class="block text-3xl font-serif text-[var(--color-ixora-black)]">{{ countdown.seconds | number:'2.0-0' }}</span>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-semibold">Sec</span>
+        </div>
+      </div>
     </div>
 
     <div *ngIf="loading" class="flex justify-center py-12">

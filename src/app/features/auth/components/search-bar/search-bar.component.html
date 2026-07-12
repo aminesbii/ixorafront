@@ -1,50 +1,38 @@
-<div class="relative w-full">
+<div class="relative w-full" (keydown)="onKeydown($event)">
   <div class="relative">
     <svg xmlns="http://www.w3.org/2000/svg"
-         class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+         class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none z-10"
          fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
+    <!-- Ghost suggestion layer (behind input) -->
+    <span *ngIf="ghostText"
+          class="ghost-text absolute left-9 top-1/2 -translate-y-1/2 pointer-events-none whitespace-nowrap overflow-hidden text-gray-300 select-none z-0"
+          aria-hidden="true">{{ ghostText }}</span>
+    <!-- Real input (on top) -->
     <input
+      #searchInput
       type="text"
       [(ngModel)]="query"
       (ngModelChange)="onInput($event)"
-      (keydown)="onKeydown($event)"
-      (focus)="suggestions.length > 0 && (showDropdown = true)"
+      (focus)="onFocus()"
       (blur)="onBlur()"
       placeholder="Search products..."
-      class="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-md bg-gray-50 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 focus:bg-white transition-colors"
+      autocomplete="off"
+      class="search-input w-full pl-9 pr-8 py-2 border border-gray-200 rounded-md bg-transparent text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-colors relative z-[1]"
     />
     <button *ngIf="query"
             (click)="clear()"
-            class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+            class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors z-10">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
   </div>
-  <div *ngIf="showDropdown"
-       class="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-100 rounded-lg shadow-xl z-50 max-h-72 overflow-y-auto">
-    <div class="py-1">
-      <button *ngFor="let s of suggestions"
-              (mousedown)="selectSuggestion(s)"
-              class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-0">
-        <div class="w-10 h-10 rounded overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
-          <img *ngIf="s.images?.[0]?.image_url"
-               [src]="s.images?.[0]?.image_url"
-               class="w-full h-full object-cover"
-               alt="" />
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm text-gray-800 truncate font-medium leading-snug">{{ s.name }}</p>
-          <p *ngIf="s.base_price != null" class="text-xs text-gray-500 mt-0.5 leading-snug">{{ s.base_price | currency:'TND ' }}</p>
-        </div>
-      </button>
-      <div *ngIf="suggestions.length === 0 && query.trim().length >= 2"
-           class="px-4 py-5 text-center text-sm text-gray-400">
-        No products found
-      </div>
-    </div>
+  <!-- Tab hint -->
+  <div *ngIf="ghostText && showHint"
+       class="absolute right-0 -bottom-6 text-[9px] uppercase tracking-widest text-gray-300 font-medium z-10">
+    Tab to accept
   </div>
 </div>

@@ -3,7 +3,7 @@ import { CategoryService } from '../../../../core/services/category.service';
 import { CategoryTree } from '../../../../core/models/category.model';
 
 export interface FilterState {
-  category_id: string | null;
+  category_ids: string[];
   sort: string;
 }
 
@@ -18,9 +18,9 @@ export class SidebarFilterComponent implements OnInit {
   @Input() mobileOpen = false;
   @Output() mobileClose = new EventEmitter<void>();
   @Output() hideSidebar = new EventEmitter<void>();
-  @Input() set initialCategoryId(value: string | null) {
-    if (value && this.filters) {
-      this.filters.category_id = value;
+  @Input() set initialCategoryIds(value: string[]) {
+    if (value?.length && this.filters) {
+      this.filters.category_ids = [...value];
     }
   }
 
@@ -29,7 +29,7 @@ export class SidebarFilterComponent implements OnInit {
   categories: CategoryTree[] = [];
 
   filters: FilterState = {
-    category_id: null,
+    category_ids: [],
     sort: '-createdAt',
   };
 
@@ -51,9 +51,34 @@ export class SidebarFilterComponent implements OnInit {
     });
   }
 
-  setCategory(id: string | null): void {
-    this.filters.category_id = this.filters.category_id === id ? null : id;
+  toggleCategory(id: string): void {
+    const idx = this.filters.category_ids.indexOf(id);
+    if (idx === -1) {
+      this.filters.category_ids.push(id);
+    } else {
+      this.filters.category_ids.splice(idx, 1);
+    }
     this.emitChange();
+  }
+
+  isCategorySelected(id: string): boolean {
+    return this.filters.category_ids.includes(id);
+  }
+
+  removeCategory(id: string): void {
+    this.filters.category_ids = this.filters.category_ids.filter(c => c !== id);
+    this.emitChange();
+  }
+
+  getCategoryName(id: string): string {
+    for (const cat of this.categories) {
+      if (cat.id === id || cat._id === id) return cat.name;
+      if (cat.children) {
+        const sub = cat.children.find(c => c.id === id || c._id === id);
+        if (sub) return sub.name;
+      }
+    }
+    return id;
   }
 
   setSort(value: string): void {
@@ -71,15 +96,15 @@ export class SidebarFilterComponent implements OnInit {
   }
 
   clearAll(): void {
-    this.filters = { category_id: null, sort: '-createdAt' };
+    this.filters = { category_ids: [], sort: '-createdAt' };
     this.emitChange();
   }
 
   hasActiveFilters(): boolean {
-    return !!this.filters.category_id;
+    return this.filters.category_ids.length > 0;
   }
 
   private emitChange(): void {
-    this.filterChange.emit({ ...this.filters });
+    this.filterChange.emit({ ...this.filters, category_ids: [...this.filters.category_ids] });
   }
 }

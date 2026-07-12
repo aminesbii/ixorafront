@@ -106,19 +106,22 @@
         </div>
 
         <!-- Quantity + Add to Cart -->
-        <div class="flex items-center gap-4 mb-6">
+        <div class="flex items-center gap-4 mb-4">
           <div class="flex items-center border border-gray-200">
             <button (click)="decreaseQty()" class="px-5 py-3 text-lg hover:bg-gray-100 transition-colors">−</button>
             <span class="px-6 py-3 text-lg font-medium border-x border-gray-200 min-w-[60px] text-center">{{ quantity
               }}</span>
             <button (click)="increaseQty()" class="px-5 py-3 text-lg hover:bg-gray-100 transition-colors">+</button>
           </div>
-          <button (click)="addToCart()" [disabled]="outOfStock"
+          <button (click)="addToCart()"
             class="flex-1 text-white cursor-pointer py-4 px-10 text-sm uppercase tracking-[0.2em] transition-all duration-500"
-            [ngClass]="outOfStock ? 'bg-gray-400 cursor-not-allowed' : 'bg-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-green)]'">
-            {{ outOfStock ? 'Out of Stock' : 'Add to Cart' }}
+            [ngClass]="outOfStock ? 'border-2 border-[var(--color-ixora-black)] bg-transparent text-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-black)] hover:text-white' : 'bg-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-green)]'">
+            {{ outOfStock ? 'Pre-Order' : 'Add to Cart' }}
           </button>
         </div>
+        <p *ngIf="outOfStock" class="text-xs text-gray-400 mb-6 leading-relaxed">
+          This product is currently out of stock. Pre-order now and we'll ship as soon as it's available.
+        </p>
 
         <!-- Variant Cards Carousel -->
         <div *ngIf="displayVariants.length > 0" class="border-t border-gray-100 pt-6 mt-6">

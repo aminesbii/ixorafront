@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ElementRef, QueryList, ViewChildren, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import gsap from 'gsap';
 import { ProductService } from '../../../../core/services/product.service';
@@ -10,11 +10,16 @@ import { Product } from '../../../../core/models/product.model';
   styleUrls: ['./sales-products.component.css'],
   standalone: false
 })
-export class SalesProductsComponent implements OnInit, AfterViewInit {
+export class SalesProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('revealEl') revealElements!: QueryList<ElementRef>;
 
   products: Product[] = [];
   loading = false;
+
+  countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  hasCountdown = false;
+  private countdownInterval: any;
+  private earliestEndDate: Date | null = null;
 
   constructor(
     private productService: ProductService,
@@ -37,6 +42,7 @@ export class SalesProductsComponent implements OnInit, AfterViewInit {
       next: (res) => {
         this.products = res.products || [];
         this.loading = false;
+        this.computeCountdown();
         if (isPlatformBrowser(this.platformId)) {
           setTimeout(() => this.initScrollAnimations(), 100);
         }
@@ -45,6 +51,12 @@ export class SalesProductsComponent implements OnInit, AfterViewInit {
         this.loading = false;
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
   }
 
   getMainImage(product: Product): string | null {
@@ -91,6 +103,52 @@ export class SalesProductsComponent implements OnInit, AfterViewInit {
     if (!ps || !this.isSaleActive(product)) return null;
     const sp = Math.round(ps.price * (1 - product.sale_percentage! / 100) * 100) / 100;
     return `${sp} ${ps.currency}`;
+  }
+
+  private computeCountdown(): void {
+    const now = new Date();
+    let earliest: Date | null = null;
+
+    for (const p of this.products) {
+      if (p.sale_end_date) {
+        const end = new Date(p.sale_end_date);
+        if (!isNaN(end.getTime()) && end.getTime() > now.getTime()) {
+          if (!earliest || end.getTime() < earliest.getTime()) {
+            earliest = end;
+          }
+        }
+      }
+    }
+
+    if (earliest) {
+      this.earliestEndDate = earliest;
+      this.hasCountdown = true;
+      this.updateCountdown();
+      if (isPlatformBrowser(this.platformId)) {
+        this.countdownInterval = setInterval(() => this.updateCountdown(), 1000);
+      }
+    } else {
+      this.hasCountdown = false;
+    }
+  }
+
+  private updateCountdown(): void {
+    if (!this.earliestEndDate) return;
+    const now = new Date();
+    const diff = this.earliestEndDate.getTime() - now.getTime();
+
+    if (diff <= 0) {
+      this.hasCountdown = false;
+      clearInterval(this.countdownInterval);
+      return;
+    }
+
+    this.countdown = {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / (1000 * 60)) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+    };
   }
 
   initScrollAnimations() {

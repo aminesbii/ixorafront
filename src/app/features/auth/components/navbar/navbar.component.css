@@ -154,3 +154,85 @@ nav a.active-link::after {
 .mobile-menu--open .mobile-menu__links ~ .mobile-menu__links span {
   transition-delay: 0.42s;
 }
+
+/* ===== Products Dropdown (hover-safe) ===== */
+.products-dropdown {
+  position: relative;
+}
+
+.products-dropdown__panel {
+  position: absolute;
+  top: 100%;
+  left: -16px;
+  min-width: 240px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Invisible bridge: covers the gap between trigger and panel */
+.products-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: -16px;
+  right: -16px;
+  height: 12px;
+  background: transparent;
+}
+
+.products-dropdown:hover > .products-dropdown__panel,
+.products-dropdown__panel:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
+  pointer-events: auto;
+}
+
+/* Subcategory flyout */
+.products-dropdown__item {
+  position: relative;
+}
+
+.products-dropdown__sub {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  min-width: 220px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
+  pointer-events: none;
+  z-index: 101;
+}
+
+/* Bridge for sub-flyout */
+.products-dropdown__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.products-dropdown__item:hover > .products-dropdown__sub {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0s;
+  pointer-events: auto;
+}

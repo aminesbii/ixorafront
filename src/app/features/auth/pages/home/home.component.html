@@ -5,7 +5,7 @@
 
   <app-featured-products></app-featured-products>
 
-  <app-sales-products></app-sales-products>
+  <app-sales-products id="sales-section"></app-sales-products>
 
   <app-shop-by-category></app-shop-by-category>
 
@@ -70,5 +70,26 @@
     </div>
   </section>
 </main>
+
+<!-- Promo Reminder Banner -->
+<div *ngIf="showPromoBanner"
+     class="fixed bottom-0 left-0 right-0 z-40 bg-[var(--color-ixora-black)] text-white cursor-pointer transition-all duration-500"
+     [class.translate-y-full]="!showPromoBanner"
+     (click)="scrollToSales()">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+      <p class="text-xs sm:text-sm uppercase tracking-[0.15em] font-semibold">
+        <span class="text-[var(--color-ixora-green)]">Limited Time Offers</span> — Up to 50% off on selected products
+      </p>
+    </div>
+    <div class="flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] font-semibold text-gray-300 hover:text-white transition-colors">
+      <span class="hidden sm:inline">Shop Now</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+</div>
 
 <app-footer></app-footer>

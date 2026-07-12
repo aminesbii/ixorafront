@@ -3,41 +3,33 @@
   [class.navbar-dark]="isOnHomePage && isOnHero"
   [class.navbar-light]="!(isOnHomePage && isOnHero)"
   [ngClass]="(isOnHomePage && isOnHero) ? (isMobileMenuOpen ? 'bg-white text-black' : 'bg-transparent') : (isScrolled && !isMobileMenuOpen ? 'bg-white/75 backdrop-blur-md text-black' : 'bg-white/90 text-black')">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 flex items-center justify-between h-[64px]">
+  <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-10 flex items-center justify-between h-[64px]">
 
-    <!-- Logo -->
-    <a routerLink="/" class="flex-shrink-0">
-      <img src="/icons/IXORLogo.png" alt="ixora logo" class="logo-img h-10 sm:h-12 object-contain" noParallax />
-    </a>
-
-    <!-- Center links (desktop) -->
+    <!-- Left links (desktop) -->
     <ul class="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.18em] font-semibold">
       <li><a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Home</a></li>
-      <li><a routerLink="/products" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Products</a></li>
-      <!-- <li>
-        <div class="dropdown dropdown-hover dropdown-bottom">
-          <div tabindex="0" role="button" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200 flex items-center gap-1">
-            Categories
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-          <ul tabindex="0" class="dropdown-content menu bg-white/95 backdrop-blur-md shadow-lg rounded-none mt-2 w-56 p-0 border border-gray-100">
-            <li *ngFor="let cat of categories">
-              <a [routerLink]="cat.children?.length ? null : '/products'" [queryParams]="cat.children?.length ? null : {category: cat._id}"
-                 class="text-[11px] uppercase tracking-[0.15em] font-semibold text-gray-700 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 px-5 py-3 border-b border-gray-100 last:border-b-0"
-                 [routerLinkActive]="'text-[var(--color-ixora-green)] bg-gray-50'">
+      <!-- Products with categories dropdown -->
+      <li class="products-dropdown">
+        <a routerLink="/products" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200 flex items-center gap-1">
+          Products
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <div class="products-dropdown__panel">
+          <ul class="py-1">
+            <li *ngFor="let cat of categories" class="products-dropdown__item">
+              <a [routerLink]="cat.children?.length ? null : '/products'" [queryParams]="cat.children?.length ? null : {category: cat.id}"
+                 class="flex items-center justify-between px-5 py-3 text-[11px] uppercase tracking-[0.15em] font-semibold text-gray-700 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
                 {{ cat.name }}
-                <span *ngIf="cat.children?.length" class="ml-auto">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
+                <svg *ngIf="cat.children?.length" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
               </a>
-              <ul *ngIf="cat.children?.length" class="bg-white/95 shadow-lg border border-gray-100 ml-0">
+              <ul *ngIf="cat.children?.length" class="products-dropdown__sub">
                 <li *ngFor="let sub of cat.children">
-                  <a routerLink="/products" [queryParams]="{category: sub._id}"
-                     class="text-[10px] uppercase tracking-[0.15em] font-medium text-gray-500 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 px-5 py-2.5 border-b border-gray-100 last:border-b-0">
+                  <a routerLink="/products" [queryParams]="{category: sub.id}"
+                     class="block px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] font-medium text-gray-500 hover:text-[var(--color-ixora-green)] hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
                     {{ sub.name }}
                   </a>
                 </li>
@@ -45,11 +37,21 @@
             </li>
           </ul>
         </div>
-      </li> -->
+      </li>
       <li><a routerLink="/about" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">About</a></li>
       <li><a routerLink="/contact" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Contact</a></li>
       <li><a routerLink="/products" [queryParams]="{on_sale: true}" routerLinkActive="active-link" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Sales</a></li>
     </ul>
+
+    <!-- Center Logo -->
+    <a routerLink="/" class="hidden lg:block flex-shrink-0 absolute left-1/2 -translate-x-1/2">
+      <img src="/icons/IXORLogo.png" alt="ixora logo" class="logo-img h-10 sm:h-12 object-contain" noParallax />
+    </a>
+
+    <!-- Mobile Logo (left, before hamburger) -->
+    <a routerLink="/" class="lg:hidden flex-shrink-0">
+      <img src="/icons/IXORLogo.png" alt="ixora logo" class="logo-img h-10 sm:h-12 object-contain" noParallax />
+    </a>
 
     <!-- Right actions (desktop) -->
     <div class="hidden lg:flex items-center gap-6">
@@ -121,30 +123,32 @@
     <ul class="flex flex-col items-center gap-8 text-2xl uppercase tracking-[0.15em] font-semibold mobile-menu__links">
       <li><a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="closeMobileMenu()">Home</a></li>
-      <li><a routerLink="/products" routerLinkActive="active-link" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
-          (click)="closeMobileMenu()">Products</a></li>
-      <!-- <li>
+      <li>
         <details>
           <summary class="list-none block py-2 hover:text-[var(--color-ixora-green)] transition-colors cursor-pointer text-center">
-            Categories
+            Products
           </summary>
           <ul class="mt-4 space-y-3">
+            <li>
+              <a routerLink="/products" class="block text-base uppercase tracking-[0.1em] font-semibold text-gray-700 hover:text-[var(--color-ixora-green)] transition-colors py-1"
+                 (click)="closeMobileMenu()">All Products</a>
+            </li>
             <li *ngFor="let cat of categories">
               <div class="text-base uppercase tracking-[0.1em] font-semibold text-gray-600 py-1">{{ cat.name }}</div>
               <ul *ngIf="cat.children?.length" class="space-y-1 mb-4">
                 <li *ngFor="let sub of cat.children">
-                  <a routerLink="/products" [queryParams]="{category: sub._id}"
+                  <a routerLink="/products" [queryParams]="{category: sub.id}"
                      class="block text-sm font-medium text-gray-500 hover:text-[var(--color-ixora-green)] transition-colors py-1"
                      (click)="closeMobileMenu()">{{ sub.name }}</a>
                 </li>
               </ul>
-              <a *ngIf="!cat.children?.length" routerLink="/products" [queryParams]="{category: cat._id}"
+              <a *ngIf="!cat.children?.length" routerLink="/products" [queryParams]="{category: cat.id}"
                  class="block text-sm font-medium text-gray-500 hover:text-[var(--color-ixora-green)] transition-colors py-1"
                  (click)="closeMobileMenu()">{{ cat.name }}</a>
             </li>
           </ul>
         </details>
-      </li> -->
+      </li>
       <li><a routerLink="/about" routerLinkActive="active-link" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
           (click)="closeMobileMenu()">About</a></li>
       <li><a routerLink="/contact" routerLinkActive="active-link" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"
