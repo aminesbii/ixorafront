@@ -2,7 +2,9 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ProductService } from '../../../../core/services/product.service';
+import { CategoryService } from '../../../../core/services/category.service';
 import { Product, ProductImage, ProductVariant } from '../../../../core/models/product.model';
+import { Category } from '../../../../core/models/category.model';
 import { firstValueFrom, of, switchMap } from 'rxjs';
 
 export interface VariantCreationItem {
@@ -23,6 +25,7 @@ export interface VariantCreationItem {
 })
 export class AdminProductsComponent implements OnInit {
   products: Product[] = [];
+  categories: Category[] = [];
   loading = false;
   showAddForm = false;
   productForm: FormGroup;
@@ -109,6 +112,7 @@ export class AdminProductsComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
+    private categoryService: CategoryService,
     private fb: FormBuilder,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef
@@ -120,6 +124,7 @@ export class AdminProductsComponent implements OnInit {
       description: [''],
       status: ['draft', Validators.required],
       is_featured: [false],
+      category_id: [null],
       base_price: [null],
       currency: ['TND'],
       on_sale: [false],
@@ -139,6 +144,7 @@ export class AdminProductsComponent implements OnInit {
       description: [''],
       status: ['draft', Validators.required],
       is_featured: [false],
+      category_id: [null],
       base_price: [null],
       currency: ['TND'],
       on_sale: [false],
@@ -154,6 +160,10 @@ export class AdminProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProducts();
+    this.categoryService.list({ is_active: true }).subscribe({
+      next: (cats) => { this.categories = cats; },
+      error: () => { }
+    });
   }
 
   ngOnDestroy(): void {
@@ -443,6 +453,7 @@ export class AdminProductsComponent implements OnInit {
       description: product.description ?? '',
       status: product.status,
       is_featured: product.is_featured,
+      category_id: product.category_id ?? null,
       base_price: product.base_price ?? null,
       currency: product.currency ?? 'TND',
       on_sale: product.on_sale ?? false,

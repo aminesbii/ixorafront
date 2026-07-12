@@ -162,4 +162,12 @@ export class ProductService {
     formData.append('image', imageFile);
     return this.http.post<ProductVariant>(`${this.API_URL}/${productId}/variants/${variantId}/image`, formData);
   }
+
+  // ─── Bulk Category Assignment ───────────────────────────────────────────────
+  bulkAssignCategory(productIds: string[], categoryId: string | null): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`${this.API_URL}/bulk-assign-category`, {
+      product_ids: productIds,
+      category_id: categoryId
+    });
+  }
 }

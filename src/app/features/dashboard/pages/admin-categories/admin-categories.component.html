@@ -123,6 +123,11 @@
                         <i class="fa-solid fa-pen text-xs"></i>
                     </button>
                     <button
+                        class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-blue-500 hover:text-blue-700 hover:bg-blue-50 transition-colors border border-gray-100"
+                        title="Assign Products" (click)="openAssignModal(cat)">
+                        <i class="fa-solid fa-link text-xs"></i>
+                    </button>
+                    <button
                         class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors border border-gray-100"
                         title="Delete" (click)="openDeleteConfirm(cat)">
                         <i class="fa-solid fa-trash text-xs"></i>
@@ -281,4 +286,86 @@
 <div class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl translate-y-20 opacity-0 transition-all duration-300 z-[70] font-medium text-sm"
     [class.!translate-y-0]="toastVisible" [class.!opacity-100]="toastVisible">
     {{ toastMessage }}
+</div>
+
+<!-- ─── Assign Products Modal ─────────────────────────────────────────────────── -->
+<div class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+    *ngIf="assignCategory" (click)="closeAssignModal()">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg max-h-[85vh] flex flex-col"
+        (click)="$event.stopPropagation()">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-100 shrink-0">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">Assign Products</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Category: <strong>{{ assignCategory.name }}</strong></p>
+            </div>
+            <button class="text-gray-400 hover:text-gray-800 p-1" (click)="closeAssignModal()">
+                <i class="fa-solid fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="relative mb-4 shrink-0">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="text" [(ngModel)]="assignSearchTerm" placeholder="Search products..."
+                class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-300" />
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="assignLoading" class="flex items-center justify-center py-10">
+            <div
+                class="w-6 h-6 border-2 border-[var(--color-ixora-black)] border-t-transparent rounded-full animate-spin">
+            </div>
+        </div>
+
+        <!-- Product list -->
+        <div *ngIf="!assignLoading" class="flex-1 overflow-y-auto space-y-2 pr-1">
+            <div *ngIf="filteredAssignProducts.length === 0" class="text-center py-10 text-sm text-gray-500 italic">
+                No products found.
+            </div>
+            <label *ngFor="let p of filteredAssignProducts"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-all"
+                [class.cursor-pointer]="canAssign(p)" [class.cursor-not-allowed]="!canAssign(p)"
+                [class.opacity-60]="!canAssign(p)"
+                [class.border-[var(--color-ixora-black)]]="assignedProductIds.has(productId(p))"
+                [class.bg-gray-50]="assignedProductIds.has(productId(p))"
+                [class.border-gray-200]="!assignedProductIds.has(productId(p))">
+                <input type="checkbox" [checked]="assignedProductIds.has(productId(p))" [disabled]="!canAssign(p)"
+                    (change)="toggleProductAssign(p)"
+                    class="w-4 h-4 border-gray-300 text-[var(--color-ixora-black)] rounded focus:ring-black"
+                    [class.cursor-pointer]="canAssign(p)" [class.cursor-not-allowed]="!canAssign(p)" />
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold truncate" [class.text-gray-900]="canAssign(p)"
+                        [class.text-gray-500]="!canAssign(p)">{{ p.name }}</p>
+                    <p class="text-xs text-gray-500">
+                        <span *ngIf="p.category && canAssign(p)" class="text-blue-600">{{ p.category.name }}</span>
+                        <span *ngIf="p.category && !canAssign(p)" class="text-gray-500 font-medium">Assigned to: {{
+                            p.category.name }}</span>
+                        <span *ngIf="!p.category" class="italic">No category</span>
+                    </p>
+                </div>
+                <span *ngIf="assignedProductIds.has(productId(p))"
+                    class="shrink-0 w-5 h-5 bg-[var(--color-ixora-black)] rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-check text-white text-[10px]"></i>
+                </span>
+            </label>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-between items-center pt-4 mt-4 border-t border-gray-100 shrink-0">
+            <span class="text-xs text-gray-500">{{ assignedProductIds.size }} product(s) selected</span>
+            <div class="flex gap-3">
+                <button
+                    class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-black hover:bg-gray-100 rounded-md transition-colors"
+                    (click)="closeAssignModal()">Cancel</button>
+                <button
+                    class="px-5 py-2 text-sm font-bold bg-[var(--color-ixora-black)] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex items-center gap-2"
+                    (click)="confirmAssign()" [disabled]="isAssignSubmitting">
+                    <i class="fa-solid fa-spinner fa-spin" *ngIf="isAssignSubmitting"></i>
+                    {{ isAssignSubmitting ? 'Saving...' : 'Save Assignments' }}
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

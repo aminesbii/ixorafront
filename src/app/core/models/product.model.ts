@@ -59,4 +59,5 @@ export interface Product {
   // Populated fields (optional, added by frontend requests or controllers)
   images?: ProductImage[];
   variants?: ProductVariant[];
+  category?: { name: string; slug: string } | null;
 }

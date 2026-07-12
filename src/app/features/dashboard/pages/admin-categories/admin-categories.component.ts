@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CategoryService } from '../../../../core/services/category.service';
 import { Category } from '../../../../core/models/category.model';
+import { ProductService } from '../../../../core/services/product.service';
+import { Product } from '../../../../core/models/product.model';
 
 @Component({
     selector: 'app-admin-categories',
@@ -38,6 +40,14 @@ export class AdminCategoriesComponent implements OnInit {
     // Delete confirm
     confirmDelete: Category | null = null;
 
+    // Assign products modal
+    assignCategory: Category | null = null;
+    allProducts: Product[] = [];
+    assignedProductIds: Set<string> = new Set();
+    assignSearchTerm = '';
+    isAssignSubmitting = false;
+    assignLoading = false;
+
     // Toast
     toastMessage = '';
     toastVisible = false;
@@ -45,6 +55,7 @@ export class AdminCategoriesComponent implements OnInit {
 
     constructor(
         private categoryService: CategoryService,
+        private productService: ProductService,
         private sanitizer: DomSanitizer,
         private cdr: ChangeDetectorRef
     ) { }
@@ -246,5 +257,94 @@ export class AdminCategoriesComponent implements OnInit {
         if (!parentId) return '—';
         const parent = this.categories.find(c => this.catId(c) === parentId);
         return parent ? parent.name : '—';
+    }
+
+    // ─── Assign Products ────────────────────────────────────────────────────────
+    get filteredAssignProducts(): Product[] {
+        if (!this.assignSearchTerm.trim()) return this.allProducts;
+        const q = this.assignSearchTerm.toLowerCase();
+        return this.allProducts.filter(p => p.name.toLowerCase().includes(q));
+    }
+
+    productId(p: Product): string {
+        return (p.id ?? p._id) as string;
+    }
+
+    canAssign(p: Product): boolean {
+        if (!this.assignCategory) return false;
+        const currentCatId = this.catId(this.assignCategory);
+        // Can be changed ONLY if it has no category, or if it already belongs to THIS current category.
+        return !p.category_id || p.category_id === currentCatId;
+    }
+
+    openAssignModal(cat: Category): void {
+        this.assignCategory = cat;
+        this.assignedProductIds = new Set();
+        this.assignSearchTerm = '';
+        this.assignLoading = true;
+        this.productService.list({ limit: 200 }).subscribe({
+            next: (res) => {
+                this.allProducts = res.products;
+                // Pre-mark products already in this category
+                const catId = this.catId(cat);
+                res.products.forEach(p => {
+                    if (p.category_id === catId) {
+                        this.assignedProductIds.add(this.productId(p));
+                    }
+                });
+                this.assignLoading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => { this.assignLoading = false; }
+        });
+    }
+
+    closeAssignModal(): void {
+        this.assignCategory = null;
+        this.allProducts = [];
+        this.assignedProductIds.clear();
+        this.isAssignSubmitting = false;
+    }
+
+    toggleProductAssign(p: Product): void {
+        const id = this.productId(p);
+        if (this.assignedProductIds.has(id)) {
+            this.assignedProductIds.delete(id);
+        } else {
+            this.assignedProductIds.add(id);
+        }
+    }
+
+    confirmAssign(): void {
+        if (!this.assignCategory || this.isAssignSubmitting) return;
+        this.isAssignSubmitting = true;
+        const catId = this.catId(this.assignCategory);
+
+        // Products to assign to this category (checked)
+        const toAssign = Array.from(this.assignedProductIds);
+        // Products to unassign (were in this category but are now unchecked)
+        const toUnassign = this.allProducts
+            .filter(p => p.category_id === catId && !this.assignedProductIds.has(this.productId(p)))
+            .map(p => this.productId(p));
+
+        const ops: Promise<any>[] = [];
+        if (toAssign.length) {
+            ops.push(new Promise((res, rej) =>
+                this.productService.bulkAssignCategory(toAssign, catId).subscribe({ next: res, error: rej })
+            ));
+        }
+        if (toUnassign.length) {
+            ops.push(new Promise((res, rej) =>
+                this.productService.bulkAssignCategory(toUnassign, null).subscribe({ next: res, error: rej })
+            ));
+        }
+
+        Promise.all(ops).then(() => {
+            this.showToast('Products assigned successfully');
+            this.closeAssignModal();
+        }).catch(() => {
+            this.showToast('Failed to save assignments');
+            this.isAssignSubmitting = false;
+        });
     }
 }
