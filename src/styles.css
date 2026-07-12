@@ -86,3 +86,5 @@ span.line-reveal-inner {
   transform: translateY(100%);
   will-change: transform, opacity;
 }
+
+/* Force CSS Rebuild for new Tailwind classes */

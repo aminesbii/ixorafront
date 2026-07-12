@@ -1,0 +1,284 @@
+<!-- ─── Page Container ───────────────────────────────────────────────────────── -->
+<div class="bg-[var(--color-ixora-white)] min-h-screen">
+
+    <!-- ─── Header ─────────────────────────────────────────────────────────────── -->
+    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-4xl lg:text-5xl font-extrabold font-serif text-[var(--color-ixora-black)] mb-2">Categories
+            </h1>
+            <p class="text-sm text-gray-700 font-medium">Manage your product categories and hierarchy.</p>
+        </div>
+        <button (click)="toggleAddForm()"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-ixora-black)] text-white text-xs uppercase font-bold tracking-wider hover:bg-opacity-90 rounded-md shadow-sm transition-all duration-300">
+            <i class="fa-solid" [class.fa-plus]="!showAddForm" [class.fa-times]="showAddForm"></i>
+            <span>{{ showAddForm ? 'Cancel' : 'Add Category' }}</span>
+        </button>
+    </div>
+
+    <!-- ─── Add Form ────────────────────────────────────────────────────────────── -->
+    <div *ngIf="showAddForm" class="border border-gray-200 rounded-md p-8 bg-white mb-8 shadow-sm">
+        <div class="mb-6">
+            <h2 class="text-2xl font-serif font-bold text-[var(--color-ixora-black)]">New Category</h2>
+            <p class="text-sm text-gray-500 mt-1">Fill in the category details</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div class="flex flex-col gap-2">
+                <label class="block text-xs font-semibold text-gray-600">Name *</label>
+                <input type="text" [(ngModel)]="addName" (ngModelChange)="onAddNameChange()" placeholder="e.g. Skincare"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors bg-white" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="block text-xs font-semibold text-gray-600">Slug *</label>
+                <input type="text" [(ngModel)]="addSlug" placeholder="auto-generated"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors bg-white" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="block text-xs font-semibold text-gray-600">Parent Category</label>
+                <select [(ngModel)]="addParentId"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors bg-white">
+                    <option value="">None (top-level)</option>
+                    <option *ngFor="let c of categories" [value]="catId(c)">{{ c.name }}</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="block text-xs font-semibold text-gray-600">Sort Order</label>
+                <input type="number" [(ngModel)]="addSortOrder"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors bg-white" />
+            </div>
+            <div class="flex items-end pb-2">
+                <label class="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="addIsActive"
+                        class="w-4 h-4 border-gray-300 text-[var(--color-ixora-black)] rounded focus:ring-black cursor-pointer" />
+                    Active
+                </label>
+            </div>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="mb-6">
+            <label class="block text-xs font-semibold text-gray-600 mb-2">Category Image</label>
+            <div class="w-32 h-32 border-2 border-dashed border-[var(--color-ixora-blue)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition-colors text-blue-400 hover:text-blue-600"
+                *ngIf="!addImagePreview" (click)="addImageInput.click()">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl mb-2"></i>
+                <span class="text-xs font-medium">Upload</span>
+                <input #addImageInput type="file" accept="image/*" (change)="onAddImageSelected($event)" hidden />
+            </div>
+            <div class="relative w-32 h-32 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0"
+                *ngIf="addImagePreview">
+                <img [src]="addImagePreview" alt="Preview" class="w-full h-full object-cover" />
+                <button
+                    class="absolute top-1 right-1 bg-black/50 hover:bg-black text-white w-6 h-6 rounded-full flex items-center justify-center transition-colors"
+                    (click)="removeAddImage()">
+                    <i class="fa-solid fa-times text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-6 mt-4 border-t border-gray-100">
+            <button
+                class="px-5 py-2 text-sm font-bold bg-[var(--color-ixora-black)] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex items-center gap-2"
+                (click)="submitAdd()" [disabled]="isSubmitting || !addName || !addSlug">
+                <i class="fa-solid fa-save w-4"></i> {{ isSubmitting ? 'Saving...' : 'Save Category' }}
+            </button>
+        </div>
+    </div>
+
+    <!-- ─── Loading ──────────────────────────────────────────────────────────────── -->
+    <div *ngIf="loading" class="py-20 flex flex-col items-center justify-center">
+        <div
+            class="w-8 h-8 border-2 border-[var(--color-ixora-black)] border-t-transparent rounded-full animate-spin mx-auto mb-3">
+        </div>
+        <p class="text-sm font-semibold text-gray-500">Loading categories...</p>
+    </div>
+
+    <!-- ─── Empty State ──────────────────────────────────────────────────────────── -->
+    <div *ngIf="!loading && categories.length === 0"
+        class="flex flex-col items-center justify-center py-20 bg-white rounded-md border border-gray-200 mb-8 overflow-hidden text-gray-400">
+        <i class="fa-solid fa-layer-group text-5xl mb-4 text-gray-300"></i>
+        <p class="text-sm font-semibold text-gray-700">No categories found</p>
+        <p class="text-sm">Click "Add Category" to create your first one.</p>
+    </div>
+
+    <!-- ─── Category Grid ───────────────────────────────────────────────────────── -->
+    <div *ngIf="!loading && categories.length > 0"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col relative group hover:shadow-md transition-shadow"
+            *ngFor="let cat of categories">
+            <div
+                class="w-full aspect-[4/3] bg-gray-50 flex items-center justify-center overflow-hidden border-b border-gray-100">
+                <img *ngIf="cat.image_url" [src]="cat.image_url" [alt]="cat.name"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div class="text-4xl text-gray-300 flex items-center justify-center h-full w-full"
+                    *ngIf="!cat.image_url">
+                    <i class="fa-solid fa-image"></i>
+                </div>
+            </div>
+            <div class="p-4 flex flex-col gap-2 relative">
+                <div class="absolute -top-4 right-4 flex gap-2">
+                    <!-- Quick actions floating above the content boundary -->
+                    <button
+                        class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-gray-600 hover:text-[var(--color-ixora-black)] hover:bg-gray-50 transition-colors border border-gray-100"
+                        title="Edit" (click)="openEdit(cat)">
+                        <i class="fa-solid fa-pen text-xs"></i>
+                    </button>
+                    <button
+                        class="w-8 h-8 rounded-full bg-white shadow flex items-center justify-center text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors border border-gray-100"
+                        title="Delete" (click)="openDeleteConfirm(cat)">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                </div>
+                <h3 class="text-lg font-serif font-bold text-[var(--color-ixora-black)] leading-tight truncate pr-16">{{
+                    cat.name }}</h3>
+                <span class="block text-xs text-gray-500 font-mono truncate">/{{ cat.slug }}</span>
+
+                <div class="flex flex-col gap-2 text-xs mt-2 pt-3 border-t border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500 font-medium">Status</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider"
+                            [class.bg-green-100]="cat.is_active" [class.text-green-700]="cat.is_active"
+                            [class.bg-gray-100]="!cat.is_active" [class.text-gray-600]="!cat.is_active">
+                            {{ cat.is_active ? 'Active' : 'Draft' }}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-500 font-medium">Sort Order</span>
+                        <span class="font-medium">{{ cat.sort_order }}</span>
+                    </div>
+                    <div class="flex items-center justify-between" *ngIf="cat.parent_id">
+                        <span class="text-gray-500 font-medium">Parent</span>
+                        <span class="font-medium truncate max-w-[120px]">{{ parentName(cat.parent_id) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Edit Modal ─────────────────────────────────────────────────────────────── -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" *ngIf="editCategory"
+    (click)="closeEdit()">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+            <h2 class="text-2xl font-serif font-bold text-[var(--color-ixora-black)]">Edit Category</h2>
+            <button class="p-2 text-gray-400 hover:text-gray-800 transition-colors" (click)="closeEdit()">
+                <i class="fa-solid fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="flex flex-col gap-2">
+                <label class="block text-xs font-semibold text-gray-600">Name *</label>
+                <input type="text" [(ngModel)]="editName" (ngModelChange)="onEditNameChange()"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="block text-xs font-semibold text-gray-600">Slug *</label>
+                <input type="text" [(ngModel)]="editSlug"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="block text-xs font-semibold text-gray-600">Parent Category</label>
+                <select [(ngModel)]="editParentId"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors bg-white">
+                    <option value="">None (top-level)</option>
+                    <option *ngFor="let c of categories" [value]="catId(c)"
+                        [disabled]="catId(c) === catId(editCategory!)">{{ c.name }}</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="block text-xs font-semibold text-gray-600">Sort Order</label>
+                <input type="number" [(ngModel)]="editSortOrder"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-300 transition-colors" />
+            </div>
+            <div class="flex items-end pb-2">
+                <label class="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="editIsActive"
+                        class="w-4 h-4 border-gray-300 text-[var(--color-ixora-black)] rounded focus:ring-black cursor-pointer" />
+                    Active
+                </label>
+            </div>
+        </div>
+
+        <!-- Image -->
+        <div class="mb-6">
+            <label class="block text-xs font-semibold text-gray-600 mb-2">Category Image</label>
+
+            <!-- Current image -->
+            <div class="relative w-32 h-32 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex flex-col items-center justify-center group mb-4"
+                *ngIf="editCategory!.image_url && !editImagePreview">
+                <img [src]="editCategory!.image_url" [alt]="editCategory!.name" class="w-full h-full object-cover" />
+                <div
+                    class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <button class="px-3 py-1 bg-white text-xs font-bold rounded shadow hover:bg-gray-100"
+                        (click)="editImageInput.click()">Change Image</button>
+                </div>
+            </div>
+
+            <!-- New image preview -->
+            <div class="relative w-32 h-32 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex-shrink-0"
+                *ngIf="editImagePreview">
+                <img [src]="editImagePreview" alt="New preview" class="w-full h-full object-cover" />
+                <button
+                    class="absolute top-1 right-1 bg-black/50 hover:bg-black text-white w-6 h-6 rounded-full flex items-center justify-center transition-colors"
+                    (click)="removeEditImage()">
+                    <i class="fa-solid fa-times text-xs"></i>
+                </button>
+            </div>
+
+            <!-- No image yet -->
+            <div class="w-32 h-32 border-2 border-dashed border-[var(--color-ixora-blue)] rounded-md flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition-colors text-blue-400 hover:text-blue-600"
+                *ngIf="!editCategory!.image_url && !editImagePreview" (click)="editImageInput.click()">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl mb-2"></i>
+                <span class="text-xs font-medium">Upload</span>
+            </div>
+
+            <input #editImageInput type="file" accept="image/*" (change)="onEditImageSelected($event)" hidden />
+        </div>
+
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+            <button
+                class="px-5 py-2 text-sm font-semibold text-gray-600 hover:text-black border border-gray-300 rounded-md transition-colors"
+                (click)="closeEdit()">Cancel</button>
+            <button
+                class="px-5 py-2 text-sm font-bold bg-[var(--color-ixora-black)] text-white rounded-md hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex items-center gap-2"
+                (click)="submitEdit()" [disabled]="isEditSubmitting || !editName || !editSlug">
+                <i class="fa-solid fa-save"></i> {{ isEditSubmitting ? 'Saving...' : 'Save Changes' }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Delete Confirm Modal ───────────────────────────────────────────────────── -->
+<div class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+    *ngIf="confirmDelete" (click)="closeDeleteConfirm()">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm" (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-gray-900">Confirm Deletion</h2>
+            <button class="text-gray-400 hover:text-gray-800" (click)="closeDeleteConfirm()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+            Are you sure you want to delete <strong class="text-gray-900">"{{ confirmDelete.name }}"</strong>? This
+            cannot be undone. Products previously in this category will need a new category assignment.
+        </p>
+        <div class="flex justify-end gap-3">
+            <button
+                class="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-black hover:bg-gray-100 rounded-md transition-colors"
+                (click)="closeDeleteConfirm()">Cancel</button>
+            <button
+                class="px-4 py-2 text-sm font-bold bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center gap-2"
+                (click)="confirmDeleteCategory()">
+                <i class="fa-solid fa-trash w-4"></i> Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Toast ──────────────────────────────────────────────────────────────────── -->
+<div class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl translate-y-20 opacity-0 transition-all duration-300 z-[70] font-medium text-sm"
+    [class.!translate-y-0]="toastVisible" [class.!opacity-100]="toastVisible">
+    {{ toastMessage }}
+</div>

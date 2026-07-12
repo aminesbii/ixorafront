@@ -26,7 +26,7 @@ export class ShopByCategoryComponent implements OnInit, AfterViewInit {
     private categoryService: CategoryService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadCategories();
@@ -44,21 +44,25 @@ export class ShopByCategoryComponent implements OnInit, AfterViewInit {
         if (cats && cats.length > 0) {
           this.categories = cats.map(cat => {
             let image = 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=600&auto=format&fit=crop';
-            const nameLower = cat.name.toLowerCase();
-            if (nameLower.includes('serum')) {
-              image = 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop';
-            } else if (nameLower.includes('moisturizer') || nameLower.includes('cream')) {
-              image = 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=600&auto=format&fit=crop';
-            } else if (nameLower.includes('cleanser') || nameLower.includes('wash')) {
-              image = 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=600&auto=format&fit=crop';
-            } else if (nameLower.includes('shampoo')) {
-              image = 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=600&auto=format&fit=crop';
-            } else if (nameLower.includes('oil') || nameLower.includes('mask') || nameLower.includes('hair')) {
-              image = 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=600&auto=format&fit=crop';
-            } else if (nameLower.includes('wellness')) {
-              image = 'https://images.unsplash.com/photo-1571781926291-c477eb31f24e?q=80&w=600&auto=format&fit=crop';
+            if (cat.image_url) {
+              image = cat.image_url;
+            } else {
+              const nameLower = cat.name.toLowerCase();
+              if (nameLower.includes('serum')) {
+                image = 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop';
+              } else if (nameLower.includes('moisturizer') || nameLower.includes('cream')) {
+                image = 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=600&auto=format&fit=crop';
+              } else if (nameLower.includes('cleanser') || nameLower.includes('wash')) {
+                image = 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=600&auto=format&fit=crop';
+              } else if (nameLower.includes('shampoo')) {
+                image = 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=600&auto=format&fit=crop';
+              } else if (nameLower.includes('oil') || nameLower.includes('mask') || nameLower.includes('hair')) {
+                image = 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=600&auto=format&fit=crop';
+              } else if (nameLower.includes('wellness')) {
+                image = 'https://images.unsplash.com/photo-1571781926291-c477eb31f24e?q=80&w=600&auto=format&fit=crop';
+              }
             }
-            return { _id: cat._id, name: cat.name, image, slug: cat.slug };
+            return { _id: (cat.id || cat._id) as string, name: cat.name, image, slug: cat.slug };
           });
         }
         if (isPlatformBrowser(this.platformId)) {

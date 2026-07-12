@@ -7,6 +7,7 @@ import { AdminProductsComponent } from './pages/admin-products/admin-products.co
 import { RecycleBinComponent } from './pages/recycle-bin/recycle-bin.component';
 import { AdminAnalyticsComponent } from './pages/admin-analytics/admin-analytics.component';
 import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
+import { AdminCategoriesComponent } from './pages/admin-categories/admin-categories.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { AuthGuard } from '../../core/guards/auth.guard';
 import { AdminGuard } from '../../core/guards/admin.guard';
@@ -37,6 +38,12 @@ const routes: Routes = [
       {
         path: 'recycle-bin',
         component: RecycleBinComponent,
+        canActivate: [AuthGuard, AdminGuard],
+        data: { permission: 'products' }
+      },
+      {
+        path: 'categories',
+        component: AdminCategoriesComponent,
         canActivate: [AuthGuard, AdminGuard],
         data: { permission: 'products' }
       },
