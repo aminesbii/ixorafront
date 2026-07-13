@@ -196,28 +196,76 @@
 <app-footer></app-footer>
 
 
-<dialog #orderSuccessModal class="modal">
-  <div class="modal-box text-center">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" (click)="closeOrderSuccess()">✕</button>
-    </form>
-    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-      <svg class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
+<dialog #orderSuccessModal class="receipt-dialog">
+  <div class="receipt">
+    <div class="receipt-scallop-top"></div>
+
+    <div class="receipt-body">
+      <div class="receipt-brand">IXORA</div>
+      <div class="receipt-subhead">ORDER CONFIRMATION</div>
+
+      <div class="receipt-divider"></div>
+
+      <div class="receipt-info">
+        <div class="receipt-info-row">
+          <span class="receipt-label">Order</span>
+          <span class="receipt-value mono">{{ placedOrderNumber }}</span>
+        </div>
+        <div class="receipt-info-row">
+          <span class="receipt-label">Date</span>
+          <span class="receipt-value">{{ placedDate }}</span>
+        </div>
+      </div>
+
+      <div class="receipt-divider dashed"></div>
+
+      <div class="receipt-items">
+        <div class="receipt-items-header">
+          <span class="receipt-label">Item</span>
+          <span class="receipt-label text-right">Price</span>
+          <span class="receipt-label text-right">Qty</span>
+          <span class="receipt-label text-right">Total</span>
+        </div>
+        <div class="receipt-items-list">
+          <div *ngFor="let item of placedOrderItems" class="receipt-item-row">
+            <span class="receipt-item-name">{{ item.name }}</span>
+            <span class="receipt-item-price">{{ item.unitPrice | number:'1.2-2' }}</span>
+            <span class="receipt-item-qty">{{ item.qty }}</span>
+            <span class="receipt-item-total">{{ item.price | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt-total-row">
+        <span class="receipt-label">Total Charged</span>
+        <span class="receipt-total-amount">{{ placedOrderTotal | number:'1.2-2' }} {{ placedOrderCurrency }}</span>
+      </div>
+
+      <div class="receipt-divider"></div>
+
+      <div class="receipt-success">
+        <div class="receipt-check">✓</div>
+        <p>Your order has been placed successfully!</p>
+      </div>
+
+      <div class="receipt-divider dashed"></div>
+
+      <div class="receipt-actions">
+        <a [routerLink]="['/track-order']" class="receipt-btn primary">
+          Track Your Order
+        </a>
+        <button (click)="closeOrderSuccess()" class="receipt-btn secondary">
+          Continue Shopping
+        </button>
+      </div>
+
+      <div class="receipt-footer">
+        <div class="receipt-divider"></div>
+        <p>Thank you for your purchase!</p>
+      </div>
     </div>
-    <h3 class="text-lg font-bold text-gray-800 mb-2">Order Placed!</h3>
-    <p class="text-sm text-gray-500 mb-1">Your order number is</p>
-    <p class="text-xl font-mono font-bold text-[var(--color-ixora-green)] mb-6 select-all">{{ placedOrderNumber }}</p>
-    <div class="flex flex-col gap-2">
-      <a [routerLink]="['/track-order']"
-        class="px-6 py-3 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300 text-center">
-        Track Your Order
-      </a>
-      <button (click)="closeOrderSuccess()"
-        class="px-6 py-3 text-[10px] uppercase tracking-widest font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer">
-        Continue Shopping
-      </button>
-    </div>
+
+    <div class="receipt-scallop-bottom"></div>
   </div>
+  <button class="receipt-close-btn" (click)="closeOrderSuccess()">✕</button>
 </dialog>

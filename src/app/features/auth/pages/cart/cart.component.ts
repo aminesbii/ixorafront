@@ -10,6 +10,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { DashboardService } from '../../../../core/services/dashboard.service';
 import { Cart, CartItem } from '../../../../core/models/cart.model';
 import { Product } from '../../../../core/models/product.model';
+import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-cart',
@@ -30,6 +31,9 @@ export class CartComponent implements OnInit {
   showOrderSuccess = false;
   placedOrderNumber = '';
   placedOrderCurrency = '';
+  placedOrderTotal = 0;
+  placedDate = '';
+  placedOrderItems: { name: string; qty: number; unitPrice: number; price: number }[] = [];
   copied = false;
 
   customerName = '';
@@ -257,9 +261,25 @@ export class CartComponent implements OnInit {
       next: (res) => {
         this.isPlacingOrder = false;
         this.showOrderForm = false;
-        this.placedOrderNumber = (res as any).order?.order_number || '';
-        this.placedOrderCurrency = (res as any).order?.currency || 'TND';
+        const data = res as any;
+        const order = data.order || data;
+        this.placedOrderNumber = order?.order_number || '';
+        this.placedOrderCurrency = order?.currency || 'TND';
+        this.placedOrderTotal = order?.grand_total || this.total;
+        this.placedDate = order?.createdAt ? new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        const orderItems = data.items || order?.items || [];
+        this.placedOrderItems = orderItems.map((i: any) => ({
+          name: i.product_name_snapshot || i.product_name || 'Product',
+          qty: i.quantity || 0,
+          unitPrice: i.unit_price_snapshot || 0,
+          price: i.line_total || i.unit_price_snapshot * i.quantity || 0
+        }));
         this.orderSuccessModal?.nativeElement.showModal();
+        setTimeout(() => {
+          confetti({ particleCount: 80, spread: 70, origin: { x: 0.5, y: 0.4 } });
+          setTimeout(() => confetti({ particleCount: 40, spread: 100, origin: { x: 0.2, y: 0.5 } }), 200);
+          setTimeout(() => confetti({ particleCount: 40, spread: 100, origin: { x: 0.8, y: 0.5 } }), 300);
+        }, 300);
         this.cartService.getCart().subscribe();
         for (const item of this.items) {
           const pid = typeof item.product_id === 'string' ? item.product_id : (item.product_id as any)?._id;
