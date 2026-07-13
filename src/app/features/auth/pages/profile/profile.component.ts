@@ -23,8 +23,6 @@ export class ProfileComponent implements OnInit {
     full_name: string;
     email: string;
     phone: string | null;
-    role: string;
-    status: string;
     createdAt: string;
   } | null = null;
 
