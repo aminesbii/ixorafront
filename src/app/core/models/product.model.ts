@@ -43,7 +43,6 @@ export interface Product {
   name: string;
   slug: string;
   short_description?: string | null;
-  description?: string | null;
   ingredients?: string | null;
   details?: ProductDetails;
   status: 'draft' | 'active' | 'archived';

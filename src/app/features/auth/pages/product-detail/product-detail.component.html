@@ -89,8 +89,7 @@
       <div #revealEl class="w-full max-w-lg opacity-0 translate-y-8">
         <h1 class="text-5xl lg:text-7xl font-serif leading-[1.1] mb-6">{{ product.name }}</h1>
 
-        <p class="text-base lg:text-lg text-gray-500 leading-relaxed mb-8">{{ product.short_description ||
-          product.description }}</p>
+        <p class="text-base lg:text-lg text-gray-500 leading-relaxed mb-8">{{ product.short_description }}</p>
 
         <div class="flex items-baseline gap-3 mb-8">
           <span class="text-xl lg:text-2xl font-semibold" [class.text-red-600]="hasSale"
@@ -113,14 +112,13 @@
               }}</span>
             <button (click)="increaseQty()" class="px-5 py-3 text-lg hover:bg-gray-100 transition-colors">+</button>
           </div>
-          <button (click)="addToCart()"
-            class="flex-1 text-white cursor-pointer py-4 px-10 text-sm uppercase tracking-[0.2em] transition-all duration-500"
-            [ngClass]="outOfStock ? 'border-2 border-[var(--color-ixora-black)] bg-transparent text-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-black)] hover:text-white' : 'bg-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-green)]'">
-            {{ outOfStock ? 'Pre-Order' : 'Add to Cart' }}
+          <button *ngIf="!outOfStock" (click)="addToCart()"
+            class="flex-1 text-white cursor-pointer py-4 px-10 text-sm uppercase tracking-[0.2em] transition-all duration-500 bg-[var(--color-ixora-black)] hover:bg-[var(--color-ixora-green)]">
+            Add to Cart
           </button>
         </div>
         <p *ngIf="outOfStock" class="text-xs text-gray-400 mb-6 leading-relaxed">
-          This product is currently out of stock. Pre-order now and we'll ship as soon as it's available.
+          This product is currently out of stock.
         </p>
 
         <!-- Variant Cards Carousel -->

@@ -16,7 +16,7 @@ interface FeaturedProductUI {
   salePercentage?: number;
   image: string;
   tag: string;
-  description?: string;
+  short_description?: string | null;
 }
 
 @Component({
@@ -79,7 +79,8 @@ export class FeaturedProductsComponent implements OnInit, AfterViewInit {
               onSale: isOnSale,
               salePercentage: isOnSale ? prod.sale_percentage! : undefined,
               image: imageUrl,
-              tag: isOnSale ? `-${prod.sale_percentage}%` : ''
+              tag: isOnSale ? `-${prod.sale_percentage}%` : '',
+              short_description: prod.short_description
             };
           });
 

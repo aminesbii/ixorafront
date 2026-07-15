@@ -13,8 +13,8 @@ export class AdminSidebarComponent {
   allMenuItems = [
     { label: 'Home', icon: 'fa-solid fa-house', route: '/dashboard/home', key: 'home' },
     { label: 'Products', icon: 'fa-solid fa-cubes', route: '/dashboard/products', key: 'products' },
-    { label: 'Categories', icon: 'fa-solid fa-layer-group', route: '/dashboard/categories', key: 'products' },
-    { label: 'Recycle Bin', icon: 'fa-solid fa-trash-can', route: '/dashboard/recycle-bin', key: 'products' },
+    { label: 'Categories&Sorting', icon: 'fa-solid fa-layer-group', route: '/dashboard/categories', key: 'categories' },
+    { label: 'Recycle Bin', icon: 'fa-solid fa-trash-can', route: '/dashboard/recycle-bin', key: 'recycle-bin' },
     { label: 'Orders', icon: 'fa-solid fa-truck', route: '/dashboard/orders', key: 'orders' },
     { label: 'Analytics', icon: 'fa-solid fa-chart-bar', route: '/dashboard/analytics', key: 'analytics' },
     { label: 'Settings', icon: 'fa-solid fa-gear', route: '/dashboard/settings', key: 'settings' }

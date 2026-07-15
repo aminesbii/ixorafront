@@ -37,7 +37,7 @@
           </figure>
           <div class="card-body px-0 py-6">
             <h3 class="card-title font-sans text-base md:text-lg font-medium tracking-wide text-left">{{ product.name }}</h3>
-            <p class="product-description text-gray-500 text-sm mt-2 line-clamp-3 text-left">{{ product.description || 'Description coming soon' }}</p>
+            <p class="product-description text-gray-500 text-sm mt-2 line-clamp-3 text-left">{{ product.short_description || 'Description coming soon' }}</p>
             <p class="text-sm font-semibold mt-3" [class.text-red-600]="product.onSale">
               <span *ngIf="product.onSale && product.originalPrice" class="line-through text-gray-400 mr-2">{{ product.originalPrice }}</span>
               {{ product.price }}

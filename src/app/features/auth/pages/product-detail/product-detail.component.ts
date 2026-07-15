@@ -75,7 +75,7 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
   private setSEOTags(product: Product | null): void {
     if (!product) return;
     const name = product.name;
-    const description = product.short_description || product.description || '';
+    const description = product.short_description || '';
     const image = this.mainImage ? this.normalizeUrl(this.mainImage.image_url) : '';
     const url = `https://ixora.tn/products/${product.slug}`;
 
