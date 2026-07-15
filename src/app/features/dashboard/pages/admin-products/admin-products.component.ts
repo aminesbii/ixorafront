@@ -33,7 +33,7 @@ export class AdminProductsComponent implements OnInit {
   // Filters
   searchTerm = '';
   filterStatus = '';
-  sortDate = '';
+  sortDate = 'manual';
   filterFeatured = false;
 
   // Image upload (create mode)
@@ -179,6 +179,7 @@ export class AdminProductsComponent implements OnInit {
     if (this.filterFeatured) params.is_featured = true;
     if (this.sortDate === 'newest') params.sort = '-createdAt';
     else if (this.sortDate === 'oldest') params.sort = 'createdAt';
+    else if (this.sortDate === 'manual') params.sort = 'sort_order';
     this.productService.list(params).subscribe({
       next: (res: { products: Product[]; pagination: any }) => {
         this.products = res.products;

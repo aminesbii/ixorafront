@@ -55,6 +55,7 @@ export class AdminCategoriesComponent implements OnInit {
     sortLoading = false;
     isSortSaving = false;
     showSortModal = false;
+    selectedTopIds: Set<string> = new Set();
 
     // Reorder state
     isReordering = false;
@@ -136,11 +137,17 @@ export class AdminCategoriesComponent implements OnInit {
     openSortModal(cat: Category): void {
         this.sortCategory = cat;
         this.sortProducts = [];
+        this.selectedTopIds = new Set();
         this.sortLoading = true;
         this.showSortModal = true;
         this.productService.getByCategory(this.catId(cat)).subscribe({
             next: (products) => {
                 this.sortProducts = products;
+                for (const p of products) {
+                    if (p.sort_order != null) {
+                        this.selectedTopIds.add(this.prodId(p));
+                    }
+                }
                 this.sortLoading = false;
                 this.cdr.detectChanges();
             },
@@ -155,36 +162,79 @@ export class AdminCategoriesComponent implements OnInit {
         this.showSortModal = false;
         this.sortCategory = null;
         this.sortProducts = [];
+        this.selectedTopIds.clear();
         this.isSortSaving = false;
     }
 
-    get sortedTopProducts(): Product[] {
-        return this.sortProducts.filter(p => p.sort_order != null)
+    get topProducts(): Product[] {
+        return this.sortProducts
+            .filter(p => this.selectedTopIds.has(this.prodId(p)))
             .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
     }
 
-    get unsortedProducts(): Product[] {
-        return this.sortProducts.filter(p => p.sort_order == null);
+    get restProducts(): Product[] {
+        return this.sortProducts.filter(p => !this.selectedTopIds.has(this.prodId(p)));
     }
 
-    get topProductIds(): string[] {
-        return this.sortedTopProducts.map(p => this.prodId(p));
+    get canPinMore(): boolean {
+        return this.selectedTopIds.size < 3;
+    }
+
+    toggleTopProduct(p: Product): void {
+        const id = this.prodId(p);
+        if (this.selectedTopIds.has(id)) {
+            this.selectedTopIds.delete(id);
+        } else {
+            if (!this.canPinMore) return;
+            this.selectedTopIds.add(id);
+        }
+        this.saveTopOrder();
+    }
+
+    isTopProduct(p: Product): boolean {
+        return this.selectedTopIds.has(this.prodId(p));
     }
 
     onProductDrop(event: CdkDragDrop<Product[]>): void {
-        const top = [...this.sortedTopProducts];
+        const top = [...this.topProducts];
         moveItemInArray(top, event.previousIndex, event.currentIndex);
         const ids = top.map(p => this.prodId(p));
         this.isSortSaving = true;
         this.productService.reorderInCategory(this.catId(this.sortCategory!), ids).subscribe({
             next: () => {
                 this.isSortSaving = false;
-                this.showToast('Products reordered');
-                this.openSortModal(this.sortCategory!);
+                const catId = this.catId(this.sortCategory!);
+                this.productService.getByCategory(catId).subscribe({
+                    next: (products) => {
+                        this.sortProducts = products;
+                        this.cdr.detectChanges();
+                    }
+                });
             },
             error: () => {
                 this.isSortSaving = false;
                 this.showToast('Failed to reorder products');
+            }
+        });
+    }
+
+    private saveTopOrder(): void {
+        this.isSortSaving = true;
+        const ids = Array.from(this.selectedTopIds);
+        this.productService.reorderInCategory(this.catId(this.sortCategory!), ids).subscribe({
+            next: () => {
+                this.isSortSaving = false;
+                const catId = this.catId(this.sortCategory!);
+                this.productService.getByCategory(catId).subscribe({
+                    next: (products) => {
+                        this.sortProducts = products;
+                        this.cdr.detectChanges();
+                    }
+                });
+            },
+            error: () => {
+                this.isSortSaving = false;
+                this.showToast('Failed to save');
             }
         });
     }

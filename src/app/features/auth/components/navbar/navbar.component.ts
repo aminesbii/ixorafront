@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef, HostListener, Inject, PLATFORM_ID } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { CategoryTree } from '../../../../core/models/category.model';
   styleUrls: ['./navbar.component.css'],
   standalone: false
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, AfterViewInit {
   isScrolled = false;
   isMobileMenuOpen = false;
   isOnHero = false;
@@ -30,8 +30,18 @@ export class NavbarComponent implements OnInit {
     private authService: AuthService,
     private cartService: CartService,
     private categoryService: CategoryService,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private cdr: ChangeDetectorRef
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isLoggedIn = this.authService.isLoggedIn();
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        this.isAdmin = this.authService.isAdmin();
+        this.userName = user.full_name;
+      }
+    }
+  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -41,13 +51,6 @@ export class NavbarComponent implements OnInit {
           this.isOnHomePage = this.router.url === '/';
           this.updateHeroState();
         });
-
-      const user = this.authService.getCurrentUser();
-      this.isLoggedIn = this.authService.isLoggedIn();
-      if (user) {
-        this.isAdmin = this.authService.isAdmin();
-        this.userName = user.full_name;
-      }
 
       this.cartService.cart$.subscribe(cart => {
         this.cartTotalItems = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
@@ -61,6 +64,18 @@ export class NavbarComponent implements OnInit {
 
       this.isOnHomePage = this.router.url === '/';
       this.updateHeroState();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isLoggedIn = this.authService.isLoggedIn();
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        this.isAdmin = this.authService.isAdmin();
+        this.userName = user.full_name;
+      }
+      this.cdr.detectChanges();
     }
   }
 

@@ -38,9 +38,10 @@
       </select>
       <select [(ngModel)]="sortDate" (ngModelChange)="applyFilters()"
         class="block w-40 pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:border-gray-300 sm:text-sm rounded-md bg-white border">
-        <option value="">Date Added</option>
+        <option value="manual">Recommended</option>
         <option value="newest">Newest First</option>
         <option value="oldest">Oldest First</option>
+        <option value="">Date Added</option>
       </select>
       <label class="flex items-center gap-2 cursor-pointer select-none">
         <input type="checkbox" [(ngModel)]="filterFeatured" (ngModelChange)="applyFilters()"

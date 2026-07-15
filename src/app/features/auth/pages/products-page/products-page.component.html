@@ -10,9 +10,6 @@
           <div class="w-10 h-0.5 mt-3" [class.bg-red-500]="onSaleFilter" [class.bg-[var(--color-ixora-green)]]="!onSaleFilter"></div>
           <p *ngIf="onSaleFilter" class="text-xs text-red-500 font-semibold mt-2 uppercase tracking-wider">Discounted items</p>
         </div>
-        <div class="w-full md:w-80">
-          <app-search-bar (search)="onSearch($event)"></app-search-bar>
-        </div>
       </div>
     </div>
   </div>

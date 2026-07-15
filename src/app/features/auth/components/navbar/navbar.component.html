@@ -68,7 +68,7 @@
         </span>
       </a>
 
-      <ng-container *ngIf="isLoggedIn">
+      <div [class.hidden]="!isLoggedIn">
         <div class="relative profile-dropdown-wrapper">
           <button (click)="toggleProfileDropdown()" class="w-9 h-9 rounded-full bg-[var(--color-ixora-black)] text-white flex items-center justify-center text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer" aria-label="Profile menu" aria-haspopup="true" [attr.aria-expanded]="isProfileDropdownOpen">
             {{ userName ? userName.charAt(0).toUpperCase() : 'U' }}
@@ -94,15 +94,15 @@
             </button>
           </div>
         </div>
-      </ng-container>
+      </div>
 
-      <ng-container *ngIf="!isLoggedIn">
+      <div [class.hidden]="isLoggedIn">
         <button
           class="px-6 py-2 text-[10px] uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300"
           (click)="goToLogin()">
           Login
         </button>
-      </ng-container>
+      </div>
     </div>
 
     <!-- Mobile hamburger -->
@@ -167,14 +167,14 @@
 
     <div class="mt-12 flex flex-col items-center gap-4 mobile-menu__links">
 
-      <ng-container *ngIf="!isLoggedIn">
+      <div [class.hidden]="isLoggedIn">
         <button
           class="px-8 py-3 text-sm uppercase tracking-widest font-semibold bg-[var(--color-ixora-black)] text-white hover:bg-[var(--color-ixora-green)] transition-colors duration-300"
           (click)="goToLogin(); closeMobileMenu()">
           Login
         </button>
-      </ng-container>
-      <ng-container *ngIf="isLoggedIn">
+      </div>
+      <div [class.hidden]="!isLoggedIn">
         <a routerLink="/profile" routerLinkActive="active-link" (click)="closeMobileMenu()"
           class="flex items-center gap-2 text-sm uppercase tracking-widest font-semibold hover:text-[var(--color-ixora-green)] transition-colors">
           <i class="fa-solid fa-user w-4 text-center"></i>
@@ -190,7 +190,7 @@
           (click)="logout(); closeMobileMenu()">
           Logout
         </button>
-      </ng-container>
+      </div>
     </div>
   </div>
 </nav>

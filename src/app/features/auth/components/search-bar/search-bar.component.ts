@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit, OnDestroy, Input, Inject, PLATFORM_ID, ElementRef, ViewChild } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, OnDestroy, Input, Inject, PLATFORM_ID, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject, Subscription, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
@@ -18,6 +18,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   query = '';
   suggestions: Suggestion[] = [];
   showHint = false;
+  highlightIndex = -1;
   private searchSubject = new Subject<string>();
   private sub?: Subscription;
 
@@ -43,6 +44,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       if (Array.isArray(results)) {
         this.suggestions = results;
         this.showHint = results.length > 0;
+        this.highlightIndex = -1;
       }
     });
   }
@@ -51,16 +53,9 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  get ghostText(): string {
-    if (!this.query || this.suggestions.length === 0) return '';
-    const q = this.query.toLowerCase();
-    const match = this.suggestions.find(s => s.name.toLowerCase().startsWith(q));
-    if (!match) return '';
-    return match.name;
-  }
-
   onInput(value: string): void {
     this.searchSubject.next(value);
+    this.highlightIndex = -1;
   }
 
   onFocus(): void {
@@ -68,18 +63,41 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
 
   onBlur(): void {
-    setTimeout(() => this.showHint = false, 150);
+    setTimeout(() => {
+      this.showHint = false;
+      this.highlightIndex = -1;
+    }, 200);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('app-search-bar')) {
+      this.showHint = false;
+      this.highlightIndex = -1;
+    }
   }
 
   onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Tab' && this.ghostText) {
+    if (event.key === 'ArrowDown') {
       event.preventDefault();
-      this.query = this.ghostText;
-      this.suggestions = [];
-      this.showHint = false;
-      this.searchSubject.next(this.ghostText);
+      if (this.suggestions.length > 0) {
+        this.highlightIndex = (this.highlightIndex + 1) % this.suggestions.length;
+      }
+      return;
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (this.suggestions.length > 0) {
+        this.highlightIndex = (this.highlightIndex - 1 + this.suggestions.length) % this.suggestions.length;
+      }
+      return;
     }
     if (event.key === 'Enter') {
+      if (this.highlightIndex >= 0 && this.highlightIndex < this.suggestions.length) {
+        this.selectSuggestion(this.suggestions[this.highlightIndex]);
+        return;
+      }
       this.showHint = false;
       this.suggestions = [];
       if (this.navigateOnSearch && this.query.trim()) {
@@ -87,10 +105,25 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       } else {
         this.search.emit(this.query);
       }
+      return;
     }
     if (event.key === 'Escape') {
       this.showHint = false;
       this.suggestions = [];
+      this.highlightIndex = -1;
+      return;
+    }
+  }
+
+  selectSuggestion(s: Suggestion): void {
+    this.showHint = false;
+    this.suggestions = [];
+    this.highlightIndex = -1;
+    if (this.navigateOnSearch) {
+      this.router.navigate(['/products', s.slug]);
+    } else {
+      this.query = s.name;
+      this.search.emit(s.name);
     }
   }
 
@@ -98,6 +131,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     this.query = '';
     this.suggestions = [];
     this.showHint = false;
+    this.highlightIndex = -1;
     this.searchSubject.next('');
   }
 }

@@ -2,17 +2,28 @@
   display: block;
 }
 
-.ghost-text {
-  font-size: 0.8125rem;
-  font-family: inherit;
-  line-height: 1;
-  letter-spacing: normal;
-}
-
 .search-input {
   color: #1f2937;
 }
 
 .search-input::placeholder {
   color: #9ca3af;
+}
+
+.suggestion-list {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+
+.suggestion-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.suggestion-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.suggestion-list::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 2px;
 }

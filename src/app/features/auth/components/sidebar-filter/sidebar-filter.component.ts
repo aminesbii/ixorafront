@@ -30,10 +30,11 @@ export class SidebarFilterComponent implements OnInit {
 
   filters: FilterState = {
     category_ids: [],
-    sort: '-createdAt',
+    sort: 'sort_order',
   };
 
   sortOptions = [
+    { value: 'sort_order', label: 'Recommended' },
     { value: '-createdAt', label: 'Newest First' },
     { value: 'createdAt', label: 'Oldest First' },
   ];
@@ -96,7 +97,7 @@ export class SidebarFilterComponent implements OnInit {
   }
 
   clearAll(): void {
-    this.filters = { category_ids: [], sort: '-createdAt' };
+    this.filters = { category_ids: [], sort: 'sort_order' };
     this.emitChange();
   }
 
