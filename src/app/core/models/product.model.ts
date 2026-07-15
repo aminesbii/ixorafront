@@ -47,6 +47,7 @@ export interface Product {
   ingredients?: string | null;
   details?: ProductDetails;
   status: 'draft' | 'active' | 'archived';
+  sort_order?: number | null;
   is_featured: boolean;
   on_sale?: boolean;
   sale_percentage?: number | null;

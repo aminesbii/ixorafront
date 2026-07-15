@@ -163,6 +163,18 @@ export class ProductService {
     return this.http.post<ProductVariant>(`${this.API_URL}/${productId}/variants/${variantId}/image`, formData);
   }
 
+  // ─── Category-specific product listing & reorder ──────────────────────────
+  getByCategory(categoryId: string): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.API_URL}/by-category/${categoryId}`);
+  }
+
+  reorderInCategory(categoryId: string, productIds: string[]): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.API_URL}/reorder-in-category`, {
+      category_id: categoryId,
+      product_ids: productIds,
+    });
+  }
+
   // ─── Bulk Category Assignment ───────────────────────────────────────────────
   bulkAssignCategory(productIds: string[], categoryId: string | null): Observable<{ message: string }> {
     return this.http.patch<{ message: string }>(`${this.API_URL}/bulk-assign-category`, {

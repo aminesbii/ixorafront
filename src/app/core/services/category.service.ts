@@ -49,6 +49,10 @@ export class CategoryService {
     return this.http.delete<{ message: string }>(`${this.API_URL}/${id}`);
   }
 
+  reorder(categoryIds: string[]): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.API_URL}/reorder`, { category_ids: categoryIds });
+  }
+
   // ─── Helpers ─────────────────────────────────────────────────────────────────
   private buildFormData(data: Partial<Category>, imageFile?: File): FormData {
     const fd = new FormData();

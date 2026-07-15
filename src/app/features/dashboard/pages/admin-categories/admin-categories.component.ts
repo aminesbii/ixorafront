@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CategoryService } from '../../../../core/services/category.service';
 import { Category } from '../../../../core/models/category.model';
 import { ProductService } from '../../../../core/services/product.service';
@@ -48,6 +49,16 @@ export class AdminCategoriesComponent implements OnInit {
     isAssignSubmitting = false;
     assignLoading = false;
 
+    // Product sort modal
+    sortCategory: Category | null = null;
+    sortProducts: Product[] = [];
+    sortLoading = false;
+    isSortSaving = false;
+    showSortModal = false;
+
+    // Reorder state
+    isReordering = false;
+
     // Toast
     toastMessage = '';
     toastVisible = false;
@@ -73,6 +84,10 @@ export class AdminCategoriesComponent implements OnInit {
         return c.id ?? c._id;
     }
 
+    prodId(p: Product): string {
+        return (p.id ?? p._id) as string;
+    }
+
     private showToast(msg: string): void {
         this.toastMessage = msg;
         this.toastVisible = true;
@@ -96,6 +111,81 @@ export class AdminCategoriesComponent implements OnInit {
                 this.loading = false;
             },
             error: () => (this.loading = false)
+        });
+    }
+
+    // ─── Drag & Drop Reorder ────────────────────────────────────────────────────
+    onCategoryDrop(event: CdkDragDrop<Category[]>): void {
+        moveItemInArray(this.categories, event.previousIndex, event.currentIndex);
+        const ids = this.categories.map(c => this.catId(c));
+        this.isReordering = true;
+        this.categoryService.reorder(ids).subscribe({
+            next: () => {
+                this.isReordering = false;
+                this.showToast('Categories reordered');
+            },
+            error: () => {
+                this.isReordering = false;
+                this.showToast('Failed to reorder categories');
+                this.loadCategories();
+            }
+        });
+    }
+
+    // ─── Product Sort Modal ─────────────────────────────────────────────────────
+    openSortModal(cat: Category): void {
+        this.sortCategory = cat;
+        this.sortProducts = [];
+        this.sortLoading = true;
+        this.showSortModal = true;
+        this.productService.getByCategory(this.catId(cat)).subscribe({
+            next: (products) => {
+                this.sortProducts = products;
+                this.sortLoading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.sortLoading = false;
+                this.showToast('Failed to load products');
+            }
+        });
+    }
+
+    closeSortModal(): void {
+        this.showSortModal = false;
+        this.sortCategory = null;
+        this.sortProducts = [];
+        this.isSortSaving = false;
+    }
+
+    get sortedTopProducts(): Product[] {
+        return this.sortProducts.filter(p => p.sort_order != null)
+            .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    }
+
+    get unsortedProducts(): Product[] {
+        return this.sortProducts.filter(p => p.sort_order == null);
+    }
+
+    get topProductIds(): string[] {
+        return this.sortedTopProducts.map(p => this.prodId(p));
+    }
+
+    onProductDrop(event: CdkDragDrop<Product[]>): void {
+        const top = [...this.sortedTopProducts];
+        moveItemInArray(top, event.previousIndex, event.currentIndex);
+        const ids = top.map(p => this.prodId(p));
+        this.isSortSaving = true;
+        this.productService.reorderInCategory(this.catId(this.sortCategory!), ids).subscribe({
+            next: () => {
+                this.isSortSaving = false;
+                this.showToast('Products reordered');
+                this.openSortModal(this.sortCategory!);
+            },
+            error: () => {
+                this.isSortSaving = false;
+                this.showToast('Failed to reorder products');
+            }
         });
     }
 
@@ -266,14 +356,9 @@ export class AdminCategoriesComponent implements OnInit {
         return this.allProducts.filter(p => p.name.toLowerCase().includes(q));
     }
 
-    productId(p: Product): string {
-        return (p.id ?? p._id) as string;
-    }
-
     canAssign(p: Product): boolean {
         if (!this.assignCategory) return false;
         const currentCatId = this.catId(this.assignCategory);
-        // Can be changed ONLY if it has no category, or if it already belongs to THIS current category.
         return !p.category_id || p.category_id === currentCatId;
     }
 
@@ -285,11 +370,10 @@ export class AdminCategoriesComponent implements OnInit {
         this.productService.list({ limit: 200 }).subscribe({
             next: (res) => {
                 this.allProducts = res.products;
-                // Pre-mark products already in this category
                 const catId = this.catId(cat);
                 res.products.forEach(p => {
                     if (p.category_id === catId) {
-                        this.assignedProductIds.add(this.productId(p));
+                        this.assignedProductIds.add(this.prodId(p));
                     }
                 });
                 this.assignLoading = false;
@@ -307,7 +391,7 @@ export class AdminCategoriesComponent implements OnInit {
     }
 
     toggleProductAssign(p: Product): void {
-        const id = this.productId(p);
+        const id = this.prodId(p);
         if (this.assignedProductIds.has(id)) {
             this.assignedProductIds.delete(id);
         } else {
@@ -319,14 +403,10 @@ export class AdminCategoriesComponent implements OnInit {
         if (!this.assignCategory || this.isAssignSubmitting) return;
         this.isAssignSubmitting = true;
         const catId = this.catId(this.assignCategory);
-
-        // Products to assign to this category (checked)
         const toAssign = Array.from(this.assignedProductIds);
-        // Products to unassign (were in this category but are now unchecked)
         const toUnassign = this.allProducts
-            .filter(p => p.category_id === catId && !this.assignedProductIds.has(this.productId(p)))
-            .map(p => this.productId(p));
-
+            .filter(p => p.category_id === catId && !this.assignedProductIds.has(this.prodId(p)))
+            .map(p => this.prodId(p));
         const ops: Promise<any>[] = [];
         if (toAssign.length) {
             ops.push(new Promise((res, rej) =>
@@ -338,7 +418,6 @@ export class AdminCategoriesComponent implements OnInit {
                 this.productService.bulkAssignCategory(toUnassign, null).subscribe({ next: res, error: rej })
             ));
         }
-
         Promise.all(ops).then(() => {
             this.showToast('Products assigned successfully');
             this.closeAssignModal();
