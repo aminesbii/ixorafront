@@ -1,0 +1,56 @@
+<div
+  class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+  (click)="close()"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)"
+  tabindex="0"
+  style="outline: none">
+
+  <!-- Close button -->
+  <button
+    class="absolute top-5 right-5 z-20 w-12 h-12 flex items-center justify-center text-white/60 hover:text-white transition-colors duration-200 cursor-pointer"
+    (click)="close(); $event.stopPropagation()"
+    aria-label="Close">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
+  <!-- Previous -->
+  <button *ngIf="images.length > 1"
+    class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200 cursor-pointer"
+    (click)="prev(); $event.stopPropagation()"
+    aria-label="Previous image">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <!-- Image container -->
+  <div class="flex items-center justify-center max-h-[90vh] max-w-[90vw]" (click)="$event.stopPropagation()">
+    <img
+      *ngIf="currentImage"
+      [src]="currentImage.url"
+      [alt]="currentImage.alt"
+      class="max-h-[90vh] max-w-[90vw] object-contain select-none"
+      [class.image-loaded]="imageLoaded"
+      (load)="onImageLoad()"
+      draggable="false" />
+  </div>
+
+  <!-- Next -->
+  <button *ngIf="images.length > 1"
+    class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200 cursor-pointer"
+    (click)="next(); $event.stopPropagation()"
+    aria-label="Next image">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <!-- Counter -->
+  <div *ngIf="images.length > 1"
+    class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 text-white/50 text-sm tracking-wider select-none">
+    {{ currentIndex + 1 }} / {{ images.length }}
+  </div>
+</div>

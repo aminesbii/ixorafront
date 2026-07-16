@@ -35,6 +35,7 @@ export class SidebarFilterComponent implements OnInit {
 
   sortOptions = [
     { value: 'sort_order', label: 'Recommended' },
+    { value: '-clicks', label: 'Most Popular' },
     { value: '-createdAt', label: 'Newest First' },
     { value: 'createdAt', label: 'Oldest First' },
   ];

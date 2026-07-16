@@ -19,7 +19,7 @@
     <div class="relative flex flex-col">
       <!-- Desktop: side-by-side grid -->
       <div class="hidden lg:grid flex-1 grid-cols-2 max-h-[90vh]">
-        <div class="overflow-hidden relative group cursor-pointer">
+        <div class="overflow-hidden relative group cursor-pointer" (click)="openViewerByUrl(secondImageUrl)">
           <div *ngIf="hasSale"
             class="absolute top-6 left-6 z-10 bg-red-600 text-white text-xs uppercase font-bold px-4 py-2 tracking-wider shadow-lg">
             -{{ product!.sale_percentage }}%
@@ -36,7 +36,7 @@
           </div>
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
         </div>
-        <div class="overflow-hidden relative group cursor-pointer">
+        <div class="overflow-hidden relative group cursor-pointer" (click)="openViewerByUrl(mainImageUrl)">
           <img *ngIf="mainImageUrl" [src]="mainImageUrl" [alt]="product.name"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             [parallaxSpeed]="35" (error)="mainImage && imageError(mainImage)" />
@@ -54,7 +54,7 @@
       <!-- Mobile: swipable carousel -->
       <div class="lg:hidden flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-0"
         style="-webkit-overflow-scrolling: touch; scrollbar-width: none;">
-        <div class="snap-start shrink-0 w-full aspect-square relative">
+        <div class="snap-start shrink-0 w-full aspect-square relative cursor-pointer" (click)="openViewerByUrl(mainImageUrl)">
           <img *ngIf="mainImageUrl" [src]="mainImageUrl" [alt]="product.name"
             class="w-full h-full object-contain p-2"
             (error)="mainImage && imageError(mainImage)" />
@@ -70,7 +70,7 @@
             -{{ product!.sale_percentage }}%
           </div>
         </div>
-        <div *ngIf="secondImageUrl" class="snap-start shrink-0 w-full aspect-square relative">
+        <div *ngIf="secondImageUrl" class="snap-start shrink-0 w-full aspect-square relative cursor-pointer" (click)="openViewerByUrl(secondImageUrl)">
           <img [src]="secondImageUrl" [alt]="product.name"
             class="w-full h-full object-contain p-2"
             (error)="secondImage && imageError(secondImage)" />
@@ -199,7 +199,8 @@
 
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 max-w-7xl mx-auto">
       <div *ngFor="let img of galleryImages; let i = index" #revealEl [attr.data-delay]="i * 0.1"
-        class="overflow-hidden group cursor-pointer opacity-0 translate-y-8 aspect-square">
+        class="overflow-hidden group cursor-pointer opacity-0 translate-y-8 aspect-square"
+        (click)="openViewerByUrl(normalizeUrl(img.image_url))">
         <img *ngIf="showImage(img)" [src]="normalizeUrl(img.image_url)" [alt]="img.alt_text || product.name"
           class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy"
           [parallaxSpeed]="25" (error)="imageError(img)" />
@@ -215,6 +216,14 @@
   </div>
 </section>
 </ng-container>
+<!-- Image Viewer -->
+<app-image-viewer
+  *ngIf="viewerOpen"
+  [images]="viewerImages"
+  [currentIndex]="viewerIndex"
+  (closeViewer)="closeViewer()">
+</app-image-viewer>
+
 <!-- Cart Feedback -->
 <div *ngIf="cartFeedback"
   class="fixed bottom-8 right-8 z-50 bg-[var(--color-ixora-black)] text-white px-6 py-4 shadow-xl border border-gray-800 transition-all duration-300">

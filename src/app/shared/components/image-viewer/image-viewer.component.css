@@ -1,0 +1,8 @@
+img {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+img.image-loaded {
+  opacity: 1;
+}

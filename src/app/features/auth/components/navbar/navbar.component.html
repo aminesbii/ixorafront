@@ -6,7 +6,7 @@
   <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-10 flex items-center justify-between h-[64px]">
 
     <!-- Left links (desktop) -->
-    <ul class="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.18em] font-semibold">
+    <ul class="hidden xl:flex items-center gap-8 text-[11px] uppercase tracking-[0.18em] font-semibold">
       <li><a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}" class="nav-link hover:text-[var(--color-ixora-green)] transition-colors duration-200">Home</a></li>
       <!-- Products with categories dropdown -->
       <li class="products-dropdown">
@@ -44,17 +44,17 @@
     </ul>
 
     <!-- Center Logo -->
-    <a routerLink="/" class="hidden lg:block flex-shrink-0 absolute left-1/2 -translate-x-1/2">
+    <a routerLink="/" class="hidden xl:block flex-shrink-0 absolute left-1/2 -translate-x-1/2">
       <img src="/icons/IXORLogo.png" alt="ixora logo" class="logo-img h-10 sm:h-12 object-contain" noParallax />
     </a>
 
     <!-- Mobile Logo (left, before hamburger) -->
-    <a routerLink="/" class="lg:hidden flex-shrink-0">
+    <a routerLink="/" class="xl:hidden flex-shrink-0">
       <img src="/icons/IXORLogo.png" alt="ixora logo" class="logo-img h-10 sm:h-12 object-contain" noParallax />
     </a>
 
     <!-- Right actions (desktop) -->
-    <div class="hidden lg:flex items-center gap-6">
+    <div class="hidden xl:flex items-center gap-6">
       <div class="w-64">
         <app-search-bar [navigateOnSearch]="true"></app-search-bar>
       </div>
@@ -106,7 +106,7 @@
     </div>
 
     <!-- Mobile hamburger -->
-    <div class="lg:hidden relative" [style.z-index]="isMobileMenuOpen ? 61 : 60">
+    <div class="xl:hidden relative" [style.z-index]="isMobileMenuOpen ? 61 : 60">
       <button class="hamburger-btn p-1.5" [class.hamburger-btn--open]="isMobileMenuOpen" (click)="toggleMobileMenu()" aria-label="Toggle menu" [attr.aria-expanded]="isMobileMenuOpen">
         <span class="hamburger-bar"></span>
         <span class="hamburger-bar"></span>
@@ -118,7 +118,7 @@
 
   <!-- Mobile full-screen menu -->
   <div
-    class="mobile-menu fixed inset-0 flex flex-col items-center justify-center lg:hidden"
+    class="mobile-menu fixed inset-0 flex flex-col items-center justify-center xl:hidden"
     [class.mobile-menu--open]="isMobileMenuOpen">
     <ul class="flex flex-col items-center gap-8 text-2xl uppercase tracking-[0.15em] font-semibold mobile-menu__links">
       <li><a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}" class="block py-2 hover:text-[var(--color-ixora-green)] transition-colors"

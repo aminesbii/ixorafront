@@ -246,6 +246,34 @@ export class ProductDetailComponent implements OnInit, AfterViewInit {
     this.selectedImage = this.normalizeUrl(img.image_url);
   }
 
+  get viewerImages(): { url: string; alt: string }[] {
+    if (!this.product?.images) return [];
+    return [...this.product.images]
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .filter(img => this.showImage(img))
+      .map(img => ({
+        url: this.normalizeUrl(img.image_url),
+        alt: img.alt_text || this.product?.name || ''
+      }));
+  }
+
+  viewerOpen = false;
+  viewerIndex = 0;
+
+  openViewerByUrl(url: string): void {
+    const idx = this.viewerImages.findIndex(v => v.url === url);
+    if (idx >= 0) {
+      this.viewerIndex = idx;
+      this.viewerOpen = true;
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  closeViewer(): void {
+    this.viewerOpen = false;
+    document.body.style.overflow = '';
+  }
+
   increaseQty() {
     let stock = (this.product as any)?.stock_qty ?? 99;
     if (this.selectedVariant && this.selectedVariant.id !== 'base' && this.selectedVariant._id !== 'base') {
