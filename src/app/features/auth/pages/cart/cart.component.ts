@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { CartService } from '../../../../core/services/cart.service';
 import { ProductService } from '../../../../core/services/product.service';
 import { OrderService, CheckoutPayload } from '../../../../core/services/order.service';
+import { ColissimoService, Governorate } from '../../../../core/services/colissimo.service';
 import { AddressService } from '../../../../core/services/address.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DashboardService } from '../../../../core/services/dashboard.service';
@@ -43,13 +44,23 @@ export class CartComponent implements OnInit {
 
   addressStreet = '';
   addressCity = '';
+  addressGouvernorat = '';
   addressPostalCode = '';
-  addressCountry = '';
+  addressCountry = 'Tunisia';
+
+  governorates: Governorate[] = [];
+  availableCities: string[] = [];
+
+  deliveryNbPieces = 1;
+  deliveryDesignation = '';
+  deliveryCommentaire = '';
+  deliveryType = 'VO';
 
   constructor(
     private cartService: CartService,
     private productService: ProductService,
     private orderService: OrderService,
+    private colissimoService: ColissimoService,
     private addressService: AddressService,
     private authService: AuthService,
     private dashboardService: DashboardService,
@@ -169,8 +180,31 @@ export class CartComponent implements OnInit {
 
   // ─── Order Form ──────────────────────────────────────
 
+  onGouvernoratChange(): void {
+    const found = this.governorates.find(g => g.gouvernorat === this.addressGouvernorat);
+    this.availableCities = found ? found.villes.filter(v => v !== '-') : [];
+    if (this.availableCities.length > 0 && !this.availableCities.includes(this.addressCity)) {
+      this.addressCity = '';
+    }
+  }
+
   openOrderForm(): void {
     const user = this.authService.getCurrentUser();
+
+    this.colissimoService.getGovernorates().subscribe({
+      next: (govs) => {
+        this.governorates = govs;
+      },
+      error: () => {
+        this.governorates = [];
+      }
+    });
+
+    const items = this.items;
+    this.deliveryDesignation = items.map(i => {
+      const p = this.getProduct(i as any);
+      return p?.name || 'Article';
+    }).join(', ').substring(0, 200);
 
     if (user) {
       this.customerName = user.full_name || '';
@@ -181,9 +215,11 @@ export class CartComponent implements OnInit {
           const addr = addresses[0];
           this.addressStreet = addr.street || '';
           this.addressCity = addr.city || '';
+          this.addressGouvernorat = addr.gouvernorat || '';
           this.addressPostalCode = addr.postal_code || '';
-          this.addressCountry = addr.country || '';
+          this.addressCountry = addr.country || 'Tunisia';
           this.customerPhone = addr.phone || '';
+          if (this.addressGouvernorat) this.onGouvernoratChange();
         }
         this.showOrderForm = true;
       });
@@ -193,8 +229,9 @@ export class CartComponent implements OnInit {
       this.customerPhone = '';
       this.addressStreet = '';
       this.addressCity = '';
+      this.addressGouvernorat = '';
       this.addressPostalCode = '';
-      this.addressCountry = '';
+      this.addressCountry = 'Tunisia';
       this.showOrderForm = true;
     }
   }
@@ -219,6 +256,10 @@ export class CartComponent implements OnInit {
 
     if (!this.customerName || !this.customerEmail) {
       this.orderError = 'Name and email are required.';
+      return;
+    }
+    if (!this.customerPhone) {
+      this.orderError = 'Phone number is required.';
       return;
     }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -250,11 +291,18 @@ export class CartComponent implements OnInit {
         phone: this.customerPhone || null,
         street: this.addressStreet,
         city: this.addressCity,
+        gouvernorat: this.addressGouvernorat || null,
         postal_code: this.addressPostalCode || null,
         country: this.addressCountry
       },
       shipping_fee: this.shipping,
-      currency: 'TND'
+      currency: 'TND',
+      colissimo_parcel: {
+        nb_pieces: this.deliveryNbPieces || 1,
+        type: this.deliveryType || 'VO',
+        designation: this.deliveryDesignation || '',
+        commentaire: this.deliveryCommentaire || ''
+      }
     };
 
     this.orderService.checkout(payload).subscribe({

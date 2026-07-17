@@ -35,7 +35,15 @@ export interface Order {
     full_name: string;
     street: string;
     city: string;
+    gouvernorat?: string | null;
     postal_code?: string | null;
     country: string;
   }>;
+  colissimoParcel?: {
+    barcode?: string | null;
+    status?: string | null;
+    nb_pieces?: number;
+    type?: string;
+    label?: string;
+  } | null;
 }

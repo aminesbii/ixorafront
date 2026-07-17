@@ -15,6 +15,12 @@ export interface CheckoutPayload {
   discount_total?: number;
   tax_total?: number;
   currency?: string;
+  colissimo_parcel?: {
+    nb_pieces?: number;
+    type?: string;
+    designation?: string;
+    commentaire?: string;
+  };
 }
 
 export interface PaginatedOrders {

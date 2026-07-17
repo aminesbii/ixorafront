@@ -7,6 +7,7 @@ export interface Address {
   phone?: string | null;
   street: string;
   city: string;
+  gouvernorat?: string | null;
   postal_code?: string | null;
   country: string;
   createdAt?: string;

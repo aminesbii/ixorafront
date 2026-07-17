@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OrderService } from '../../../../core/services/order.service';
+import { ColissimoService } from '../../../../core/services/colissimo.service';
 import { Order, OrderItem } from '../../../../core/models/order.model';
 
 @Component({
@@ -114,7 +115,16 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
   deleteCountdown = 0;
   private deleteTimer: any = null;
 
-  constructor(private orderService: OrderService) {}
+  colissimoSending = false;
+  editColissimoPieces = 1;
+  editColissimoType = 'VO';
+  editColissimoDesignation = '';
+  editColissimoCommentaire = '';
+
+  constructor(
+    private orderService: OrderService,
+    private colissimoService: ColissimoService
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
@@ -289,6 +299,18 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     this.editShippingFee = this.selectedOrder.shipping_fee || 0;
     this.editDiscountTotal = this.selectedOrder.discount_total || 0;
     this.editTaxTotal = this.selectedOrder.tax_total || 0;
+    const parcel = (this.selectedOrder as any)?.colissimoParcel;
+    if (parcel) {
+      this.editColissimoPieces = parcel.nb_pieces ?? 1;
+      this.editColissimoType = parcel.type || 'VO';
+      this.editColissimoDesignation = parcel.designation || '';
+      this.editColissimoCommentaire = parcel.commentaire || '';
+    } else {
+      this.editColissimoPieces = 1;
+      this.editColissimoType = 'VO';
+      this.editColissimoDesignation = '';
+      this.editColissimoCommentaire = '';
+    }
   }
 
   saveOrder(): void {
@@ -315,6 +337,44 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
       },
       error: () => (this.isSaving = false)
     });
+  }
+
+  sendToColissimo(): void {
+    if (!this.selectedOrder) return;
+    this.colissimoSending = true;
+    this.colissimoService.createParcel(this.selectedOrder._id, {
+      nb_pieces: this.editColissimoPieces,
+      type: this.editColissimoType,
+      designation: this.editColissimoDesignation,
+      commentaire: this.editColissimoCommentaire,
+    }).subscribe({
+      next: (res) => {
+        this.colissimoSending = false;
+        this.showToast('Order sent to Colissimo');
+        this.viewOrder(this.selectedOrder!);
+      },
+      error: (err) => {
+        this.colissimoSending = false;
+        this.showToast(err?.error?.message || 'Failed to send to Colissimo');
+      }
+    });
+  }
+
+  printColissimoLabel(): void {
+    const parcel = (this.selectedOrder as any)?.colissimoParcel;
+    if (!parcel?.barcode) return;
+    this.colissimoService.getParcelPdf(parcel.barcode).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+      },
+      error: () => this.showToast('Failed to load label PDF')
+    });
+  }
+
+  get colissimoParcel(): any {
+    return (this.selectedOrder as any)?.colissimoParcel || null;
   }
 
   formatDate(d?: string): string {

@@ -138,7 +138,7 @@
                 <p *ngIf="emailError" class="mt-1 text-xs text-rose-500">{{ emailError }}</p>
               </div>
               <div>
-                <label for="checkout-phone" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Phone</label>
+                  <label for="checkout-phone" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Phone <span class="text-rose-500">*</span></label>
                 <input id="checkout-phone" [(ngModel)]="customerPhone" type="tel" placeholder="Phone number"
                   class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
               </div>
@@ -151,11 +151,22 @@
                     <input id="checkout-street" [(ngModel)]="addressStreet" type="text" placeholder="Street address"
                       class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
                   </div>
+                  <div>
+                    <label for="checkout-gouvernorat" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Governorate <span class="text-rose-500">*</span></label>
+                    <select id="checkout-gouvernorat" [(ngModel)]="addressGouvernorat" (ngModelChange)="onGouvernoratChange()"
+                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-white">
+                      <option value="">Select governorate</option>
+                      <option *ngFor="let g of governorates" [value]="g.gouvernorat">{{ g.gouvernorat }}</option>
+                    </select>
+                  </div>
                   <div class="grid grid-cols-2 gap-3">
                     <div>
                       <label for="checkout-city" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">City <span class="text-rose-500">*</span></label>
-                      <input id="checkout-city" [(ngModel)]="addressCity" type="text" placeholder="City"
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                      <select id="checkout-city" [(ngModel)]="addressCity"
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-white">
+                        <option value="">Select city</option>
+                        <option *ngFor="let v of availableCities" [value]="v">{{ v }}</option>
+                      </select>
                     </div>
                     <div>
                       <label for="checkout-zip" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Zip Code</label>
@@ -164,10 +175,23 @@
                     </div>
                   </div>
                   <div>
-                    <label for="checkout-country" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Country <span class="text-rose-500">*</span></label>
+                    <label for="checkout-country" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Country</label>
                     <input id="checkout-country" [(ngModel)]="addressCountry" type="text" placeholder="Country"
-                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-gray-50" readonly />
                   </div>
+                </div>
+              </div>
+
+              <div class="border-t border-gray-100 pt-4">
+                <p class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-3">Delivery Type</p>
+                <div>
+                  <select id="delivery-type" [(ngModel)]="deliveryType"
+                    class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-white">
+                    <option value="VO">Normal (VO)</option>
+                    <option value="VM">VM</option>
+                    <option value="GV">GV</option>
+                    <option value="EXP">Express</option>
+                  </select>
                 </div>
               </div>
             </div>
