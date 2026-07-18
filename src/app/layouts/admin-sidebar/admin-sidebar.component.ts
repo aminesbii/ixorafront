@@ -16,6 +16,7 @@ export class AdminSidebarComponent {
     { label: 'Categories&Sorting', icon: 'fa-solid fa-layer-group', route: '/dashboard/categories', key: 'categories' },
     { label: 'Recycle Bin', icon: 'fa-solid fa-trash-can', route: '/dashboard/recycle-bin', key: 'recycle-bin' },
     { label: 'Orders', icon: 'fa-solid fa-truck', route: '/dashboard/orders', key: 'orders' },
+    { label: 'Deliveries', icon: 'fa-solid fa-boxes-stacked', route: '/dashboard/deliveries', key: 'deliveries' },
     { label: 'Analytics', icon: 'fa-solid fa-chart-bar', route: '/dashboard/analytics', key: 'analytics' },
     { label: 'Settings', icon: 'fa-solid fa-gear', route: '/dashboard/settings', key: 'settings' }
   ];
@@ -38,6 +39,7 @@ export class AdminSidebarComponent {
       const perms = user.permissions || [];
       return this.allMenuItems.filter(item => {
         if (item.key === 'settings') return false;
+        if (item.key === 'deliveries') return perms.includes('orders');
         return perms.includes(item.key);
       });
     }

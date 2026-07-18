@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { OrderService } from '../../../../core/services/order.service';
 import { ColissimoService } from '../../../../core/services/colissimo.service';
+import { WebSocketService } from '../../../../core/services/websocket.service';
 import { Order, OrderItem } from '../../../../core/models/order.model';
 
 @Component({
@@ -116,23 +118,31 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
   private deleteTimer: any = null;
 
   colissimoSending = false;
+  colissimoRefreshing = false;
   editColissimoPieces = 1;
   editColissimoType = 'VO';
   editColissimoDesignation = '';
   editColissimoCommentaire = '';
 
+  private socketSub: Subscription | null = null;
+
   constructor(
     private orderService: OrderService,
-    private colissimoService: ColissimoService
+    private colissimoService: ColissimoService,
+    private ws: WebSocketService
   ) {}
 
   ngOnInit(): void {
     this.loadOrders();
+    this.socketSub = this.ws.orderUpdates$.subscribe(() => {
+      this.loadOrders();
+    });
   }
 
   ngOnDestroy(): void {
     if (this.toastTimer) clearTimeout(this.toastTimer);
     if (this.deleteTimer) clearInterval(this.deleteTimer);
+    this.socketSub?.unsubscribe();
   }
 
   loadOrders(): void {
@@ -276,9 +286,22 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     this.cancelInlineEdit();
     this.orderService.getById(order._id).subscribe({
       next: (full) => {
-        this.selectedOrder = full as any;
+        const data = full as any;
+        this.selectedOrder = data;
         this.loadingDetail = false;
         this.syncEditFields();
+
+        const parcel = data?.colissimoParcel;
+        if (parcel?.barcode) {
+          this.colissimoService.verifyParcel(data._id).subscribe({
+            next: (res: any) => {
+              if (res?.order) {
+                this.selectedOrder = res.order as any;
+                this.syncEditFields();
+              }
+            }
+          });
+        }
       },
       error: () => (this.loadingDetail = false)
     });
@@ -360,16 +383,54 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     });
   }
 
+  refreshColissimoParcel(): void {
+    if (!this.selectedOrder) return;
+    this.colissimoRefreshing = true;
+    this.colissimoService.verifyParcel(this.selectedOrder._id).subscribe({
+      next: (res) => {
+        this.colissimoRefreshing = false;
+        if (res.reset) {
+          this.showToast(`Parcel ${res.barcode} removed from Colissimo — reset to Draft`);
+          this.viewOrder(this.selectedOrder!);
+        } else if (res.colissimoStatus) {
+          this.showToast(`Colissimo status: ${res.colissimoStatus}`);
+          this.viewOrder(this.selectedOrder!);
+        }
+      },
+      error: () => {
+        this.colissimoRefreshing = false;
+        this.showToast('Failed to verify with Colissimo');
+      },
+    });
+  }
+
+  private downloadBlob(blob: Blob, filename: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
+
   printColissimoLabel(): void {
     const parcel = (this.selectedOrder as any)?.colissimoParcel;
     if (!parcel?.barcode) return;
     this.colissimoService.getParcelPdf(parcel.barcode).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
-      },
-      error: () => this.showToast('Failed to load label PDF')
+      next: (blob) => this.downloadBlob(blob, `colissimo-${parcel.barcode}.pdf`),
+    });
+  }
+
+  getOrderBarcode(order: any): string | null {
+    return order?.colissimoParcel?.barcode || null;
+  }
+
+  printLabel(barcode: string | null | undefined): void {
+    if (!barcode) return;
+    this.colissimoService.getParcelPdf(barcode).subscribe({
+      next: (blob) => this.downloadBlob(blob, `colissimo-${barcode}.pdf`),
     });
   }
 

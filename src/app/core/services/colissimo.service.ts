@@ -46,4 +46,28 @@ export class ColissimoService {
       responseType: 'blob'
     });
   }
+
+  listDeliveries(params?: { page?: number; limit?: number; status?: string; search?: string }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') httpParams = httpParams.set(k, String(v));
+      });
+    }
+    return this.http.get(`${this.API_URL}/deliveries`, { params: httpParams });
+  }
+
+  syncDeliveries(): Observable<any> {
+    return this.http.post(`${this.API_URL}/deliveries/sync`, {});
+  }
+
+  verifyParcel(orderId: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/verify-parcel`, { orderId });
+  }
+
+  getBatchParcelPdf(barcodes: string[]): Observable<Blob> {
+    return this.http.post(`${this.API_URL}/parcels/batch-pdf`, { barcodes }, {
+      responseType: 'blob'
+    });
+  }
 }
