@@ -128,19 +128,20 @@
             <div class="space-y-4">
               <div>
                 <label for="checkout-name" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Full Name <span class="text-rose-500">*</span></label>
-                <input id="checkout-name" [(ngModel)]="customerName" type="text" placeholder="Recipient name"
-                  class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                <input id="checkout-name" [(ngModel)]="customerName" type="text" placeholder="Enter your full name"
+                  class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all required-input" />
+                <p *ngIf="nameError" class="mt-1 text-xs text-rose-500">{{ nameError }}</p>
               </div>
               <div>
-                <label for="checkout-email" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Email <span class="text-rose-500">*</span></label>
+                <label for="checkout-email" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Email</label>
                 <input id="checkout-email" [(ngModel)]="customerEmail" type="email" placeholder="Email address"
                   class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
-                <p *ngIf="emailError" class="mt-1 text-xs text-rose-500">{{ emailError }}</p>
               </div>
               <div>
                   <label for="checkout-phone" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Phone <span class="text-rose-500">*</span></label>
-                <input id="checkout-phone" [(ngModel)]="customerPhone" type="tel" placeholder="Phone number"
-                  class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                <input id="checkout-phone" [(ngModel)]="customerPhone" type="tel" placeholder="Enter your phone number"
+                  class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all required-input" />
+                <p *ngIf="phoneError" class="mt-1 text-xs text-rose-500">{{ phoneError }}</p>
               </div>
 
               <div class="border-t border-gray-100 pt-4">
@@ -148,36 +149,41 @@
                 <div class="space-y-3">
                   <div>
                     <label for="checkout-street" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Street <span class="text-rose-500">*</span></label>
-                    <input id="checkout-street" [(ngModel)]="addressStreet" type="text" placeholder="Street address"
-                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                    <input id="checkout-street" [(ngModel)]="addressStreet" type="text" placeholder="Enter your street address"
+                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all required-input" />
+                    <p *ngIf="streetError" class="mt-1 text-xs text-rose-500">{{ streetError }}</p>
                   </div>
                   <div>
                     <label for="checkout-gouvernorat" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Governorate <span class="text-rose-500">*</span></label>
                     <select id="checkout-gouvernorat" [(ngModel)]="addressGouvernorat" (ngModelChange)="onGouvernoratChange()"
-                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-white">
+                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-white required-input">
                       <option value="">Select governorate</option>
                       <option *ngFor="let g of governorates" [value]="g.gouvernorat">{{ g.gouvernorat }}</option>
                     </select>
+                    <p *ngIf="gouvernoratError" class="mt-1 text-xs text-rose-500">{{ gouvernoratError }}</p>
                   </div>
                   <div class="grid grid-cols-2 gap-3">
                     <div>
                       <label for="checkout-city" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">City <span class="text-rose-500">*</span></label>
                       <select id="checkout-city" [(ngModel)]="addressCity"
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-white">
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-white required-input">
                         <option value="">Select city</option>
                         <option *ngFor="let v of availableCities" [value]="v">{{ v }}</option>
                       </select>
+                      <p *ngIf="cityError" class="mt-1 text-xs text-rose-500">{{ cityError }}</p>
                     </div>
                     <div>
-                      <label for="checkout-zip" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Zip Code</label>
-                      <input id="checkout-zip" [(ngModel)]="addressPostalCode" type="text" placeholder="Zip code"
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all" />
+                      <label for="checkout-zip" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Zip Code <span class="text-rose-500">*</span></label>
+                      <input id="checkout-zip" [(ngModel)]="addressPostalCode" type="text" placeholder="Enter your zip code"
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all required-input" />
+                      <p *ngIf="zipError" class="mt-1 text-xs text-rose-500">{{ zipError }}</p>
                     </div>
                   </div>
                   <div>
-                    <label for="checkout-country" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Country</label>
-                    <input id="checkout-country" [(ngModel)]="addressCountry" type="text" placeholder="Country"
-                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-gray-50" readonly />
+                    <label for="checkout-country" class="block text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-1.5">Country <span class="text-rose-500">*</span></label>
+                    <input id="checkout-country" [(ngModel)]="addressCountry" type="text" placeholder="Enter your country"
+                      class="w-full px-4 py-2.5 border border-gray-200 rounded-sm text-sm focus:outline-none focus:border-[var(--color-ixora-green)] focus:ring-1 focus:ring-[var(--color-ixora-green)]/20 transition-all bg-gray-50 required-input" readonly />
+                    <p *ngIf="countryError" class="mt-1 text-xs text-rose-500">{{ countryError }}</p>
                   </div>
                 </div>
               </div>

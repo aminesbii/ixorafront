@@ -40,7 +40,13 @@ export class CartComponent implements OnInit {
   customerName = '';
   customerEmail = '';
   customerPhone = '';
-  emailError = '';
+  nameError = '';
+  phoneError = '';
+  streetError = '';
+  cityError = '';
+  gouvernoratError = '';
+  zipError = '';
+  countryError = '';
 
   addressStreet = '';
   addressCity = '';
@@ -239,6 +245,13 @@ export class CartComponent implements OnInit {
   closeOrderForm(): void {
     this.showOrderForm = false;
     this.orderError = '';
+    this.nameError = '';
+    this.phoneError = '';
+    this.streetError = '';
+    this.cityError = '';
+    this.gouvernoratError = '';
+    this.zipError = '';
+    this.countryError = '';
   }
 
 
@@ -252,25 +265,46 @@ export class CartComponent implements OnInit {
 
   placeOrder(): void {
     this.orderError = '';
-    this.emailError = '';
+    this.nameError = '';
+    this.phoneError = '';
+    this.streetError = '';
+    this.cityError = '';
+    this.gouvernoratError = '';
+    this.zipError = '';
+    this.countryError = '';
 
-    if (!this.customerName || !this.customerEmail) {
-      this.orderError = 'Name and email are required.';
-      return;
+    let hasError = false;
+
+    if (!this.customerName) {
+      this.nameError = 'Please enter your full name.';
+      hasError = true;
     }
     if (!this.customerPhone) {
-      this.orderError = 'Phone number is required.';
-      return;
+      this.phoneError = 'Please enter your phone number.';
+      hasError = true;
     }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(this.customerEmail)) {
-      this.emailError = 'Please enter a valid email address.';
-      return;
+    if (!this.addressStreet) {
+      this.streetError = 'Please enter your street address.';
+      hasError = true;
     }
-    if (!this.addressStreet || !this.addressCity || !this.addressCountry) {
-      this.orderError = 'Street, city, and country are required.';
-      return;
+    if (!this.addressGouvernorat) {
+      this.gouvernoratError = 'Please select your governorate.';
+      hasError = true;
     }
+    if (!this.addressCity) {
+      this.cityError = 'Please select your city.';
+      hasError = true;
+    }
+    if (!this.addressPostalCode) {
+      this.zipError = 'Please enter your zip code.';
+      hasError = true;
+    }
+    if (!this.addressCountry) {
+      this.countryError = 'Please enter your country.';
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     const cartId = this.cart?._id || this.cart?.id;
     if (!cartId) {

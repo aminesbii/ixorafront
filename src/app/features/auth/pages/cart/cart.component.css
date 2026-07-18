@@ -314,3 +314,8 @@
   background: #fff;
   color: #111;
 }
+
+.required-input::placeholder {
+  color: #f43f5e;
+  opacity: 0.8;
+}
